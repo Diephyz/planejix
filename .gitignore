@@ -1,8 +1,10 @@
 # Dependencies
 node_modules/
 
-# Database file (local data — not committed)
+# Database files (local data — not committed)
 backend/database/expenses.db
+backend/database/expenses.db-shm
+backend/database/expenses.db-wal
 
 # Environment variables (contain secrets)
 backend/.env

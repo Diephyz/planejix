@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Database file (local data — not committed)
+backend/database/expenses.db
+
+# Environment variables (contain secrets)
+backend/.env
+frontend/.env
+
+# Build output
+frontend/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

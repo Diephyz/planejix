@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Stop-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "Bash(cd /mnt/c/Users/jeffb/Downloads/ProjetoClaudezin && ls)",
+      "Read(//mnt/c/Users/jeffb/Downloads/**)"
+    ]
+  }
+}

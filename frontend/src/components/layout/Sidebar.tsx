@@ -143,9 +143,13 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
           {/* User info */}
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
-              {initials}
-            </div>
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+            ) : (
+              <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+                {initials}
+              </div>
+            )}
             <div className="min-w-0">
               {user?.name && (
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.name}</p>

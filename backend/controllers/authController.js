@@ -70,7 +70,7 @@ exports.googleAuth = async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();
-    const { sub: googleId, email, name } = payload;
+    const { sub: googleId, email, name, picture } = payload;
 
     // Find by google_id first, then by email
     let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(googleId);
@@ -78,7 +78,7 @@ exports.googleAuth = async (req, res) => {
     if (!user && email) {
       user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
       if (user) {
-        db.prepare('UPDATE users SET google_id = ? WHERE id = ?').run(googleId, user.id);
+        db.prepare('UPDATE users SET google_id = ?, avatar_url = ? WHERE id = ?').run(googleId, picture || null, user.id);
       }
     }
 
@@ -92,8 +92,8 @@ exports.googleAuth = async (req, res) => {
 
       const fakePassword = bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 4);
       const result = db
-        .prepare('INSERT INTO users (username, password, google_id, email) VALUES (?, ?, ?, ?)')
-        .run(username, fakePassword, googleId, email);
+        .prepare('INSERT INTO users (username, password, google_id, email, avatar_url) VALUES (?, ?, ?, ?, ?)')
+        .run(username, fakePassword, googleId, email, picture || null);
       const userId = result.lastInsertRowid;
 
       const insertCategory = db.prepare('INSERT INTO categories (user_id, name, color) VALUES (?, ?, ?)');
@@ -111,8 +111,11 @@ exports.googleAuth = async (req, res) => {
       user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
     }
 
+    // Update avatar on every Google login in case it changed
+    if (picture) db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(picture, user.id);
+
     const token = signToken(user.id, user.username);
-    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null } });
+    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null } });
   } catch (err) {
     console.error('Google auth error:', err.message);
     res.status(401).json({ error: 'Falha ao autenticar com Google' });

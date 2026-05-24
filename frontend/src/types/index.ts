@@ -2,6 +2,7 @@ export interface User {
   id: number;
   username: string;
   name?: string | null;
+  avatar_url?: string | null;
 }
 
 export type TransactionType = 'income' | 'expense';

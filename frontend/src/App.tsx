@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import PrivateRoute from './components/auth/PrivateRoute';
 import AppLayout from './components/layout/AppLayout';
 import LoginPage from './pages/LoginPage';
@@ -9,6 +9,14 @@ import TransactionsPage from './pages/TransactionsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import ImportPage from './pages/ImportPage';
 import BudgetsPage from './pages/BudgetsPage';
+import AdminPage from './pages/AdminPage';
+import ApprovalsPage from './pages/ApprovalsPage';
+import type { ReactNode } from 'react';
+
+function AdminRoute({ children }: { children: ReactNode }) {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <>{children}</> : <Navigate to="/" replace />;
+}
 
 export default function App() {
   return (
@@ -30,6 +38,8 @@ export default function App() {
             <Route path="budgets" element={<BudgetsPage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="import" element={<ImportPage />} />
+            <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+            <Route path="approvals" element={<AdminRoute><ApprovalsPage /></AdminRoute>} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

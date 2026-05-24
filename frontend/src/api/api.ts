@@ -76,6 +76,8 @@ export const adminAPI = {
     api.post<AdminUser>('/admin/users', data),
   approveUser: (id: number) =>
     api.patch<AdminUser>(`/admin/users/${id}/approve`),
+  rejectUser: (id: number) =>
+    api.patch(`/admin/users/${id}/reject`),
   updateExpiry: (id: number, expires_in_days: number) =>
     api.put<AdminUser>(`/admin/users/${id}`, { expires_in_days }),
   deleteUser: (id: number) =>

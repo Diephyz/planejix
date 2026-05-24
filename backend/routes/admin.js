@@ -10,6 +10,7 @@ router.use(requireAdmin);
 router.get('/users', adminController.listUsers);
 router.post('/users', adminController.createUser);
 router.patch('/users/:id/approve', adminController.approveUser);
+router.patch('/users/:id/reject', adminController.rejectUser);
 router.put('/users/:id', adminController.updateExpiry);
 router.delete('/users/:id', adminController.deleteUser);
 

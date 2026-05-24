@@ -145,3 +145,18 @@ exports.deleteUser = (req, res) => {
   db.prepare('DELETE FROM users WHERE id = ?').run(id);
   res.json({ success: true });
 };
+
+exports.rejectUser = (req, res) => {
+  const { id } = req.params;
+
+  const user = db.prepare('SELECT id, is_admin FROM users WHERE id = ?').get(id);
+  if (!user) {
+    return res.status(404).json({ error: 'Usuário não encontrado' });
+  }
+  if (user.is_admin) {
+    return res.status(400).json({ error: 'Não é possível rejeitar o administrador' });
+  }
+
+  db.prepare('DELETE FROM users WHERE id = ?').run(id);
+  res.json({ success: true });
+};

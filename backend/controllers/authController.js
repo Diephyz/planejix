@@ -22,8 +22,8 @@ function signToken(userId, username) {
 
 exports.register = (req, res) => {
   const { username, password, name, email } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username e senha são obrigatórios' });
+  if (!username || !password || !name) {
+    return res.status(400).json({ error: 'Nome, username e senha são obrigatórios' });
   }
   if (username.length < 3) {
     return res.status(400).json({ error: 'Username deve ter pelo menos 3 caracteres' });

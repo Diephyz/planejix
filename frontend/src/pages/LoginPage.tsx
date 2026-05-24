@@ -169,7 +169,7 @@ export default function LoginPage() {
 
               <form onSubmit={handleRegister} className="space-y-4">
                 <div>
-                  <label className="label">Nome (opcional)</label>
+                  <label className="label">Nome</label>
                   <input
                     type="text"
                     className="input-field"
@@ -177,6 +177,7 @@ export default function LoginPage() {
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
                     autoComplete="name"
+                    required
                   />
                 </div>
                 <div>

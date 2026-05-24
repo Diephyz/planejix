@@ -32,9 +32,14 @@ exports.register = (req, res) => {
     return res.status(400).json({ error: 'Senha deve ter pelo menos 6 caracteres' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
-  if (existing) {
-    return res.status(409).json({ error: 'Username já está em uso' });
+  const existingUsername = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get(username);
+  if (existingUsername) {
+    return res.status(409).json({ error: 'Este usuário já está em uso' });
+  }
+
+  const existingEmail = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+  if (existingEmail) {
+    return res.status(409).json({ error: 'Este e-mail já está cadastrado' });
   }
 
   const hash = bcrypt.hashSync(password, 12);

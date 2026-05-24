@@ -193,7 +193,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div>
-                  <label className="label">E-mail (opcional)</label>
+                  <label className="label">E-mail</label>
                   <input
                     type="email"
                     className="input-field"
@@ -201,6 +201,7 @@ export default function LoginPage() {
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
                     autoComplete="email"
+                    required
                   />
                 </div>
                 <div>

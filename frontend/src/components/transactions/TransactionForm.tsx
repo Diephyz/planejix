@@ -1,17 +1,19 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import Modal from '../shared/Modal';
 import { transactionsAPI, categoriesAPI } from '../../api/api';
-import type { Category, TransactionType, ExpenseKind } from '../../types';
+import type { Category, Transaction, TransactionType, ExpenseKind } from '../../types';
 
 interface TransactionFormProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  transaction?: Transaction;
 }
 
 const today = new Date().toISOString().split('T')[0];
 
-export default function TransactionForm({ open, onClose, onSuccess }: TransactionFormProps) {
+export default function TransactionForm({ open, onClose, onSuccess, transaction }: TransactionFormProps) {
+  const isEdit = !!transaction;
   const [type, setType] = useState<TransactionType>('expense');
   const [kind, setKind] = useState<ExpenseKind>('variable');
   const [description, setDescription] = useState('');
@@ -19,6 +21,7 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
   const [date, setDate] = useState(today);
   const [categoryId, setCategoryId] = useState<string>('');
   const [notes, setNotes] = useState('');
+  const [recurring, setRecurring] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,8 +29,20 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
   useEffect(() => {
     if (open) {
       categoriesAPI.getAll().then((res) => setCategories(res.data)).catch(() => {});
+      if (transaction) {
+        setType(transaction.type);
+        setKind(transaction.kind || 'variable');
+        setDescription(transaction.description);
+        setAmount(String(transaction.amount));
+        setDate(transaction.date);
+        setCategoryId(transaction.category_id ? String(transaction.category_id) : '');
+        setNotes(transaction.notes || '');
+        setRecurring(!!transaction.recurring);
+      } else {
+        reset();
+      }
     }
-  }, [open]);
+  }, [open, transaction]);
 
   const reset = () => {
     setType('expense');
@@ -37,6 +52,7 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
     setDate(today);
     setCategoryId('');
     setNotes('');
+    setRecurring(false);
     setError('');
   };
 
@@ -59,15 +75,21 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
     }
     setLoading(true);
     try {
-      await transactionsAPI.create({
+      const data = {
         type,
         kind,
         description: description.trim(),
         amount: numAmount,
         date,
-        category_id: categoryId ? Number(categoryId) : undefined,
+        category_id: categoryId ? Number(categoryId) : null,
         notes: notes.trim() || undefined,
-      } as never);
+        recurring,
+      };
+      if (isEdit && transaction) {
+        await transactionsAPI.update(transaction.id, data);
+      } else {
+        await transactionsAPI.create(data as never);
+      }
       reset();
       onSuccess();
       onClose();
@@ -80,7 +102,7 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
   };
 
   return (
-    <Modal open={open} onClose={handleClose} title="Nova Transação">
+    <Modal open={open} onClose={handleClose} title={isEdit ? 'Editar Transação' : 'Nova Transação'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Type toggle */}
         <div>
@@ -113,24 +135,22 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
 
         {/* Kind */}
         <div>
-          <div>
-            <label className="label">Subtipo</label>
-            <div className="flex rounded-lg overflow-hidden border border-dark-600">
-              {(['fixed', 'variable', 'custom'] as ExpenseKind[]).map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => setKind(k)}
-                  className={`flex-1 py-2 text-xs font-medium transition-colors ${
-                    kind === k
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-dark-700 text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {k === 'fixed' ? 'Fixo' : k === 'variable' ? 'Variável' : 'Personalizado'}
-                </button>
-              ))}
-            </div>
+          <label className="label">Subtipo</label>
+          <div className="flex rounded-lg overflow-hidden border border-dark-600">
+            {(['fixed', 'variable', 'custom'] as ExpenseKind[]).map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setKind(k)}
+                className={`flex-1 py-2 text-xs font-medium transition-colors ${
+                  kind === k
+                    ? 'bg-brand-500 text-white'
+                    : 'bg-dark-700 text-gray-400 hover:text-white'
+                }`}
+              >
+                {k === 'fixed' ? 'Fixo' : k === 'variable' ? 'Variável' : 'Personalizado'}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -197,6 +217,21 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
           />
         </div>
 
+        {/* Recurring toggle */}
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <div className="relative flex-shrink-0">
+            <input
+              type="checkbox"
+              className="sr-only"
+              checked={recurring}
+              onChange={(e) => setRecurring(e.target.checked)}
+            />
+            <div className={`w-10 h-5 rounded-full transition-colors ${recurring ? 'bg-brand-500' : 'bg-dark-600'}`} />
+            <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${recurring ? 'translate-x-5' : ''}`} />
+          </div>
+          <span className="text-sm text-gray-300 dark:text-gray-300">Transação recorrente</span>
+        </label>
+
         {error && (
           <p className="text-sm text-red-400 bg-red-900/20 border border-red-800 px-3 py-2 rounded-lg">{error}</p>
         )}
@@ -206,7 +241,7 @@ export default function TransactionForm({ open, onClose, onSuccess }: Transactio
             Cancelar
           </button>
           <button type="submit" className="btn-primary flex-1" disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
+            {loading ? 'Salvando...' : isEdit ? 'Atualizar' : 'Salvar'}
           </button>
         </div>
       </form>

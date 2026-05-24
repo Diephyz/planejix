@@ -7,6 +7,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import TransactionsPage from './pages/TransactionsPage';
 import CategoriesPage from './pages/CategoriesPage';
+import ImportPage from './pages/ImportPage';
+import BudgetsPage from './pages/BudgetsPage';
 
 export default function App() {
   return (
@@ -14,7 +16,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route
             path="/"
             element={
@@ -25,7 +27,9 @@ export default function App() {
           >
             <Route index element={<DashboardPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
+            <Route path="budgets" element={<BudgetsPage />} />
             <Route path="categories" element={<CategoriesPage />} />
+            <Route path="import" element={<ImportPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -1,6 +1,7 @@
 export interface User {
   id: number;
   username: string;
+  name?: string | null;
 }
 
 export type TransactionType = 'income' | 'expense';
@@ -24,9 +25,22 @@ export interface Transaction {
   amount: number;
   date: string;
   notes?: string;
+  recurring?: boolean;
   created_at: string;
   category_name?: string;
   category_color?: string;
+}
+
+export interface Budget {
+  id: number;
+  user_id: number;
+  category_id: number | null;
+  amount: number;
+  period: 'monthly' | 'annual';
+  category_name?: string;
+  category_color?: string;
+  spent?: number;
+  percent?: number;
 }
 
 export interface MonthlySummary {
@@ -34,6 +48,12 @@ export interface MonthlySummary {
   income: number;
   expenses: number;
   balance: number;
+}
+
+export interface CategorySlice {
+  name: string;
+  color: string;
+  value: number;
 }
 
 export interface AnnualSummary {
@@ -48,6 +68,8 @@ export interface AnnualSummary {
     variable: number;
     custom: number;
   };
+  byCategoryYear: CategorySlice[];
+  byCategoryMonth: CategorySlice[];
   largestExpense: number;
 }
 
@@ -56,4 +78,6 @@ export interface TransactionFilters {
   year?: number;
   type?: TransactionType | 'all';
   category_id?: number | '';
+  date_from?: string;
+  date_to?: string;
 }

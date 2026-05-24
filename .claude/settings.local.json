@@ -3,7 +3,14 @@
     "allow": [
       "PowerShell(Stop-Process -Name \"node\" -ErrorAction SilentlyContinue)",
       "Bash(cd /mnt/c/Users/jeffb/Downloads/ProjetoClaudezin && ls)",
-      "Read(//mnt/c/Users/jeffb/Downloads/**)"
+      "Read(//mnt/c/Users/jeffb/Downloads/**)",
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\('PATH','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('PATH','User'\\); node -e \"const r = require\\('C:/Users/jeffb/Downloads/ProjetoClaudezin/frontend/node_modules/recharts/package.json'\\); console.log\\(r.version\\)\")",
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\('PATH','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('PATH','User'\\); cd \"C:\\\\Users\\\\jeffb\\\\Downloads\\\\ProjetoClaudezin\\\\frontend\"; npx tsc --noEmit 2>&1 | Select-Object -First 30)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\('Path','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('Path','User'\\); cd \"C:\\\\Users\\\\jeffb\\\\Downloads\\\\ProjetoClaudezin\\\\frontend\"; npx tsc --noEmit 2>&1 | Select-Object -First 50)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\('Path','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('Path','User'\\); Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"cd 'C:\\\\Users\\\\jeffb\\\\Downloads\\\\ProjetoClaudezin'; npm run dev\" -WindowStyle Normal)",
+      "PowerShell(Start-Sleep -Seconds 8; $env:Path = [System.Environment]::GetEnvironmentVariable\\('Path','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('Path','User'\\); try { $r = Invoke-WebRequest -Uri \"http://localhost:3001/api/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"username\":\"x\",\"password\":\"x\"}' -ErrorAction Stop; \"backend OK: $\\($r.StatusCode\\)\" } catch { \"backend resposta: $\\($_.Exception.Response.StatusCode.value__\\)\" })",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -ErrorAction Stop; \"frontend OK: $\\($r.StatusCode\\)\" } catch { \"frontend: $\\($_.Exception.Message\\)\" })",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\('Path','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('Path','User'\\); cd \"C:\\\\Users\\\\jeffb\\\\Downloads\\\\ProjetoClaudezin\"; git status; git log --oneline -5)"
     ]
   }
 }

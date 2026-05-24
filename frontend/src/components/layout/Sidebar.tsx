@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -26,6 +27,15 @@ const navItems = [
     ),
   },
   {
+    to: '/budgets',
+    label: 'Metas',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+  },
+  {
     to: '/categories',
     label: 'Categorias',
     icon: (
@@ -34,11 +44,33 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    to: '/import',
+    label: 'Importar Excel',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  const displayName = user?.name || user?.username || '';
+  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <>
@@ -53,23 +85,15 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-dark-800 border-r border-dark-600 z-30
+          fixed top-0 left-0 h-full w-64 bg-white dark:bg-dark-800 border-r border-gray-200 dark:border-dark-600 z-30
           flex flex-col transition-transform duration-300
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
         `}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-dark-600">
-          <div className="w-9 h-9 bg-brand-500 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <span className="text-base font-bold text-white leading-tight block">Planejix</span>
-            <span className="text-xs text-gray-400 leading-tight">Carteira Inteligente</span>
-          </div>
+        <div className="flex items-center justify-center px-6 py-4 border-b border-gray-200 dark:border-dark-600">
+          <img src="/logo.png" alt="Planejix" className="h-28 w-auto" />
         </div>
 
         {/* Nav */}
@@ -86,8 +110,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                   ${isActive
-                    ? 'bg-brand-500/20 text-brand-400'
-                    : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                    ? 'bg-brand-500/20 text-brand-500 dark:text-brand-400'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
                   }
                 `}
               >
@@ -98,17 +122,43 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* User + Logout */}
-        <div className="px-3 py-4 border-t border-dark-600">
-          <div className="flex items-center gap-3 px-3 py-2 mb-1">
-            <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-sm font-bold">
-              {user?.username?.charAt(0).toUpperCase()}
+        {/* Theme toggle + User + Logout */}
+        <div className="px-3 py-4 border-t border-gray-200 dark:border-dark-600 space-y-1">
+          {/* Theme toggle */}
+          <button
+            onClick={() => setIsDark((d) => !d)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white transition-colors w-full"
+          >
+            {isDark ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+            {isDark ? 'Tema Claro' : 'Tema Escuro'}
+          </button>
+
+          {/* User info */}
+          <div className="flex items-center gap-3 px-3 py-2">
+            <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+              {initials}
             </div>
-            <span className="text-sm text-gray-300 truncate">{user?.username}</span>
+            <div className="min-w-0">
+              {user?.name && (
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
+              )}
+              <p className={`text-gray-500 dark:text-gray-400 truncate ${user?.name ? 'text-xs' : 'text-sm'}`}>
+                {user?.username}
+              </p>
+            </div>
           </div>
+
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-red-900/30 hover:text-red-400 transition-colors w-full"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 transition-colors w-full"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -6,8 +6,8 @@ const db = require('../database/db');
 
 const DEFAULT_CATEGORIES = [
   { name: 'Alimentação', color: '#f97316' },
-  { name: 'Aluguel', color: '#8b5cf6' },
   { name: 'Cuidados Pessoais', color: '#ec4899' },
+  { name: 'Educação', color: '#06b6d4' },
   { name: 'Lazer', color: '#ec4899' },
   { name: 'Moradia', color: '#8b5cf6' },
   { name: 'Outros', color: '#6b7280' },
@@ -21,7 +21,7 @@ function signToken(userId, username) {
 }
 
 exports.register = (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, name } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'Username e senha são obrigatórios' });
   }
@@ -38,7 +38,7 @@ exports.register = (req, res) => {
   }
 
   const hash = bcrypt.hashSync(password, 12);
-  const result = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hash);
+  const result = db.prepare('INSERT INTO users (username, password, name) VALUES (?, ?, ?)').run(username, hash, name || null);
   const userId = result.lastInsertRowid;
 
   const insertCategory = db.prepare('INSERT INTO categories (user_id, name, color) VALUES (?, ?, ?)');
@@ -54,7 +54,7 @@ exports.register = (req, res) => {
   }
 
   const token = signToken(userId, username);
-  res.status(201).json({ token, user: { id: userId, username } });
+  res.status(201).json({ token, user: { id: userId, username, name: name || null } });
 };
 
 exports.googleAuth = async (req, res) => {
@@ -112,7 +112,7 @@ exports.googleAuth = async (req, res) => {
     }
 
     const token = signToken(user.id, user.username);
-    res.json({ token, user: { id: user.id, username: user.username } });
+    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null } });
   } catch (err) {
     console.error('Google auth error:', err.message);
     res.status(401).json({ error: 'Falha ao autenticar com Google' });
@@ -131,5 +131,5 @@ exports.login = (req, res) => {
   }
 
   const token = signToken(user.id, user.username);
-  res.json({ token, user: { id: user.id, username: user.username } });
+  res.json({ token, user: { id: user.id, username: user.username, name: user.name || null } });
 };

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Transaction, TransactionFilters, Category } from '../types';
+import type { Transaction, TransactionFilters, Category, Budget } from '../types';
 
 const api = axios.create({ baseURL: '/api' });
 
@@ -26,8 +26,8 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (username: string, password: string) =>
     api.post('/auth/login', { username, password }),
-  register: (username: string, password: string) =>
-    api.post('/auth/register', { username, password }),
+  register: (username: string, password: string, name?: string) =>
+    api.post('/auth/register', { username, password, name }),
   googleLogin: (credential: string) =>
     api.post('/auth/google', { credential }),
 };
@@ -35,12 +35,27 @@ export const authAPI = {
 export const transactionsAPI = {
   getAll: (filters: TransactionFilters) =>
     api.get<Transaction[]>('/transactions', { params: filters }),
-  getSummary: (year: number) =>
-    api.get('/transactions/summary', { params: { year } }),
+  getSummary: (year: number, month: number) =>
+    api.get('/transactions/summary', { params: { year, month } }),
+  getByCategory: (year: number, month?: number) =>
+    api.get<{ name: string; color: string; value: number }[]>('/transactions/by-category', { params: { year, month } }),
   create: (data: Partial<Transaction>) =>
     api.post<Transaction>('/transactions', data),
+  update: (id: number, data: Partial<Transaction>) =>
+    api.put<Transaction>(`/transactions/${id}`, data),
   delete: (id: number) =>
     api.delete(`/transactions/${id}`),
+};
+
+export const budgetsAPI = {
+  getAll: () => api.get<Budget[]>('/budgets'),
+  getProgress: (year: number, month: number) =>
+    api.get<Budget[]>('/budgets/progress', { params: { year, month } }),
+  create: (data: { category_id?: number | null; amount: number; period: string }) =>
+    api.post<Budget>('/budgets', data),
+  update: (id: number, data: { amount: number; period: string }) =>
+    api.put<Budget>(`/budgets/${id}`, data),
+  delete: (id: number) => api.delete(`/budgets/${id}`),
 };
 
 export const categoriesAPI = {

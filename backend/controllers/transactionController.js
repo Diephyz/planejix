@@ -20,6 +20,14 @@ exports.getAll = (req, res) => {
     query += ` AND strftime('%m', t.date) = ?`;
     params.push(String(month).padStart(2, '0'));
   }
+  if (req.query.date_from) {
+    query += ` AND t.date >= ?`;
+    params.push(req.query.date_from);
+  }
+  if (req.query.date_to) {
+    query += ` AND t.date <= ?`;
+    params.push(req.query.date_to);
+  }
   if (type && type !== 'all') {
     query += ` AND t.type = ?`;
     params.push(type);
@@ -38,6 +46,7 @@ exports.getAll = (req, res) => {
 exports.getSummary = (req, res) => {
   const { userId } = req.user;
   const year = req.query.year || new Date().getFullYear();
+  const month = req.query.month || new Date().getMonth() + 1;
 
   const monthlyRows = db.prepare(`
     SELECT
@@ -82,6 +91,32 @@ exports.getSummary = (req, res) => {
     WHERE user_id = ? AND type = 'expense' AND strftime('%Y', date) = ?
   `).get(userId, String(year));
 
+  const byCategoryYear = db.prepare(`
+    SELECT
+      COALESCE(c.name, 'Sem categoria') AS name,
+      COALESCE(c.color, '#6b7280') AS color,
+      SUM(t.amount) AS value
+    FROM transactions t
+    LEFT JOIN categories c ON t.category_id = c.id
+    WHERE t.user_id = ? AND t.type = 'expense' AND strftime('%Y', t.date) = ?
+    GROUP BY t.category_id
+    ORDER BY value DESC
+  `).all(userId, String(year));
+
+  const byCategoryMonth = db.prepare(`
+    SELECT
+      COALESCE(c.name, 'Sem categoria') AS name,
+      COALESCE(c.color, '#6b7280') AS color,
+      SUM(t.amount) AS value
+    FROM transactions t
+    LEFT JOIN categories c ON t.category_id = c.id
+    WHERE t.user_id = ? AND t.type = 'expense'
+      AND strftime('%Y', t.date) = ?
+      AND strftime('%m', t.date) = ?
+    GROUP BY t.category_id
+    ORDER BY value DESC
+  `).all(userId, String(year), String(month).padStart(2, '0'));
+
   res.json({
     monthly,
     annual: {
@@ -94,8 +129,41 @@ exports.getSummary = (req, res) => {
       variable: kindRow?.variable ?? 0,
       custom: kindRow?.custom ?? 0,
     },
+    byCategoryYear,
+    byCategoryMonth,
     largestExpense: largestExpense?.value ?? 0,
   });
+};
+
+exports.getByCategory = (req, res) => {
+  const { userId } = req.user;
+  const { year, month } = req.query;
+
+  let where = `t.user_id = ? AND t.type = 'expense'`;
+  const params = [userId];
+
+  if (year) {
+    where += ` AND strftime('%Y', t.date) = ?`;
+    params.push(String(year));
+  }
+  if (month) {
+    where += ` AND strftime('%m', t.date) = ?`;
+    params.push(String(month).padStart(2, '0'));
+  }
+
+  const rows = db.prepare(`
+    SELECT
+      COALESCE(c.name, 'Sem categoria') AS name,
+      COALESCE(c.color, '#6b7280') AS color,
+      SUM(t.amount) AS value
+    FROM transactions t
+    LEFT JOIN categories c ON t.category_id = c.id
+    WHERE ${where}
+    GROUP BY t.category_id
+    ORDER BY value DESC
+  `).all(...params);
+
+  res.json(rows);
 };
 
 exports.create = (req, res) => {
@@ -137,6 +205,30 @@ exports.create = (req, res) => {
   `).get(result.lastInsertRowid);
 
   res.status(201).json(created);
+};
+
+exports.update = (req, res) => {
+  const { userId } = req.user;
+  const { id } = req.params;
+  const { type, kind, description, amount, date, category_id, notes, recurring } = req.body;
+
+  const transaction = db.prepare('SELECT id FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
+  if (!transaction) return res.status(404).json({ error: 'Transação não encontrada' });
+
+  db.prepare(`
+    UPDATE transactions SET
+      type = ?, kind = ?, description = ?, amount = ?, date = ?,
+      category_id = ?, notes = ?, recurring = ?
+    WHERE id = ? AND user_id = ?
+  `).run(type, kind || 'variable', description, Number(amount), date,
+    category_id || null, notes || null, recurring ? 1 : 0, id, userId);
+
+  const updated = db.prepare(`
+    SELECT t.*, c.name AS category_name, c.color AS category_color
+    FROM transactions t LEFT JOIN categories c ON t.category_id = c.id
+    WHERE t.id = ?
+  `).get(id);
+  res.json(updated);
 };
 
 exports.remove = (req, res) => {

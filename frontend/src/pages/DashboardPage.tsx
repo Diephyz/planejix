@@ -1,28 +1,35 @@
 import { useState, useEffect, useCallback } from 'react';
-import { transactionsAPI } from '../api/api';
-import type { AnnualSummary, Transaction } from '../types';
+import { transactionsAPI, budgetsAPI } from '../api/api';
+import type { AnnualSummary, Transaction, Budget } from '../types';
 import SummaryCard from '../components/dashboard/SummaryCard';
 import MonthlyBarChart from '../components/dashboard/MonthlyBarChart';
 import AnnualLineChart from '../components/dashboard/AnnualLineChart';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
+import CategoryDonutChart from '../components/dashboard/CategoryDonutChart';
 
 const currentYear = new Date().getFullYear();
+
+const currentMonth = new Date().getMonth() + 1;
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
 export default function DashboardPage() {
   const [year, setYear] = useState(currentYear);
   const [summary, setSummary] = useState<AnnualSummary | null>(null);
   const [recent, setRecent] = useState<Transaction[]>([]);
+  const [budgetAlerts, setBudgetAlerts] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [summaryRes, recentRes] = await Promise.all([
-        transactionsAPI.getSummary(year),
+      const [summaryRes, recentRes, budgetsRes] = await Promise.all([
+        transactionsAPI.getSummary(year, currentMonth),
         transactionsAPI.getAll({ year }),
+        budgetsAPI.getProgress(year, currentMonth),
       ]);
       setSummary(summaryRes.data);
       setRecent(recentRes.data.slice(0, 10));
+      setBudgetAlerts(budgetsRes.data.filter((b) => (b.percent ?? 0) >= 80));
     } catch (err) {
       console.error(err);
     } finally {
@@ -37,7 +44,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold text-white">Visão Geral</h2>
           <p className="text-sm text-gray-400 mt-0.5">Acompanhe suas finanças</p>
@@ -103,6 +110,35 @@ export default function DashboardPage() {
             />
           </div>
 
+          {/* Budget alerts */}
+          {budgetAlerts.length > 0 && (
+            <div className="space-y-2">
+              {budgetAlerts.map((b) => {
+                const over = (b.percent ?? 0) > 100;
+                return (
+                  <div
+                    key={b.id}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm ${
+                      over
+                        ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                        : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
+                    }`}
+                  >
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    </svg>
+                    <span className="flex-1">
+                      <strong>{b.category_name || 'Geral'}:</strong>{' '}
+                      {over
+                        ? `Limite excedido! ${fmt(b.spent ?? 0)} de ${fmt(b.amount)} (${(b.percent ?? 0).toFixed(0)}%)`
+                        : `Atenção: ${(b.percent ?? 0).toFixed(0)}% do orçamento usado — ${fmt(b.spent ?? 0)} de ${fmt(b.amount)}`}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {/* Expense by Kind */}
           <div className="grid grid-cols-3 gap-4">
             {[
@@ -122,7 +158,13 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Charts */}
+          {/* Donut Charts */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <CategoryDonutChart mode="monthly" />
+            <CategoryDonutChart mode="annual" />
+          </div>
+
+          {/* Line/Bar Charts */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <MonthlyBarChart data={summary.monthly} />
             <AnnualLineChart data={summary.monthly} />

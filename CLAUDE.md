@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Planejix - Carteira Inteligente** is a personal finance dashboard with JWT auth, Google OAuth, dark mode, and monthly/annual charts. It is a monorepo with a Node.js/Express backend and a React/TypeScript/Vite frontend.
+**Planejix - Carteira Inteligente** is a personal finance dashboard with JWT auth, Google OAuth, light/dark theme, donut/bar/line charts, budget goals, Excel export/import, and paginated transactions. Monorepo with a Node.js/Express backend and a React/TypeScript/Vite frontend.
 
 ## Commands
 
@@ -32,26 +32,91 @@ npm run build   # TypeScript check + production build
 
 No test suite exists in this project.
 
+### GitHub Repository
+```
+https://github.com/Diephyz/planejix
+```
+The remote is configured with an embedded PAT for silent pushes. A Claude Code Stop hook (in `~/.claude/settings.json`) auto-commits and pushes any changes after each session response. The `.env` files and SQLite database are excluded via `.gitignore` and are never committed.
+
 ## Architecture
 
 ### Backend (`backend/`)
 
 - **Runtime**: Node.js 24 — uses the built-in `node:sqlite` (`DatabaseSync`) instead of `better-sqlite3`, which avoids native compilation. Do **not** replace with `better-sqlite3`.
 - **Entry point**: `server.js` — loads `.env`, initialises the DB, mounts routes under `/api`.
-- **Database**: `backend/database/db.js` — opens `expenses.db`, runs `CREATE TABLE IF NOT EXISTS` on startup, and applies additive `ALTER TABLE` migrations via try/catch (used to add `google_id`/`email` columns). Add new columns the same way.
-- **Auth flow**: `bcrypt` password hashing + 7-day JWT signed with `JWT_SECRET`. Google OAuth uses `google-auth-library` to verify ID tokens server-side; Google users get a random bcrypt hash as their stored password.
+- **Database**: `backend/database/db.js` — opens `expenses.db`, runs `CREATE TABLE IF NOT EXISTS` on startup, and applies additive `ALTER TABLE` migrations via try/catch. Pattern for new columns: `try { db.exec('ALTER TABLE t ADD COLUMN col TYPE') } catch {}`.
+- **Auth flow**: `bcrypt` password hashing + 7-day JWT signed with `JWT_SECRET`. Google OAuth uses `google-auth-library` to verify ID tokens server-side. Registration accepts optional `name` field stored in `users.name`.
 - **Route/controller split**: thin routes in `routes/`, all logic in `controllers/`. Every protected route uses `middleware/auth.js`, which attaches `req.user = { userId, username }`.
-- **Default categories**: defined as `DEFAULT_CATEGORIES` array in `controllers/authController.js`. Adding a category there automatically provisions it for every new user (both password and Google registration). To backfill existing users, run a one-off Node script against `expenses.db`.
+- **Default categories**: defined as `DEFAULT_CATEGORIES` array in `controllers/authController.js`. Adding a category there automatically provisions it for every new user.
 
 ### Frontend (`frontend/src/`)
 
-- **API layer**: `api/api.ts` — single axios instance with base URL `/api`. A request interceptor attaches the JWT from `localStorage`; a response interceptor redirects to `/login` on 401. All API calls go through `authAPI`, `transactionsAPI`, and `categoriesAPI` exported from this file.
-- **Auth state**: `context/AuthContext.tsx` (`useAuth` hook) — persists token + user object in `localStorage` under keys `expense_token` / `expense_user`. `PrivateRoute` wraps all authenticated routes.
-- **Routing** (`App.tsx`): Public routes `/login` and `/register`. All other routes are nested inside `PrivateRoute > AppLayout`, which renders a persistent `Sidebar` + `Topbar` with `<Outlet>`.
-- **Vite proxy**: `/api/*` requests are proxied to `http://localhost:3001` in dev, so the frontend never makes cross-origin calls. Configured in `vite.config.ts`.
-- **Styling**: Tailwind CSS with `darkMode: 'class'`. The `<html>` tag always carries `class="dark"`. Custom colour tokens (`dark-900` through `dark-500`, `brand-*`) are defined in `tailwind.config.js`. Shared utility classes (`card`, `btn-primary`, `input-field`, `label`) are defined in `index.css` as `@layer components`.
-- **Charts**: Recharts — `MonthlyBarChart` (BarChart, income vs expenses per month) and `AnnualLineChart` (LineChart, income/expenses/balance trend). Both use `<ResponsiveContainer>` inside a parent with explicit height (`h-[280px]`).
-- **Types**: all shared TypeScript interfaces live in `src/types/index.ts`.
+- **API layer**: `api/api.ts` — single axios instance. Exports `authAPI`, `transactionsAPI`, `categoriesAPI`, `budgetsAPI`. Request interceptor attaches JWT; response interceptor redirects to `/login` on 401.
+- **Auth state**: `context/AuthContext.tsx` (`useAuth` hook) — persists token + user (`{ id, username, name }`) in `localStorage` under `expense_token` / `expense_user`.
+- **Routing** (`App.tsx`): Public: `/login`. Private (inside `PrivateRoute > AppLayout`): `/` (Dashboard), `/transactions`, `/budgets`, `/categories`, `/import`.
+- **Vite proxy**: `/api/*` → `http://localhost:3001`. Configured in `vite.config.ts`.
+- **Theme**: Tailwind `darkMode: 'class'`. `index.html` has an inline script that reads `localStorage('theme')` and adds/removes `class="dark"` on `<html>` before React mounts (prevents flash). Toggle button lives in `Sidebar.tsx` — writes preference back to `localStorage`. All core component classes in `index.css` use `dark:` variants.
+- **Charts**: Recharts — `MonthlyBarChart`, `AnnualLineChart`, `CategoryDonutChart` (active-shape donut with hover label). All use `<ResponsiveContainer>` inside an explicit-height parent. To avoid selection squares on click: no `<Tooltip>`, CSS `outline:none` on `.recharts-wrapper`, and `onMouseDown preventDefault`.
+- **Types**: all shared TypeScript interfaces in `src/types/index.ts`.
+
+### Pages & Key Components
+
+| Route | Component | Notes |
+|---|---|---|
+| `/login` | `LoginPage.tsx` | Tabbed login + register. Register has optional Name field. Google OAuth button in both tabs. |
+| `/` | `DashboardPage.tsx` | KPI cards, budget alerts (≥80%), expense-by-kind strip, donut charts, bar/line charts, recent transactions. |
+| `/transactions` | `TransactionsPage.tsx` | Paginated (10/page) table, export to Excel, edit + delete with confirmation modal, date-range filter toggle. |
+| `/budgets` | `BudgetsPage.tsx` | Budget goals per category with progress bars (green/yellow/red). CRUD via modal. Pulls `getProgress` which returns `spent` and `percent`. |
+| `/categories` | `CategoriesPage.tsx` | Inline CRUD for user categories. |
+| `/import` | `ImportPage.tsx` | Drag-and-drop Excel/CSV import via SheetJS (`xlsx`). Preview table with row validation before bulk create. |
+
+### Component Notes
+
+- **`TransactionForm`**: accepts optional `transaction?: Transaction` prop — when provided, switches to edit mode (pre-fills form, calls `PUT /transactions/:id`). Has a recurring toggle (stored as `INTEGER 0/1` in SQLite — always use `!!t.recurring` in JSX to avoid rendering `0`).
+- **`TransactionTable`**: `onEdit` prop triggers edit flow in parent. Delete uses a `Modal` confirmation (not `window.confirm`).
+- **`TransactionFilters`**: calendar button toggles between month/year selectors and free date-range (`date_from` / `date_to`) inputs.
+- **`Sidebar`**: manages theme toggle state, shows `user.name` (primary) + `user.username` (secondary). Includes Metas nav item.
+- **`BudgetsPage`**: progress bar color: green < 80%, yellow 80–100%, red > 100%. Shows "Limite excedido" label when over budget.
+
+## API Endpoints
+
+```
+AUTH
+POST /api/auth/register   { username, password, name? }  → { token, user }
+POST /api/auth/login      { username, password }          → { token, user }
+POST /api/auth/google     { credential }                  → { token, user }
+
+TRANSACTIONS (JWT required)
+GET    /api/transactions         ?year&month&type&category_id&date_from&date_to
+GET    /api/transactions/summary ?year&month  → AnnualSummary (monthly[], annual{}, byKind{}, byCategoryYear[], byCategoryMonth[], largestExpense)
+GET    /api/transactions/by-category ?year&month → { name, color, value }[]
+POST   /api/transactions         { type, kind, description, amount, date, category_id?, notes?, recurring? }
+PUT    /api/transactions/:id     (same fields, partial)
+DELETE /api/transactions/:id
+
+CATEGORIES (JWT required)
+GET    /api/categories
+POST   /api/categories    { name, color }
+PUT    /api/categories/:id
+DELETE /api/categories/:id
+
+BUDGETS (JWT required)
+GET    /api/budgets              → Budget[]
+GET    /api/budgets/progress     ?year&month → Budget[] with spent, percent
+POST   /api/budgets              { category_id?, amount, period }
+PUT    /api/budgets/:id          { amount, period }
+DELETE /api/budgets/:id
+```
+
+## Database Schema Notes
+
+- `transactions.type`: `'income'` | `'expense'`; `transactions.kind`: `'fixed'` | `'variable'` | `'custom'`.
+- `transactions.amount` is always positive — `type` determines the sign in the UI.
+- `transactions.recurring`: `INTEGER` `0` or `1`. Always coerce with `!!t.recurring` in React.
+- `budgets.period`: `'monthly'` | `'annual'`. `getProgress` computes `spent` by summing expenses matching period and category.
+- `categories` are per-user; deleting a category sets `category_id = NULL` on related transactions (`ON DELETE SET NULL`).
+- Dates stored as `TEXT` `YYYY-MM-DD`. SQLite filters use `strftime('%Y', date)` / `strftime('%m', date)` with zero-padded month strings.
+- New columns added via `try { db.exec('ALTER TABLE ... ADD COLUMN ...') } catch {}` in `db.js`.
 
 ## Environment Variables
 
@@ -62,11 +127,4 @@ No test suite exists in this project.
 | `backend/.env` | `PORT` | Backend port (default 3001) |
 | `frontend/.env` | `VITE_GOOGLE_CLIENT_ID` | Renders the Google Sign-In button client-side |
 
-`VITE_*` variables are bundled by Vite at build time; restart the dev server after changing them.
-
-## Database Schema Notes
-
-- `transactions.type` is `'income'` or `'expense'`; `transactions.kind` (`'fixed'`, `'variable'`, `'custom'`) applies to **both** types (not only expenses).
-- `transactions.amount` is always positive — `type` determines the sign in the UI.
-- `categories` are per-user; deleting a category sets `category_id = NULL` on related transactions (`ON DELETE SET NULL`).
-- Dates are stored as `TEXT` in `YYYY-MM-DD` format. SQLite date filters use `strftime('%Y', date)` and `strftime('%m', date)` with zero-padded month strings.
+`VITE_*` variables are bundled at build time — restart Vite after changing them.

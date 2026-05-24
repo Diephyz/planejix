@@ -38,23 +38,10 @@ exports.register = (req, res) => {
   }
 
   const hash = bcrypt.hashSync(password, 12);
-  const result = db.prepare('INSERT INTO users (username, password, name) VALUES (?, ?, ?)').run(username, hash, name || null);
-  const userId = result.lastInsertRowid;
+  db.prepare('INSERT INTO users (username, password, name, approved) VALUES (?, ?, ?, 0)')
+    .run(username, hash, name || null);
 
-  const insertCategory = db.prepare('INSERT INTO categories (user_id, name, color) VALUES (?, ?, ?)');
-  db.exec('BEGIN');
-  try {
-    for (const cat of DEFAULT_CATEGORIES) {
-      insertCategory.run(userId, cat.name, cat.color);
-    }
-    db.exec('COMMIT');
-  } catch (err) {
-    db.exec('ROLLBACK');
-    throw err;
-  }
-
-  const token = signToken(userId, username);
-  res.status(201).json({ token, user: { id: userId, username, name: name || null } });
+  res.status(201).json({ message: 'Cadastro realizado! Aguarde a aprovação do administrador para acessar o sistema.' });
 };
 
 exports.googleAuth = async (req, res) => {
@@ -83,39 +70,22 @@ exports.googleAuth = async (req, res) => {
     }
 
     if (!user) {
-      // Create new user from Google account
-      const baseUsername = (name || email.split('@')[0]).replace(/\s+/g, '').toLowerCase();
-      const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(baseUsername);
-      const username = existing
-        ? baseUsername + '_' + crypto.randomBytes(2).toString('hex')
-        : baseUsername;
+      return res.status(403).json({ error: 'Conta não encontrada. Entre em contato com o administrador.' });
+    }
 
-      const fakePassword = bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 4);
-      const result = db
-        .prepare('INSERT INTO users (username, password, google_id, email, avatar_url) VALUES (?, ?, ?, ?, ?)')
-        .run(username, fakePassword, googleId, email, picture || null);
-      const userId = result.lastInsertRowid;
+    if (!user.is_admin && !user.approved) {
+      return res.status(403).json({ error: 'Acesso pendente. Aguarde a aprovação do administrador.' });
+    }
 
-      const insertCategory = db.prepare('INSERT INTO categories (user_id, name, color) VALUES (?, ?, ?)');
-      db.exec('BEGIN');
-      try {
-        for (const cat of DEFAULT_CATEGORIES) {
-          insertCategory.run(userId, cat.name, cat.color);
-        }
-        db.exec('COMMIT');
-      } catch (err) {
-        db.exec('ROLLBACK');
-        throw err;
-      }
-
-      user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    if (!user.is_admin && user.expires_at && new Date(user.expires_at) < new Date()) {
+      return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
     }
 
     // Update avatar on every Google login in case it changed
     if (picture) db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(picture, user.id);
 
     const token = signToken(user.id, user.username);
-    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null } });
+    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null, is_admin: !!user.is_admin } });
   } catch (err) {
     console.error('Google auth error:', err.message);
     res.status(401).json({ error: 'Falha ao autenticar com Google' });
@@ -133,6 +103,14 @@ exports.login = (req, res) => {
     return res.status(401).json({ error: 'Username ou senha incorretos' });
   }
 
+  if (!user.is_admin && !user.approved) {
+    return res.status(403).json({ error: 'Acesso pendente. Aguarde a aprovação do administrador.' });
+  }
+
+  if (!user.is_admin && user.expires_at && new Date(user.expires_at) < new Date()) {
+    return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
+  }
+
   const token = signToken(user.id, user.username);
-  res.json({ token, user: { id: user.id, username: user.username, name: user.name || null } });
+  res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, is_admin: !!user.is_admin } });
 };

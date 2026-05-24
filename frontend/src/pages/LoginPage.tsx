@@ -10,20 +10,16 @@ export default function LoginPage() {
   const [tab, setTab] = useState<'login' | 'register'>('login');
 
   const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const switchTab = (t: 'login' | 'register') => {
-    setTab(t);
-    setError('');
-    setUsername('');
-    setName('');
-    setPassword('');
-    setConfirm('');
-  };
+  const [regUsername, setRegUsername] = useState('');
+  const [regName, setRegName] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regError, setRegError] = useState('');
+  const [regLoading, setRegLoading] = useState(false);
+  const [regSuccess, setRegSuccess] = useState(false);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -43,22 +39,24 @@ export default function LoginPage() {
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (password !== confirm) {
-      setError('As senhas não coincidem');
-      return;
-    }
-    setLoading(true);
+    setRegError('');
+    setRegLoading(true);
     try {
-      const res = await authAPI.register(username, password, name.trim() || undefined);
-      login(res.data.token, res.data.user);
-      navigate('/');
+      await authAPI.register(regUsername, regPassword, regName || undefined);
+      setRegSuccess(true);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
-      setError(msg || 'Erro ao criar conta');
+      setRegError(msg || 'Erro ao criar conta');
     } finally {
-      setLoading(false);
+      setRegLoading(false);
     }
+  };
+
+  const switchTab = (next: 'login' | 'register') => {
+    setTab(next);
+    setError('');
+    setRegError('');
+    setRegSuccess(false);
   };
 
   return (
@@ -71,126 +69,145 @@ export default function LoginPage() {
 
         <div className="card">
           {/* Tabs */}
-          <div className="flex bg-dark-700 rounded-lg p-1 mb-6">
+          <div className="flex border-b border-dark-600 mb-5 -mx-6 px-6">
             <button
               onClick={() => switchTab('login')}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 ${
                 tab === 'login'
-                  ? 'bg-brand-500 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-brand-400 border-brand-400'
+                  : 'text-gray-500 border-transparent hover:text-gray-300'
               }`}
             >
               Entrar
             </button>
             <button
               onClick={() => switchTab('register')}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 ${
                 tab === 'register'
-                  ? 'bg-brand-500 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-brand-400 border-brand-400'
+                  : 'text-gray-500 border-transparent hover:text-gray-300'
               }`}
             >
               Criar conta
             </button>
           </div>
 
-          {error && (
-            <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-3 rounded-lg mb-4 text-sm">
-              {error}
-            </div>
-          )}
-
           {tab === 'login' ? (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="label">Usuário</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="Seu usuário"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoComplete="username"
-                  required
-                />
-              </div>
-              <div>
-                <label className="label">Senha</label>
-                <input
-                  type="password"
-                  className="input-field"
-                  placeholder="Sua senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                />
-              </div>
-              <button type="submit" className="btn-primary w-full mt-2" disabled={loading}>
-                {loading ? 'Entrando...' : 'Entrar'}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div>
-                <label className="label">Nome completo</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="Seu nome"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="label">Usuário</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="Mínimo 3 caracteres"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  minLength={3}
-                  required
-                />
-              </div>
-              <div>
-                <label className="label">Senha</label>
-                <input
-                  type="password"
-                  className="input-field"
-                  placeholder="Mínimo 6 caracteres"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  minLength={6}
-                  required
-                />
-              </div>
-              <div>
-                <label className="label">Confirmar senha</label>
-                <input
-                  type="password"
-                  className="input-field"
-                  placeholder="Repita a senha"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn-primary w-full mt-2" disabled={loading}>
-                {loading ? 'Criando conta...' : 'Criar conta'}
-              </button>
-            </form>
-          )}
+            <>
+              {error && (
+                <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-3 rounded-lg mb-4 text-sm">
+                  {error}
+                </div>
+              )}
 
-          <div className="mt-5">
-            <div className="relative flex items-center gap-3 my-4">
-              <div className="flex-1 h-px bg-dark-600" />
-              <span className="text-xs text-gray-500">ou continue com</span>
-              <div className="flex-1 h-px bg-dark-600" />
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="label">Usuário</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder="Seu usuário"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="username"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label">Senha</label>
+                  <input
+                    type="password"
+                    className="input-field"
+                    placeholder="Sua senha"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn-primary w-full mt-2" disabled={loading}>
+                  {loading ? 'Entrando...' : 'Entrar'}
+                </button>
+              </form>
+
+              <div className="mt-5">
+                <div className="relative flex items-center gap-3 my-4">
+                  <div className="flex-1 h-px bg-dark-600" />
+                  <span className="text-xs text-gray-500">ou continue com</span>
+                  <div className="flex-1 h-px bg-dark-600" />
+                </div>
+                <GoogleLoginButton />
+              </div>
+            </>
+          ) : regSuccess ? (
+            <div className="text-center py-4">
+              <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-semibold text-lg mb-2">Cadastro enviado!</h3>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                Seu cadastro foi recebido com sucesso.<br />
+                Aguarde a aprovação do administrador para acessar o sistema.
+              </p>
+              <button
+                onClick={() => switchTab('login')}
+                className="btn-primary px-6"
+              >
+                Voltar ao login
+              </button>
             </div>
-            <GoogleLoginButton />
-          </div>
+          ) : (
+            <>
+              {regError && (
+                <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-3 rounded-lg mb-4 text-sm">
+                  {regError}
+                </div>
+              )}
+
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div>
+                  <label className="label">Nome (opcional)</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder="Seu nome completo"
+                    value={regName}
+                    onChange={(e) => setRegName(e.target.value)}
+                    autoComplete="name"
+                  />
+                </div>
+                <div>
+                  <label className="label">Usuário</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder="Mínimo 3 caracteres"
+                    value={regUsername}
+                    onChange={(e) => setRegUsername(e.target.value)}
+                    autoComplete="username"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label">Senha</label>
+                  <input
+                    type="password"
+                    className="input-field"
+                    placeholder="Mínimo 6 caracteres"
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    autoComplete="new-password"
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn-primary w-full mt-2" disabled={regLoading}>
+                  {regLoading ? 'Criando conta...' : 'Criar conta'}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
       <p className="text-center text-xs text-gray-500 mt-6">Diephyz Corporation ©</p>

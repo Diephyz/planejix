@@ -59,5 +59,12 @@ try { db.exec('ALTER TABLE users ADD COLUMN name TEXT'); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN recurring INTEGER NOT NULL DEFAULT 0"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN avatar_url TEXT"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN recurring_parent_id INTEGER REFERENCES transactions(id) ON DELETE SET NULL"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN expires_at TEXT"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN approved INTEGER NOT NULL DEFAULT 1"); } catch {}
+
+// Ensure the admin account is always admin, no expiration, and approved.
+const adminUsername = process.env.ADMIN_USERNAME || 'Diephyz';
+db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE username = ?").run(adminUsername);
 
 module.exports = db;

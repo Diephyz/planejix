@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Transaction, TransactionFilters, Category, Budget } from '../types';
+import type { Transaction, TransactionFilters, Category, Budget, AdminUser } from '../types';
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 
@@ -67,4 +67,17 @@ export const categoriesAPI = {
     api.put<Category>(`/categories/${id}`, data),
   delete: (id: number) =>
     api.delete(`/categories/${id}`),
+};
+
+export const adminAPI = {
+  getUsers: () =>
+    api.get<AdminUser[]>('/admin/users'),
+  createUser: (data: { username: string; password: string; name?: string; expires_in_days: number }) =>
+    api.post<AdminUser>('/admin/users', data),
+  approveUser: (id: number) =>
+    api.patch<AdminUser>(`/admin/users/${id}/approve`),
+  updateExpiry: (id: number, expires_in_days: number) =>
+    api.put<AdminUser>(`/admin/users/${id}`, { expires_in_days }),
+  deleteUser: (id: number) =>
+    api.delete(`/admin/users/${id}`),
 };

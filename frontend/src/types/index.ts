@@ -3,6 +3,18 @@ export interface User {
   username: string;
   name?: string | null;
   avatar_url?: string | null;
+  is_admin?: boolean;
+}
+
+export interface AdminUser {
+  id: number;
+  username: string;
+  name: string | null;
+  email: string | null;
+  is_admin: number;
+  approved: number;
+  expires_at: string | null;
+  created_at: string;
 }
 
 export type TransactionType = 'income' | 'expense';

@@ -103,11 +103,11 @@ export default function LoginPage() {
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="label">Usuário</label>
+                  <label className="label">Usuário ou E-mail</label>
                   <input
                     type="text"
                     className="input-field"
-                    placeholder="Seu usuário"
+                    placeholder="Seu usuário ou e-mail"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     autoComplete="username"

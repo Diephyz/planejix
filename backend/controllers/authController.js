@@ -103,12 +103,12 @@ exports.googleAuth = async (req, res) => {
 exports.login = (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).json({ error: 'Username e senha são obrigatórios' });
+    return res.status(400).json({ error: 'Usuário/e-mail e senha são obrigatórios' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+  const user = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, username);
   if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(401).json({ error: 'Username ou senha incorretos' });
+    return res.status(401).json({ error: 'Usuário/e-mail ou senha incorretos' });
   }
 
   if (!user.is_admin && !user.approved) {

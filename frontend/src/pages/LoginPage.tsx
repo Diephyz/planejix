@@ -62,7 +62,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-dark-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-dark-900 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img src="/logo.png" alt="Planejix" className="h-52 w-auto mx-auto mb-3" />

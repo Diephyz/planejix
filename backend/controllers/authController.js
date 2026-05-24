@@ -100,6 +100,12 @@ exports.googleAuth = async (req, res) => {
   }
 };
 
+exports.me = (req, res) => {
+  const user = db.prepare('SELECT id, username, name, email, is_admin, avatar_url FROM users WHERE id = ?').get(req.user.userId);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+  res.json({ id: user.id, username: user.username, name: user.name || null, email: user.email || null, is_admin: !!user.is_admin, avatar_url: user.avatar_url || null });
+};
+
 exports.login = (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import axios from 'axios';
 import type { User } from '../types';
 
 interface AuthContextType {
@@ -20,17 +21,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const savedToken = localStorage.getItem('expense_token');
-    const savedUser = localStorage.getItem('expense_user');
-    if (savedToken && savedUser) {
-      try {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
-      } catch {
+    if (!savedToken) { setLoading(false); return; }
+
+    setToken(savedToken);
+    // Always fetch fresh user data from backend to pick up is_admin changes
+    axios.get('/api/auth/me', { headers: { Authorization: `Bearer ${savedToken}` } })
+      .then((res) => {
+        const freshUser = res.data as User;
+        setUser(freshUser);
+        localStorage.setItem('expense_user', JSON.stringify(freshUser));
+      })
+      .catch(() => {
         localStorage.removeItem('expense_token');
         localStorage.removeItem('expense_user');
-      }
-    }
-    setLoading(false);
+        setToken(null);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = (newToken: string, newUser: User) => {

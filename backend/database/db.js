@@ -65,7 +65,7 @@ try { db.exec("ALTER TABLE users ADD COLUMN approved INTEGER NOT NULL DEFAULT 1"
 
 // Ensure admin accounts are always admin, no expiration, and approved.
 const adminUsername = process.env.ADMIN_USERNAME || 'Diephyz';
-db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE username = ?").run(adminUsername);
+db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE LOWER(username) = LOWER(?)").run(adminUsername);
 // Also promote by email (Google OAuth users)
 const adminEmail = process.env.ADMIN_EMAIL || 'jeffbonis@gmail.com';
 db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE email = ?").run(adminEmail);

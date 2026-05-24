@@ -73,6 +73,17 @@ exports.googleAuth = async (req, res) => {
       return res.status(403).json({ error: 'Conta não encontrada. Entre em contato com o administrador.' });
     }
 
+    // Save email and avatar on every login
+    db.prepare('UPDATE users SET email = COALESCE(email, ?), avatar_url = ? WHERE id = ?')
+      .run(email || null, picture || null, user.id);
+
+    // Promote to admin if this is the known admin email
+    const adminEmail = process.env.ADMIN_EMAIL || 'jeffbonis@gmail.com';
+    if (email === adminEmail && !user.is_admin) {
+      db.prepare('UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE id = ?').run(user.id);
+      user = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+    }
+
     if (!user.is_admin && !user.approved) {
       return res.status(403).json({ error: 'Acesso pendente. Aguarde a aprovação do administrador.' });
     }
@@ -80,9 +91,6 @@ exports.googleAuth = async (req, res) => {
     if (!user.is_admin && user.expires_at && new Date(user.expires_at) < new Date()) {
       return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
     }
-
-    // Update avatar on every Google login in case it changed
-    if (picture) db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(picture, user.id);
 
     const token = signToken(user.id, user.username);
     res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null, is_admin: !!user.is_admin } });

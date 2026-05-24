@@ -112,7 +112,7 @@ exports.login = (req, res) => {
     return res.status(400).json({ error: 'Usuário/e-mail e senha são obrigatórios' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, username);
+  const user = db.prepare('SELECT * FROM users WHERE LOWER(username) = LOWER(?) OR email = ?').get(username, username);
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return res.status(401).json({ error: 'Usuário/e-mail ou senha incorretos' });
   }

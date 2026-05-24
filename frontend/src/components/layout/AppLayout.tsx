@@ -14,6 +14,9 @@ export default function AppLayout() {
         <main className="flex-1 p-4 md:p-6">
           <Outlet />
         </main>
+        <footer className="text-center py-3 text-xs text-gray-400 dark:text-gray-600">
+          © Diephyz Corporation
+        </footer>
       </div>
     </div>
   );

@@ -93,7 +93,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="flex items-center justify-center px-6 py-4 border-b border-gray-200 dark:border-dark-600">
-          <img src="/logo.png" alt="Planejix" className="h-28 w-auto" />
+          <img src="/logo.png" alt="Planejix" className="h-36 w-auto" />
         </div>
 
         {/* Nav */}

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import axios from 'axios';
+import { authAPI } from '../api/api';
 import type { User } from '../types';
 
 interface AuthContextType {
@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setToken(savedToken);
     // Always fetch fresh user data from backend to pick up is_admin changes
-    axios.get('/api/auth/me', { headers: { Authorization: `Bearer ${savedToken}` } })
+    authAPI.me()
       .then((res) => {
         const freshUser = res.data as User;
         setUser(freshUser);

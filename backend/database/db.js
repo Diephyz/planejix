@@ -57,5 +57,6 @@ try { db.exec('ALTER TABLE users ADD COLUMN google_id TEXT'); } catch {}
 try { db.exec('ALTER TABLE users ADD COLUMN email TEXT'); } catch {}
 try { db.exec('ALTER TABLE users ADD COLUMN name TEXT'); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN recurring INTEGER NOT NULL DEFAULT 0"); } catch {}
+try { db.exec("ALTER TABLE transactions ADD COLUMN recurring_parent_id INTEGER REFERENCES transactions(id) ON DELETE SET NULL"); } catch {}
 
 module.exports = db;

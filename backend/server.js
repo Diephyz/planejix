@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth');
 const transactionRoutes = require('./routes/transactions');
 const categoryRoutes = require('./routes/categories');
 const budgetRoutes = require('./routes/budgets');
+const { startRecurringJob } = require('./jobs/recurringTransactions');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -41,4 +42,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Backend rodando em http://localhost:${PORT}`);
+  startRecurringJob();
 });

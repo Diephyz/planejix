@@ -16,6 +16,7 @@ export default function LoginPage() {
 
   const [regUsername, setRegUsername] = useState('');
   const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regError, setRegError] = useState('');
   const [regLoading, setRegLoading] = useState(false);
@@ -42,7 +43,7 @@ export default function LoginPage() {
     setRegError('');
     setRegLoading(true);
     try {
-      await authAPI.register(regUsername, regPassword, regName || undefined);
+      await authAPI.register(regUsername, regPassword, regName || undefined, regEmail || undefined);
       setRegSuccess(true);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
@@ -188,6 +189,17 @@ export default function LoginPage() {
                     onChange={(e) => setRegUsername(e.target.value)}
                     autoComplete="username"
                     required
+                  />
+                </div>
+                <div>
+                  <label className="label">E-mail (opcional)</label>
+                  <input
+                    type="email"
+                    className="input-field"
+                    placeholder="seu@email.com"
+                    value={regEmail}
+                    onChange={(e) => setRegEmail(e.target.value)}
+                    autoComplete="email"
                   />
                 </div>
                 <div>

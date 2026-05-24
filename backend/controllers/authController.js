@@ -21,7 +21,7 @@ function signToken(userId, username) {
 }
 
 exports.register = (req, res) => {
-  const { username, password, name } = req.body;
+  const { username, password, name, email } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'Username e senha são obrigatórios' });
   }
@@ -38,8 +38,8 @@ exports.register = (req, res) => {
   }
 
   const hash = bcrypt.hashSync(password, 12);
-  db.prepare('INSERT INTO users (username, password, name, approved) VALUES (?, ?, ?, 0)')
-    .run(username, hash, name || null);
+  db.prepare('INSERT INTO users (username, password, name, email, approved) VALUES (?, ?, ?, ?, 0)')
+    .run(username, hash, name || null, email || null);
 
   res.status(201).json({ message: 'Cadastro realizado! Aguarde a aprovação do administrador para acessar o sistema.' });
 };

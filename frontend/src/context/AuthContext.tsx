@@ -5,6 +5,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated: !!token && !!user, loading, login, logout }}
+      value={{ user, token, isAuthenticated: !!token && !!user, isAdmin: !!user?.is_admin, loading, login, logout }}
     >
       {children}
     </AuthContext.Provider>

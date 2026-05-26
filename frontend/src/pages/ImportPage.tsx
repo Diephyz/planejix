@@ -50,6 +50,20 @@ function parseKind(raw: string): 'fixed' | 'variable' | 'custom' {
   return 'custom';
 }
 
+function downloadTemplate() {
+  const headers = ['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo'];
+  const examples = [
+    ['Saída', 'Supermercado', 250.00, '15/05/2026', 'Alimentação', 'Variável'],
+    ['Entrada', 'Salário', 3500.00, '01/05/2026', 'Salário', 'Fixo'],
+    ['Saída', 'Conta de luz', 180.00, '10/05/2026', 'Moradia', 'Fixo'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...examples]);
+  ws['!cols'] = [{ wch: 10 }, { wch: 24 }, { wch: 10 }, { wch: 14 }, { wch: 18 }, { wch: 14 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Transações');
+  XLSX.writeFile(wb, 'modelo_planejix.xlsx');
+}
+
 export default function ImportPage() {
   const [preview, setPreview] = useState<PreviewRow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -144,7 +158,18 @@ export default function ImportPage() {
 
       {/* Template info */}
       <div className="card">
-        <h3 className="text-sm font-semibold text-white mb-3">Formato esperado das colunas</h3>
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h3 className="text-sm font-semibold text-white">Formato esperado das colunas</h3>
+          <button
+            onClick={downloadTemplate}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Baixar modelo .xlsx
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-gray-400">
             <thead>

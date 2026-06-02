@@ -269,11 +269,16 @@ export default function ImportPage() {
               </thead>
               <tbody>
                 {preview.map((row, i) => (
-                  <tr key={i} className={`border-b border-dark-600/40 ${!row._valid ? 'opacity-60' : ''}`}>
+                  <tr key={i} className={`border-b border-dark-600/40 ${!row._valid ? 'opacity-70' : ''}`}>
                     <td className="py-2 pr-3">
                       {row._valid
                         ? <span className="text-green-400">✓</span>
-                        : <span className="text-red-400" title={row._error}>✗</span>
+                        : (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-red-400">✗</span>
+                            <span className="text-red-400 text-xs">{row._error}</span>
+                          </div>
+                        )
                       }
                     </td>
                     <td className="py-2 pr-3 text-gray-300">{row.tipo}</td>

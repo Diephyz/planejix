@@ -22,14 +22,15 @@ export default function BudgetsPage() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
+  const now = new Date();
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [budgetsRes, catsRes] = await Promise.all([
-        budgetsAPI.getProgress(currentYear, currentMonth),
+        budgetsAPI.getProgress(selectedYear, selectedMonth),
         categoriesAPI.getAll(),
       ]);
       setBudgets(budgetsRes.data);
@@ -38,7 +39,7 @@ export default function BudgetsPage() {
     } finally {
       setLoading(false);
     }
-  }, [currentYear, currentMonth]);
+  }, [selectedYear, selectedMonth]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -92,6 +93,7 @@ export default function BudgetsPage() {
   };
 
   const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const yearOptions = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
     <div className="space-y-5">
@@ -99,16 +101,36 @@ export default function BudgetsPage() {
         <div>
           <h2 className="text-xl font-bold text-white dark:text-white">Metas Financeiras</h2>
           <p className="text-sm text-gray-400 mt-0.5">
-            Orçamentos de {monthNames[currentMonth - 1]} {currentYear}
+            Orçamentos de {monthNames[selectedMonth - 1]} {selectedYear}
           </p>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          <span className="hidden sm:inline">Nova Meta</span>
-          <span className="sm:hidden">Novo</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="input-field w-36"
+          >
+            {monthNames.map((m, i) => (
+              <option key={i + 1} value={i + 1}>{m}</option>
+            ))}
+          </select>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="input-field w-24"
+          >
+            {yearOptions.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+          <button onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="hidden sm:inline">Nova Meta</span>
+            <span className="sm:hidden">Novo</span>
+          </button>
+        </div>
       </div>
 
       {loading ? (

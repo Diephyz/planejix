@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import Modal from '../shared/Modal';
 import { transactionsAPI, categoriesAPI } from '../../api/api';
 import type { Category, Transaction, TransactionType, ExpenseKind } from '../../types';
@@ -25,9 +25,11 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const isDirty = useRef(false);
 
   useEffect(() => {
     if (open) {
+      isDirty.current = false;
       categoriesAPI.getAll().then((res) => setCategories(res.data)).catch(() => {});
       if (transaction) {
         setType(transaction.type);
@@ -54,9 +56,13 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
     setNotes('');
     setRecurring(false);
     setError('');
+    isDirty.current = false;
   };
 
+  const markDirty = () => { isDirty.current = true; };
+
   const handleClose = () => {
+    if (isDirty.current && !window.confirm('Deseja descartar as alterações?')) return;
     reset();
     onClose();
   };
@@ -110,7 +116,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
           <div className="flex rounded-lg overflow-hidden border border-dark-600">
             <button
               type="button"
-              onClick={() => setType('income')}
+              onClick={() => { setType('income'); markDirty(); }}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 type === 'income'
                   ? 'bg-green-600 text-white'
@@ -121,7 +127,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
             </button>
             <button
               type="button"
-              onClick={() => setType('expense')}
+              onClick={() => { setType('expense'); markDirty(); }}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 type === 'expense'
                   ? 'bg-red-600 text-white'
@@ -141,7 +147,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               <button
                 key={k}
                 type="button"
-                onClick={() => setKind(k)}
+                onClick={() => { setKind(k); markDirty(); }}
                 className={`flex-1 py-2 text-xs font-medium transition-colors ${
                   kind === k
                     ? 'bg-brand-500 text-white'
@@ -161,7 +167,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
             className="input-field"
             placeholder="Ex: Aluguel, Salário..."
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => { setDescription(e.target.value); markDirty(); }}
             required
           />
         </div>
@@ -174,7 +180,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               className="input-field"
               placeholder="0,00"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => { setAmount(e.target.value); markDirty(); }}
               min="0.01"
               step="0.01"
               required
@@ -186,7 +192,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               type="date"
               className="input-field"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={(e) => { setDate(e.target.value); markDirty(); }}
               required
             />
           </div>
@@ -197,7 +203,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
           <select
             className="input-field"
             value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
+            onChange={(e) => { setCategoryId(e.target.value); markDirty(); }}
           >
             <option value="">Sem categoria</option>
             {categories.map((c) => (
@@ -213,7 +219,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
             rows={2}
             placeholder="Opcional..."
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) => { setNotes(e.target.value); markDirty(); }}
           />
         </div>
 
@@ -224,7 +230,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               type="checkbox"
               className="sr-only"
               checked={recurring}
-              onChange={(e) => setRecurring(e.target.checked)}
+              onChange={(e) => { setRecurring(e.target.checked); markDirty(); }}
             />
             <div className={`w-10 h-5 rounded-full transition-colors ${recurring ? 'bg-brand-500' : 'bg-dark-600'}`} />
             <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${recurring ? 'translate-x-5' : ''}`} />

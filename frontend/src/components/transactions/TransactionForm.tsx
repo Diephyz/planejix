@@ -22,6 +22,8 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
   const [categoryId, setCategoryId] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [recurring, setRecurring] = useState(false);
+  const [isInstallment, setIsInstallment] = useState(false);
+  const [installmentCount, setInstallmentCount] = useState('2');
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,6 +57,8 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
     setCategoryId('');
     setNotes('');
     setRecurring(false);
+    setIsInstallment(false);
+    setInstallmentCount('2');
     setError('');
     isDirty.current = false;
   };
@@ -90,6 +94,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
         category_id: categoryId ? Number(categoryId) : null,
         notes: notes.trim() || undefined,
         recurring,
+        ...(isInstallment && !isEdit ? { installment_total: Number(installmentCount) } : {}),
       };
       if (isEdit && transaction) {
         await transactionsAPI.update(transaction.id, data);
@@ -235,8 +240,57 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
             <div className={`w-10 h-5 rounded-full transition-colors ${recurring ? 'bg-brand-500' : 'bg-dark-600'}`} />
             <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${recurring ? 'translate-x-5' : ''}`} />
           </div>
-          <span className="text-sm text-gray-300 dark:text-gray-300">Transação recorrente</span>
+          <span className="text-sm text-gray-300">Transação recorrente</span>
         </label>
+
+        {/* Installment toggle — só no modo criação */}
+        {!isEdit && (
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <div className="relative flex-shrink-0">
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={isInstallment}
+                  onChange={(e) => { setIsInstallment(e.target.checked); markDirty(); }}
+                />
+                <div className={`w-10 h-5 rounded-full transition-colors ${isInstallment ? 'bg-orange-500' : 'bg-dark-600'}`} />
+                <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isInstallment ? 'translate-x-5' : ''}`} />
+              </div>
+              <span className="text-sm text-gray-300">Compra parcelada</span>
+            </label>
+
+            {isInstallment && (
+              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <label className="label">Número de parcelas</label>
+                    <input
+                      type="number"
+                      className="input-field"
+                      min={2}
+                      max={48}
+                      value={installmentCount}
+                      onChange={(e) => { setInstallmentCount(e.target.value); markDirty(); }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="label">Valor por parcela</label>
+                    <div className="input-field bg-dark-800 text-orange-400 font-semibold">
+                      {amount && Number(installmentCount) >= 2
+                        ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+                            .format(parseFloat(amount.replace(',', '.')) / Number(installmentCount))
+                        : '—'}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-orange-400/70">
+                  💳 Serão criadas {installmentCount} transações com datas mensais consecutivas a partir da data informada.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {error && (
           <p className="text-sm text-red-400 bg-red-900/20 border border-red-800 px-3 py-2 rounded-lg">{error}</p>

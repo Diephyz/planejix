@@ -39,6 +39,9 @@ export interface Transaction {
   date: string;
   notes?: string;
   recurring?: boolean;
+  installment_total?: number | null;
+  installment_current?: number | null;
+  installment_group_id?: number | null;
   created_at: string;
   category_name?: string;
   category_color?: string;

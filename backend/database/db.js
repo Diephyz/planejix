@@ -63,6 +63,11 @@ try { db.exec("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0"
 try { db.exec("ALTER TABLE users ADD COLUMN expires_at TEXT"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN approved INTEGER NOT NULL DEFAULT 1"); } catch {}
 
+// Installment support
+try { db.exec("ALTER TABLE transactions ADD COLUMN installment_total INTEGER DEFAULT NULL"); } catch {}
+try { db.exec("ALTER TABLE transactions ADD COLUMN installment_current INTEGER DEFAULT NULL"); } catch {}
+try { db.exec("ALTER TABLE transactions ADD COLUMN installment_group_id INTEGER DEFAULT NULL"); } catch {}
+
 // Ensure admin accounts are always admin, no expiration, and approved.
 const adminUsername = process.env.ADMIN_USERNAME || 'Diephyz';
 db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE LOWER(username) = LOWER(?)").run(adminUsername);

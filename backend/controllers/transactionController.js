@@ -168,9 +168,15 @@ exports.getByCategory = (req, res) => {
   res.json(rows);
 };
 
+function addMonths(dateStr, months) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1 + months, d);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+}
+
 exports.create = (req, res) => {
   const { userId } = req.user;
-  const { type, kind, description, amount, date, category_id, notes } = req.body;
+  const { type, kind, description, amount, date, category_id, notes, installment_total } = req.body;
 
   if (!type || !description || !amount || !date) {
     return res.status(400).json({ error: 'Tipo, descrição, valor e data são obrigatórios' });
@@ -185,24 +191,54 @@ exports.create = (req, res) => {
     return res.status(400).json({ error: 'Valor deve ser maior que zero' });
   }
 
+  const total = Number(installment_total);
+
+  // ── Parcelado ────────────────────────────────────────────────────────────
+  if (total >= 2) {
+    const groupId = Date.now();
+    const totalAmount = Number(amount);
+    const baseAmount = Math.floor((totalAmount / total) * 100) / 100;
+    const lastAmount = Math.round((totalAmount - baseAmount * (total - 1)) * 100) / 100;
+
+    const stmt = db.prepare(`
+      INSERT INTO transactions
+        (user_id, category_id, type, kind, description, amount, date, notes,
+         installment_total, installment_current, installment_group_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    let firstId;
+    for (let i = 1; i <= total; i++) {
+      const parcAmt = i === total ? lastAmount : baseAmount;
+      const parcDate = addMonths(date, i - 1);
+      const r = stmt.run(
+        userId, category_id || null, type, kind || 'variable',
+        description, parcAmt, parcDate, notes || null,
+        total, i, groupId
+      );
+      if (i === 1) firstId = r.lastInsertRowid;
+    }
+
+    const created = db.prepare(`
+      SELECT t.*, c.name AS category_name, c.color AS category_color
+      FROM transactions t LEFT JOIN categories c ON t.category_id = c.id
+      WHERE t.id = ?
+    `).get(firstId);
+    return res.status(201).json(created);
+  }
+
+  // ── Normal ───────────────────────────────────────────────────────────────
   const result = db.prepare(`
     INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
-    userId,
-    category_id || null,
-    type,
-    kind || 'variable',
-    description,
-    Number(amount),
-    date,
-    notes || null
+    userId, category_id || null, type, kind || 'variable',
+    description, Number(amount), date, notes || null
   );
 
   const created = db.prepare(`
     SELECT t.*, c.name AS category_name, c.color AS category_color
-    FROM transactions t
-    LEFT JOIN categories c ON t.category_id = c.id
+    FROM transactions t LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.id = ?
   `).get(result.lastInsertRowid);
 

@@ -66,13 +66,15 @@ exports.getSummary = (req, res) => {
     return { month: i + 1, income, expenses, balance: income - expenses };
   });
 
+  const monthPad = String(month).padStart(2, '0');
+
   const annualRow = db.prepare(`
     SELECT
       SUM(CASE WHEN type = 'income'  THEN amount ELSE 0 END) AS totalIncome,
       SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS totalExpenses
     FROM transactions
-    WHERE user_id = ? AND strftime('%Y', date) = ?
-  `).get(userId, String(year));
+    WHERE user_id = ? AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
+  `).get(userId, String(year), monthPad);
 
   const totalIncome = annualRow?.totalIncome ?? 0;
   const totalExpenses = annualRow?.totalExpenses ?? 0;
@@ -83,13 +85,13 @@ exports.getSummary = (req, res) => {
       SUM(CASE WHEN kind = 'variable' THEN amount ELSE 0 END) AS variable,
       SUM(CASE WHEN kind = 'custom'   THEN amount ELSE 0 END) AS custom
     FROM transactions
-    WHERE user_id = ? AND type = 'expense' AND strftime('%Y', date) = ?
-  `).get(userId, String(year));
+    WHERE user_id = ? AND type = 'expense' AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
+  `).get(userId, String(year), monthPad);
 
   const largestExpense = db.prepare(`
     SELECT MAX(amount) AS value FROM transactions
-    WHERE user_id = ? AND type = 'expense' AND strftime('%Y', date) = ?
-  `).get(userId, String(year));
+    WHERE user_id = ? AND type = 'expense' AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
+  `).get(userId, String(year), monthPad);
 
   const byCategoryYear = db.prepare(`
     SELECT

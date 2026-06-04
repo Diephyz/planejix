@@ -186,7 +186,7 @@ export default function ImportPage() {
                 <td className="py-2 pr-4">Número (ex: 150.00)</td>
                 <td className="py-2 pr-4">DD/MM/AAAA</td>
                 <td className="py-2 pr-4">Nome da categoria</td>
-                <td className="py-2 pr-4">Fixo / Variável / Personalizado</td>
+                <td className="py-2 pr-4">Fixo / Variável / Outros</td>
               </tr>
               <tr className="text-gray-500 italic">
                 <td className="py-2 pr-4">Saída</td>

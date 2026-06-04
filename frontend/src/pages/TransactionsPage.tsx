@@ -71,7 +71,7 @@ export default function TransactionsPage() {
     const kindLabel = (k: string | null | undefined) => {
       if (k === 'fixed') return 'Fixo';
       if (k === 'variable') return 'Variável';
-      if (k === 'custom') return 'Personalizado';
+      if (k === 'custom') return 'Outros';
       return '';
     };
     const data = transactions.map((t) => ({

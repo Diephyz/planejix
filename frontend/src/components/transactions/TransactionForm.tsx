@@ -159,7 +159,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
                     : 'bg-dark-700 text-gray-400 hover:text-white'
                 }`}
               >
-                {k === 'fixed' ? 'Fixo' : k === 'variable' ? 'Variável' : 'Personalizado'}
+                {k === 'fixed' ? 'Fixo' : k === 'variable' ? 'Variável' : 'Outros'}
               </button>
             ))}
           </div>

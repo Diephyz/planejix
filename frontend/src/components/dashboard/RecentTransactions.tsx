@@ -9,7 +9,7 @@ const formatDate = (dateStr: string) =>
 const kindLabels: Record<string, string> = {
   fixed: 'Fixo',
   variable: 'Variável',
-  custom: 'Personalizado',
+  custom: 'Outros',
 };
 
 export default function RecentTransactions({ transactions }: { transactions: Transaction[] }) {

@@ -18,7 +18,7 @@ const formatDate = (d: string) =>
 const kindLabels: Record<string, string> = {
   fixed: 'Fixo',
   variable: 'Variável',
-  custom: 'Personalizado',
+  custom: 'Outros',
 };
 
 export default function TransactionTable({ transactions, onRefresh, onEdit }: TableProps) {

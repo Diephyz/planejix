@@ -219,7 +219,7 @@ export default function DashboardPage() {
             color="#3b82f6"
           />
           <KindRow
-            label="Personaliz."
+            label="Outros"
             value={summary.byKind.custom}
             total={summary.annual.totalExpenses}
             color="#f97316"

@@ -170,12 +170,12 @@ export default function ImportPage() {
             Baixar modelo .xlsx
           </button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-gray-400">
+        <div className="overflow-x-auto -mx-1 px-1">
+          <table className="text-xs text-gray-400 min-w-[480px] w-full">
             <thead>
               <tr className="border-b border-dark-600">
                 {['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo'].map(col => (
-                  <th key={col} className="text-left py-2 pr-4 font-semibold text-gray-300">{col}</th>
+                  <th key={col} className="text-left py-2 pr-4 font-semibold text-gray-300 whitespace-nowrap">{col}</th>
                 ))}
               </tr>
             </thead>

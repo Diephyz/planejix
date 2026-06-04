@@ -151,10 +151,10 @@ export default function AdminPage() {
             <thead className="bg-gray-50 dark:bg-dark-700 text-gray-500 dark:text-gray-400 text-xs uppercase">
               <tr>
                 <th className="px-4 py-3 text-left">Usuário</th>
-                <th className="px-4 py-3 text-left">Nome</th>
-                <th className="px-4 py-3 text-left">Validade</th>
+                <th className="px-4 py-3 text-left hidden sm:table-cell">Nome</th>
+                <th className="px-4 py-3 text-left hidden md:table-cell">Validade</th>
                 <th className="px-4 py-3 text-left">Status</th>
-                <th className="px-4 py-3 text-left">Criado em</th>
+                <th className="px-4 py-3 text-left hidden md:table-cell">Criado em</th>
                 <th className="px-4 py-3 text-right">Ações</th>
               </tr>
             </thead>
@@ -169,14 +169,14 @@ export default function AdminPage() {
                         <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded">admin</span>
                       ) : null}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{u.name || '—'}</td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{formatDate(u.expires_at)}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{u.name || '—'}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{formatDate(u.expires_at)}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
                         {status.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{formatDate(u.created_at)}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{formatDate(u.created_at)}</td>
                     <td className="px-4 py-3 text-right">
                       {!u.is_admin && (
                         <div className="flex items-center justify-end gap-2">

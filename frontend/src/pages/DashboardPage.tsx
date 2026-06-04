@@ -310,6 +310,20 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* Por Tipo mobile (oculto em lg+) */}
+        <div className="grid grid-cols-3 gap-2 lg:hidden">
+          {[
+            { label: 'Fixos', value: summary.byKind.fixed, color: '#a855f7' },
+            { label: 'Variáveis', value: summary.byKind.variable, color: '#3b82f6' },
+            { label: 'Outros', value: summary.byKind.custom, color: '#f97316' },
+          ].map((item) => (
+            <div key={item.label} className="card py-3 px-3" style={{ borderLeft: `3px solid ${item.color}` }}>
+              <p className="text-xs text-gray-500">{item.label}</p>
+              <p className="text-xs font-bold text-white mt-0.5 truncate">{fmt(item.value)}</p>
+            </div>
+          ))}
+        </div>
+
         {/* Alertas mobile (oculto em lg+) */}
         {budgetAlerts.length > 0 && (
           <div className="space-y-2 lg:hidden">

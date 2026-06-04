@@ -73,6 +73,7 @@ function KindRow({ label, value, total, color }: KindRowProps) {
 // ── Dashboard principal ───────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [year, setYear] = useState(currentYear);
+  const [month, setMonth] = useState(currentMonth);
   const [summary, setSummary] = useState<AnnualSummary | null>(null);
   const [recent, setRecent] = useState<Transaction[]>([]);
   const [budgetAlerts, setBudgetAlerts] = useState<Budget[]>([]);
@@ -82,9 +83,9 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const [summaryRes, recentRes, budgetsRes] = await Promise.all([
-        transactionsAPI.getSummary(year, currentMonth),
+        transactionsAPI.getSummary(year, month),
         transactionsAPI.getAll({ year }),
-        budgetsAPI.getProgress(year, currentMonth),
+        budgetsAPI.getProgress(year, month),
       ]);
       setSummary(summaryRes.data);
       setRecent(recentRes.data.slice(0, 10));
@@ -94,11 +95,12 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [year]);
+  }, [year, month]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
   // ── Loading state ─────────────────────────────────────────────────────────
   if (loading) {
@@ -147,15 +149,26 @@ export default function DashboardPage() {
           <p className="text-xs text-gray-500 mt-0.5">Acompanhe suas finanças</p>
         </div>
 
-        <select
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          className="input-field w-full text-sm"
-        >
-          {yearOptions.map((y) => (
-            <option key={y} value={y}>{y}</option>
-          ))}
-        </select>
+        <div className="flex gap-2">
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            className="input-field flex-1 text-sm"
+          >
+            {monthNames.map((m, i) => (
+              <option key={i + 1} value={i + 1}>{m}</option>
+            ))}
+          </select>
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="input-field w-20 text-sm"
+          >
+            {yearOptions.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
 
         {/* KPI Cards */}
         <StatCard
@@ -262,13 +275,24 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold text-white">Visão Geral</h2>
             <p className="text-sm text-gray-400 mt-0.5">Acompanhe suas finanças</p>
           </div>
-          <select
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="input-field w-28"
-          >
-            {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
-          </select>
+          <div className="flex gap-2">
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="input-field w-32"
+            >
+              {monthNames.map((m, i) => (
+                <option key={i + 1} value={i + 1}>{m}</option>
+              ))}
+            </select>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="input-field w-24"
+            >
+              {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
         </div>
 
         {/* KPI grid mobile (oculto em lg+) */}

@@ -228,25 +228,26 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
           />
         </div>
 
-        {/* Recurring toggle */}
-        <label className="flex items-center gap-3 cursor-pointer select-none">
-          <div className="relative flex-shrink-0">
-            <input
-              type="checkbox"
-              className="sr-only"
-              checked={recurring}
-              onChange={(e) => { setRecurring(e.target.checked); markDirty(); }}
-            />
-            <div className={`w-10 h-5 rounded-full transition-colors ${recurring ? 'bg-brand-500' : 'bg-dark-600'}`} />
-            <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${recurring ? 'translate-x-5' : ''}`} />
-          </div>
-          <span className="text-sm text-gray-300">Transação recorrente</span>
-        </label>
+        {/* Toggles lado a lado */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Recorrente */}
+          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <div className="relative flex-shrink-0">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={recurring}
+                onChange={(e) => { setRecurring(e.target.checked); markDirty(); }}
+              />
+              <div className={`w-10 h-5 rounded-full transition-colors ${recurring ? 'bg-brand-500' : 'bg-dark-600'}`} />
+              <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${recurring ? 'translate-x-5' : ''}`} />
+            </div>
+            <span className="text-sm text-gray-300 leading-tight">Recorrente</span>
+          </label>
 
-        {/* Installment toggle — só no modo criação */}
-        {!isEdit && (
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer select-none">
+          {/* Parcelado — só no modo criação */}
+          {!isEdit && (
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
               <div className="relative flex-shrink-0">
                 <input
                   type="checkbox"
@@ -257,38 +258,39 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
                 <div className={`w-10 h-5 rounded-full transition-colors ${isInstallment ? 'bg-orange-500' : 'bg-dark-600'}`} />
                 <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isInstallment ? 'translate-x-5' : ''}`} />
               </div>
-              <span className="text-sm text-gray-300">Compra parcelada</span>
+              <span className="text-sm text-gray-300 leading-tight">Parcelado</span>
             </label>
+          )}
+        </div>
 
-            {isInstallment && (
-              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <label className="label">Número de parcelas</label>
-                    <input
-                      type="number"
-                      className="input-field"
-                      min={2}
-                      max={48}
-                      value={installmentCount}
-                      onChange={(e) => { setInstallmentCount(e.target.value); markDirty(); }}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label className="label">Valor por parcela</label>
-                    <div className="input-field bg-dark-800 text-orange-400 font-semibold">
-                      {amount && Number(installmentCount) >= 2
-                        ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-                            .format(parseFloat(amount.replace(',', '.')) / Number(installmentCount))
-                        : '—'}
-                    </div>
-                  </div>
-                </div>
-                <p className="text-xs text-orange-400/70">
-                  💳 Serão criadas {installmentCount} transações com datas mensais consecutivas a partir da data informada.
-                </p>
+        {/* Painel de parcelamento — full width abaixo dos toggles */}
+        {!isEdit && isInstallment && (
+          <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <label className="label">Número de parcelas</label>
+                <input
+                  type="number"
+                  className="input-field"
+                  min={2}
+                  max={48}
+                  value={installmentCount}
+                  onChange={(e) => { setInstallmentCount(e.target.value); markDirty(); }}
+                />
               </div>
-            )}
+              <div className="flex-1">
+                <label className="label">Valor por parcela</label>
+                <div className="input-field bg-dark-800 text-orange-400 font-semibold">
+                  {amount && Number(installmentCount) >= 2
+                    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+                        .format(parseFloat(amount.replace(',', '.')) / Number(installmentCount))
+                    : '—'}
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-orange-400/70">
+              💳 Serão criadas {installmentCount} transações com datas mensais consecutivas a partir da data informada.
+            </p>
           </div>
         )}
 

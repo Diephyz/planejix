@@ -97,3 +97,11 @@ export interface TransactionFilters {
   date_from?: string;
   date_to?: string;
 }
+
+export interface AppNotification {
+  id: number;
+  description: string;
+  amount: number;
+  date: string;
+  type: 'due_today' | 'due_in_3_days';
+}

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Transaction, TransactionFilters, Category, Budget, AdminUser } from '../types';
+import type { Transaction, TransactionFilters, Category, Budget, AdminUser, AppNotification } from '../types';
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 
@@ -83,4 +83,9 @@ export const adminAPI = {
     api.put<AdminUser>(`/admin/users/${id}`, { expires_in_days }),
   deleteUser: (id: number) =>
     api.delete(`/admin/users/${id}`),
+};
+
+export const notificationsAPI = {
+  getUpcoming: () =>
+    api.get<AppNotification[]>('/notifications/upcoming'),
 };

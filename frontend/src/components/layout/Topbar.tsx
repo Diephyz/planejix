@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -27,7 +28,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         </svg>
       </button>
       <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h1>
-      <span className="ml-auto text-xs text-gray-400 dark:text-gray-500 hidden sm:block">Diephyz Corporation ©</span>
+      <div className="ml-auto flex items-center gap-3">
+        <NotificationBell />
+        <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">Diephyz Corporation ©</span>
+      </div>
     </header>
   );
 }

@@ -68,6 +68,10 @@ try { db.exec("ALTER TABLE transactions ADD COLUMN installment_total INTEGER DEF
 try { db.exec("ALTER TABLE transactions ADD COLUMN installment_current INTEGER DEFAULT NULL"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN installment_group_id INTEGER DEFAULT NULL"); } catch {}
 
+// Due-date reminder support (e-mail): flags to avoid sending the same reminder twice
+try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_3d_sent_at TEXT DEFAULT NULL"); } catch {}
+try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_due_sent_at TEXT DEFAULT NULL"); } catch {}
+
 // Ensure admin accounts are always admin, no expiration, and approved.
 const adminUsername = process.env.ADMIN_USERNAME || 'Diephyz';
 db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE LOWER(username) = LOWER(?)").run(adminUsername);

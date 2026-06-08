@@ -11,7 +11,9 @@ const transactionRoutes = require('./routes/transactions');
 const categoryRoutes = require('./routes/categories');
 const budgetRoutes = require('./routes/budgets');
 const adminRoutes = require('./routes/admin');
+const notificationRoutes = require('./routes/notifications');
 const { startRecurringJob } = require('./jobs/recurringTransactions');
+const { startExpenseReminderJob } = require('./jobs/expenseReminders');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -36,6 +38,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -45,4 +48,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Backend rodando em http://localhost:${PORT}`);
   startRecurringJob();
+  startExpenseReminderJob();
 });

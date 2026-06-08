@@ -48,10 +48,14 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 - **Auth flow**: `bcrypt` password hashing + 7-day JWT signed with `JWT_SECRET`. Google OAuth uses `google-auth-library` to verify ID tokens server-side. Registration accepts optional `name` field stored in `users.name`.
 - **Route/controller split**: thin routes in `routes/`, all logic in `controllers/`. Every protected route uses `middleware/auth.js`, which attaches `req.user = { userId, username }`.
 - **Default categories**: defined as `DEFAULT_CATEGORIES` array in `controllers/authController.js`. Adding a category there automatically provisions it for every new user.
+- **Scheduled jobs** (`backend/jobs/`): use `node-cron`, exported as `startXxxJob()` and started in `server.js`'s `app.listen` callback. Each also runs once immediately on boot to "catch up" if the server was down. Existing jobs:
+  - `recurringTransactions.js` — generates monthly copies of recurring transactions (runs at midnight)
+  - `expenseReminders.js` — checks for expenses due today or in 3 days and sends reminder e-mails (runs daily at 8 AM)
+- **Shared services** (`backend/services/`): business logic reused across jobs/controllers. `reminderService.js` (`getUpcomingReminders`) centralizes the "due today / due in 3 days" query so both the e-mail job and the `/notifications` endpoint stay in sync. `emailService.js` wraps Nodemailer — gracefully no-ops (logs a warning) when `SMTP_*` env vars aren't set.
 
 ### Frontend (`frontend/src/`)
 
-- **API layer**: `api/api.ts` — single axios instance. Exports `authAPI`, `transactionsAPI`, `categoriesAPI`, `budgetsAPI`. Request interceptor attaches JWT; response interceptor redirects to `/login` on 401.
+- **API layer**: `api/api.ts` — single axios instance. Exports `authAPI`, `transactionsAPI`, `categoriesAPI`, `budgetsAPI`, `adminAPI`, `notificationsAPI`. Request interceptor attaches JWT; response interceptor redirects to `/login` on 401.
 - **Auth state**: `context/AuthContext.tsx` (`useAuth` hook) — persists token + user (`{ id, username, name }`) in `localStorage` under `expense_token` / `expense_user`.
 - **Routing** (`App.tsx`): Public: `/login`. Private (inside `PrivateRoute > AppLayout`): `/` (Dashboard), `/transactions`, `/budgets`, `/categories`, `/import`.
 - **Vite proxy**: `/api/*` → `http://localhost:3001`. Configured in `vite.config.ts`.
@@ -76,6 +80,7 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 - **`TransactionTable`**: `onEdit` prop triggers edit flow in parent. Delete uses a `Modal` confirmation (not `window.confirm`).
 - **`TransactionFilters`**: calendar button toggles between month/year selectors and free date-range (`date_from` / `date_to`) inputs.
 - **`Sidebar`**: manages theme toggle state, shows `user.name` (primary) + `user.username` (secondary). Includes Metas nav item.
+- **`NotificationBell`** (`components/layout/NotificationBell.tsx`): bell icon + badge in `Topbar`, present on every authenticated page. Fetches `notificationsAPI.getUpcoming()` on mount (i.e. every time the user opens/reloads Planejix) and shows a dropdown listing expenses due today (red "Vence hoje") or in 3 days (yellow "Vence em 3 dias"). Closes on outside click via `mousedown` listener + ref. Does not depend on/affect the e-mail reminder flags — it's a live "current state" view, not a one-time push.
 - **`BudgetsPage`**: progress bar color: green < 80%, yellow 80–100%, red > 100%. Shows "Limite excedido" label when over budget.
 
 ## API Endpoints
@@ -106,6 +111,10 @@ GET    /api/budgets/progress     ?year&month → Budget[] with spent, percent
 POST   /api/budgets              { category_id?, amount, period }
 PUT    /api/budgets/:id          { amount, period }
 DELETE /api/budgets/:id
+
+NOTIFICATIONS (JWT required)
+GET    /api/notifications/upcoming  → AppNotification[] — expenses due today or in 3 days
+                                       { id, description, amount, date, type: 'due_today' | 'due_in_3_days' }
 ```
 
 ## Database Schema Notes
@@ -117,6 +126,7 @@ DELETE /api/budgets/:id
 - `categories` are per-user; deleting a category sets `category_id = NULL` on related transactions (`ON DELETE SET NULL`).
 - Dates stored as `TEXT` `YYYY-MM-DD`. SQLite filters use `strftime('%Y', date)` / `strftime('%m', date)` with zero-padded month strings.
 - New columns added via `try { db.exec('ALTER TABLE ... ADD COLUMN ...') } catch {}` in `db.js`.
+- `transactions.reminder_3d_sent_at` / `reminder_due_sent_at`: `TEXT` timestamps (or `NULL`) marking whether the "3 days before" / "due today" e-mail reminder has already been sent for that transaction — prevents duplicate sends. Set by `jobs/expenseReminders.js`. The in-app notification bell does **not** use these flags (it always shows live current state).
 
 ## Environment Variables
 
@@ -125,6 +135,7 @@ DELETE /api/budgets/:id
 | `backend/.env` | `JWT_SECRET` | Signs JWTs |
 | `backend/.env` | `GOOGLE_CLIENT_ID` | Verifies Google ID tokens server-side |
 | `backend/.env` | `PORT` | Backend port (default 3001) |
+| `backend/.env` | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM_EMAIL` | SMTP credentials for due-date reminder e-mails (`emailService.js`, Nodemailer). Production uses Gmail (`smtp.gmail.com:587`) with an app password — see Google Account → Security → App passwords. If unset, the e-mail job logs a warning and skips sending (no crash). |
 | `frontend/.env` | `VITE_GOOGLE_CLIENT_ID` | Renders the Google Sign-In button client-side |
 
 `VITE_*` variables are bundled at build time — restart Vite after changing them.

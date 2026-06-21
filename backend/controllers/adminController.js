@@ -15,7 +15,7 @@ const DEFAULT_CATEGORIES = [
 
 exports.listUsers = (req, res) => {
   const users = db
-    .prepare('SELECT id, username, name, email, is_admin, expires_at, created_at, approved FROM users ORDER BY created_at DESC')
+    .prepare('SELECT id, username, name, email, is_admin, expires_at, created_at, approved, plan FROM users ORDER BY created_at DESC')
     .all();
   res.json(users);
 };

@@ -23,7 +23,7 @@ export default function Modal({ open, onClose, title, children, maxWidth = 'max-
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
       <div
-        className={`relative w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl animate-scale-in`}
+        className={`relative w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl animate-scale-in modal-scroll`}
         style={{
           background: 'linear-gradient(180deg, rgba(20,20,31,0.95) 0%, rgba(14,14,22,0.98) 100%)',
           backdropFilter: 'blur(24px)',

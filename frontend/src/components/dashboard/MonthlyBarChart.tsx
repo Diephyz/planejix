@@ -18,10 +18,10 @@ const formatCurrency = (value: number) =>
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-dark-700 border border-dark-600 rounded-lg p-3 text-sm shadow-xl">
-        <p className="text-gray-300 font-medium mb-2">{label}</p>
+      <div className="glass-tooltip">
+        <p className="text-gray-300 font-medium mb-1.5 text-[13px]">{label}</p>
         {payload.map((p) => (
-          <p key={p.name} style={{ color: p.color }}>
+          <p key={p.name} className="text-[12px]" style={{ color: p.color }}>
             {p.name}: {formatCurrency(p.value)}
           </p>
         ))}

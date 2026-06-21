@@ -82,15 +82,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f0f14 0%, #1a1040 50%, #0f0f14 100%)' }}>
-      {/* Decorative blurred orbs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }} />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, #22c55e, transparent 70%)' }} />
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #08080d 0%, #151030 50%, #08080d 100%)' }}>
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-20 blur-3xl pointer-events-none animate-float-orb" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }} />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-15 blur-3xl pointer-events-none animate-float-orb-reverse" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent 70%)' }} />
+      <div className="absolute top-[30%] right-[15%] w-[250px] h-[250px] rounded-full opacity-10 blur-3xl pointer-events-none animate-float-orb" style={{ background: 'radial-gradient(circle, #22c55e, transparent 70%)', animationDelay: '-3s' }} />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
-        <div className="text-center mb-8">
-          <img src="/logo.png" alt="Planejix" className="h-52 w-auto mx-auto mb-3 drop-shadow-2xl" />
-          <p className="text-gray-400 text-sm">Controle seus gastos com facilidade</p>
+        <div className="text-center mb-6">
+          <img src="/logo.png" alt="Planejix" className="h-36 sm:h-44 w-auto mx-auto mb-2 drop-shadow-2xl" />
+          <p className="text-gray-500 text-[13px]">Controle seus gastos com facilidade</p>
         </div>
 
         <div className="rounded-2xl p-6 shadow-2xl shadow-black/40" style={{ background: 'rgba(15,15,20,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -129,22 +129,30 @@ export default function LoginPage() {
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
                   <label className="label">Usuário ou E-mail</label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="Seu usuário ou e-mail"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    autoComplete="username"
-                    required
-                  />
+                  <div className="relative">
+                    <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <input
+                      type="text"
+                      className="input-field pl-10"
+                      placeholder="Seu usuário ou e-mail"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      autoComplete="username"
+                      required
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="label">Senha</label>
                   <div className="relative">
+                    <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      className="input-field pr-10"
+                      className="input-field pl-10 pr-10"
                       placeholder="Sua senha"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}

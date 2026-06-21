@@ -255,7 +255,7 @@ function TopCategories({ year, month }: { year: number; month: number }) {
       </h3>
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+          <div className="spinner" />
         </div>
       ) : data.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-sm text-gray-500">
@@ -338,7 +338,7 @@ export default function DashboardPage() {
   if (!summary) return null;
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
 
       {/* ─── Header + Quick Actions + Period Selector ─────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -375,7 +375,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── KPI Cards (horizontal, all screens) ──────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard
           label="Receitas"
           value={summary.annual.totalIncome}
@@ -436,7 +436,7 @@ export default function DashboardPage() {
       )}
 
       {/* ─── Row 1: Area chart (main) + Upcoming payments ─────────────── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2">
           <AnnualLineChart data={summary.monthly} />
         </div>
@@ -444,7 +444,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── Row 2: Top categories + Recent transactions ─────────────── */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <TopCategories year={year} month={month} />
         <EnhancedRecentTransactions transactions={recent} />
       </div>

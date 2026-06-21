@@ -5,6 +5,7 @@ import type { Transaction, Category, TransactionFilters } from '../types';
 import TransactionTable from '../components/transactions/TransactionTable';
 import TransactionFiltersComponent from '../components/transactions/TransactionFilters';
 import TransactionForm from '../components/transactions/TransactionForm';
+import { TableSkeleton } from '../components/shared/Skeleton';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
@@ -139,9 +140,7 @@ export default function TransactionsPage() {
       <TransactionFiltersComponent filters={filters} categories={categories} onChange={setFilters} />
 
       {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <div className="w-7 h-7 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <TableSkeleton rows={6} />
       ) : (
         <>
           <TransactionTable transactions={paginated} onRefresh={fetchTransactions} onEdit={handleEdit} />

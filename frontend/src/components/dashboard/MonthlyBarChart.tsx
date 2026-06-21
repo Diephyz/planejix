@@ -44,6 +44,16 @@ export default function MonthlyBarChart({ data }: { data: MonthlySummary[] }) {
       <div className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+            <defs>
+              <linearGradient id="gradEntradas" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity={1} />
+                <stop offset="100%" stopColor="#22c55e" stopOpacity={0.4} />
+              </linearGradient>
+              <linearGradient id="gradSaidas" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={1} />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity={0.4} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#32324a" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false} />
             <YAxis
@@ -54,8 +64,8 @@ export default function MonthlyBarChart({ data }: { data: MonthlySummary[] }) {
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff08' }} />
             <Legend wrapperStyle={{ color: '#9ca3af', fontSize: 12 }} />
-            <Bar dataKey="Entradas" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={40} />
-            <Bar dataKey="Saídas" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            <Bar dataKey="Entradas" fill="url(#gradEntradas)" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            <Bar dataKey="Saídas" fill="url(#gradSaidas)" radius={[4, 4, 0, 0]} maxBarSize={40} />
           </BarChart>
         </ResponsiveContainer>
       </div>

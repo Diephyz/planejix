@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import PrivateRoute from './components/auth/PrivateRoute';
 import AppLayout from './components/layout/AppLayout';
 import LoginPage from './pages/LoginPage';
@@ -13,6 +14,7 @@ import AdminPage from './pages/AdminPage';
 import ApprovalsPage from './pages/ApprovalsPage';
 import UpgradePage from './pages/UpgradePage';
 import SavingsPage from './pages/SavingsPage';
+import ProfilePage from './pages/ProfilePage';
 import type { ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -23,6 +25,7 @@ function AdminRoute({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <AuthProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -41,6 +44,7 @@ export default function App() {
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="import" element={<ImportPage />} />
             <Route path="savings" element={<SavingsPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="upgrade" element={<UpgradePage />} />
             <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             <Route path="approvals" element={<AdminRoute><ApprovalsPage /></AdminRoute>} />
@@ -48,6 +52,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

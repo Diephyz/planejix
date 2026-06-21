@@ -8,6 +8,8 @@ import CategoryDonutChart from '../components/dashboard/CategoryDonutChart';
 import { useAuth } from '../context/AuthContext';
 import { generateMonthlyReport } from '../utils/generatePdf';
 import WelcomeModal from '../components/shared/WelcomeModal';
+import { useAnimatedValue } from '../hooks/useAnimatedValue';
+import { DashboardSkeleton } from '../components/shared/Skeleton';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
@@ -26,6 +28,8 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, icon, accentColor, textClass, previousValue, invertTrend }: StatCardProps) {
+  const animatedValue = useAnimatedValue(value);
+
   let trend: React.ReactNode = null;
   if (previousValue !== undefined && previousValue > 0) {
     const pct = ((value - previousValue) / previousValue) * 100;
@@ -58,7 +62,7 @@ function StatCard({ title, value, icon, accentColor, textClass, previousValue, i
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-xs text-gray-500 font-medium truncate">{title}</p>
-        <p className={`text-sm font-bold mt-0.5 truncate ${textClass}`}>{fmt(value)}</p>
+        <p className={`text-sm font-bold mt-0.5 truncate ${textClass}`}>{fmt(animatedValue)}</p>
         {trend}
       </div>
     </div>
@@ -129,11 +133,7 @@ export default function DashboardPage() {
 
   // ── Loading state ─────────────────────────────────────────────────────────
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!summary) return null;

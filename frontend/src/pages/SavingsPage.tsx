@@ -3,6 +3,8 @@ import { savingsAPI } from '../api/api';
 import type { SavingsGoal } from '../types';
 import Modal from '../components/shared/Modal';
 import { useAuth } from '../context/AuthContext';
+import { CardsSkeleton } from '../components/shared/Skeleton';
+import { useToast } from '../context/ToastContext';
 
 const fmt = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
@@ -15,6 +17,7 @@ function daysUntil(deadline: string | null) {
 
 export default function SavingsPage() {
   const { isPro } = useAuth();
+  const { toast } = useToast();
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -71,6 +74,7 @@ export default function SavingsPage() {
       }
       setFormOpen(false);
       await loadGoals();
+      toast(editingGoal ? 'Meta atualizada com sucesso' : 'Meta criada com sucesso');
     } catch (err: any) {
       setFormError(err.response?.data?.error || 'Erro ao salvar meta');
     } finally {
@@ -86,6 +90,7 @@ export default function SavingsPage() {
       setDepositTarget(null);
       setDepositAmount('');
       await loadGoals();
+      toast('Depósito realizado com sucesso');
     } catch {} finally {
       setDepositing(false);
     }
@@ -132,9 +137,7 @@ export default function SavingsPage() {
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <div className="w-7 h-7 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <CardsSkeleton count={3} />
       ) : goals.length === 0 ? (
         <div className="card text-center py-12 text-gray-500">
           <svg className="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">

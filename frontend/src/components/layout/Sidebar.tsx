@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
@@ -67,6 +67,7 @@ const navItems = [
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { user, logout, isAdmin, plan } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 
   useEffect(() => {
@@ -187,7 +188,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           </button>
 
           {/* User info */}
-          <div className="flex items-center gap-3 px-3 py-2">
+          <div
+            className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+            onClick={() => { onClose(); navigate('/profile'); }}
+          >
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt="avatar" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
             ) : (

@@ -23,6 +23,11 @@ api.interceptors.response.use(
   }
 );
 
+export const profileAPI = {
+  update: (data: { name?: string; email?: string }) =>
+    api.put('/auth/profile', data),
+};
+
 export const authAPI = {
   login: (username: string, password: string) =>
     api.post('/auth/login', { username, password }),

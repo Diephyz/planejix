@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, type FormEvent } from 'react';
 import Modal from '../shared/Modal';
 import { transactionsAPI, categoriesAPI } from '../../api/api';
 import type { Category, Transaction, TransactionType, ExpenseKind } from '../../types';
+import { useToast } from '../../context/ToastContext';
 
 interface TransactionFormProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface TransactionFormProps {
 const today = new Date().toISOString().split('T')[0];
 
 export default function TransactionForm({ open, onClose, onSuccess, transaction }: TransactionFormProps) {
+  const { toast } = useToast();
   const isEdit = !!transaction;
   const [type, setType] = useState<TransactionType>('expense');
   const [kind, setKind] = useState<ExpenseKind>('variable');
@@ -104,6 +106,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
       reset();
       onSuccess();
       onClose();
+      toast(isEdit ? 'Transação atualizada com sucesso' : 'Transação criada com sucesso');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
       setError(msg || 'Erro ao salvar transação');

@@ -111,6 +111,24 @@ exports.me = (req, res) => {
   res.json({ id: user.id, username: user.username, name: user.name || null, email: user.email || null, is_admin: !!user.is_admin, avatar_url: user.avatar_url || null, plan: user.plan || 'free' });
 };
 
+exports.updateProfile = (req, res) => {
+  const { userId } = req.user;
+  const { name, email } = req.body;
+
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  if (email) {
+    const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?) AND id != ?').get(email, userId);
+    if (existing) return res.status(409).json({ error: 'Este e-mail já está em uso por outro usuário' });
+  }
+
+  db.prepare('UPDATE users SET name = COALESCE(?, name), email = COALESCE(?, email) WHERE id = ?').run(name || null, email || null, userId);
+
+  const updated = db.prepare('SELECT id, username, name, email, is_admin, avatar_url, plan FROM users WHERE id = ?').get(userId);
+  res.json({ id: updated.id, username: updated.username, name: updated.name, email: updated.email, is_admin: !!updated.is_admin, avatar_url: updated.avatar_url, plan: updated.plan || 'free' });
+};
+
 exports.login = (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {

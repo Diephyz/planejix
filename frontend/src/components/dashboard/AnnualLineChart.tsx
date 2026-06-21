@@ -1,6 +1,6 @@
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -45,7 +45,21 @@ export default function AnnualLineChart({ data }: { data: MonthlySummary[] }) {
       <h3 className="text-base font-semibold mb-4">Evolução Anual</h3>
       <div className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+          <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+            <defs>
+              <linearGradient id="gradAreaEntradas" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="gradAreaSaidas" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="gradAreaSaldo" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#818cf8" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#818cf8" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#32324a" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false} />
             <YAxis
@@ -57,10 +71,10 @@ export default function AnnualLineChart({ data }: { data: MonthlySummary[] }) {
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ color: '#9ca3af', fontSize: 12 }} />
             <ReferenceLine y={0} stroke="#44445e" strokeDasharray="4 4" />
-            <Line type="monotone" dataKey="Entradas" stroke="#22c55e" strokeWidth={2} dot={{ r: 3, fill: '#22c55e' }} activeDot={{ r: 5 }} />
-            <Line type="monotone" dataKey="Saídas" stroke="#ef4444" strokeWidth={2} dot={{ r: 3, fill: '#ef4444' }} activeDot={{ r: 5 }} />
-            <Line type="monotone" dataKey="Saldo" stroke="#818cf8" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3, fill: '#818cf8' }} activeDot={{ r: 5 }} />
-          </LineChart>
+            <Area type="monotone" dataKey="Entradas" stroke="#22c55e" strokeWidth={2} fill="url(#gradAreaEntradas)" dot={{ r: 3, fill: '#22c55e' }} activeDot={{ r: 5 }} />
+            <Area type="monotone" dataKey="Saídas" stroke="#ef4444" strokeWidth={2} fill="url(#gradAreaSaidas)" dot={{ r: 3, fill: '#ef4444' }} activeDot={{ r: 5 }} />
+            <Area type="monotone" dataKey="Saldo" stroke="#818cf8" strokeWidth={2} strokeDasharray="5 5" fill="url(#gradAreaSaldo)" dot={{ r: 3, fill: '#818cf8' }} activeDot={{ r: 5 }} />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>

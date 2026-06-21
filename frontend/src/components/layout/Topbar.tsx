@@ -9,8 +9,11 @@ const pageTitles: Record<string, string> = {
   '/': 'Dashboard',
   '/transactions': 'Transações',
   '/budgets': 'Metas Financeiras',
+  '/savings': 'Economia',
   '/categories': 'Categorias',
   '/import': 'Importar Excel',
+  '/profile': 'Meu Perfil',
+  '/upgrade': 'Planos',
 };
 
 export default function Topbar({ onMenuClick }: TopbarProps) {

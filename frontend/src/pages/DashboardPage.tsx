@@ -7,6 +7,7 @@ import RecentTransactions from '../components/dashboard/RecentTransactions';
 import CategoryDonutChart from '../components/dashboard/CategoryDonutChart';
 import { useAuth } from '../context/AuthContext';
 import { generateMonthlyReport } from '../utils/generatePdf';
+import WelcomeModal from '../components/shared/WelcomeModal';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
@@ -41,10 +42,11 @@ function StatCard({ title, value, icon, accentColor, textClass, previousValue, i
 
   return (
     <div
-      className="rounded-2xl p-4 flex items-center gap-3"
+      className="rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20"
       style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(255,255,255,0.04)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255,255,255,0.07)',
         borderLeft: `3px solid ${accentColor}`,
       }}
     >
@@ -94,6 +96,9 @@ export default function DashboardPage() {
   const { isPro } = useAuth();
   const [year, setYear] = useState(currentYear);
   const [month, setMonth] = useState(currentMonth);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem('planejix_onboarded');
+  });
   const [summary, setSummary] = useState<AnnualSummary | null>(null);
   const [recent, setRecent] = useState<Transaction[]>([]);
   const [budgetAlerts, setBudgetAlerts] = useState<Budget[]>([]);
@@ -229,7 +234,7 @@ export default function DashboardPage() {
         {/* Breakdown por tipo */}
         <div
           className="rounded-2xl p-4 space-y-4"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Por Tipo</p>
           <KindRow
@@ -401,6 +406,11 @@ export default function DashboardPage() {
         {/* Linha 3: Evolução anual */}
         <AnnualLineChart data={summary.monthly} />
       </div>
+
+      <WelcomeModal
+        open={showWelcome}
+        onClose={() => { setShowWelcome(false); localStorage.setItem('planejix_onboarded', '1'); }}
+      />
     </div>
   );
 }

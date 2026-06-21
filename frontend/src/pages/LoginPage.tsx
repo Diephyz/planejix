@@ -82,14 +82,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-dark-900 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f0f14 0%, #1a1040 50%, #0f0f14 100%)' }}>
+      {/* Decorative blurred orbs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }} />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, #22c55e, transparent 70%)' }} />
+
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
         <div className="text-center mb-8">
-          <img src="/logo.png" alt="Planejix" className="h-52 w-auto mx-auto mb-3" />
-          <p className="text-gray-400">Controle seus gastos com facilidade</p>
+          <img src="/logo.png" alt="Planejix" className="h-52 w-auto mx-auto mb-3 drop-shadow-2xl" />
+          <p className="text-gray-400 text-sm">Controle seus gastos com facilidade</p>
         </div>
 
-        <div className="card">
+        <div className="rounded-2xl p-6 shadow-2xl shadow-black/40" style={{ background: 'rgba(15,15,20,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)' }}>
           {/* Tabs */}
           <div className="flex border-b border-dark-600 mb-5 -mx-6 px-6">
             <button

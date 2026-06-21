@@ -144,21 +144,34 @@ export default function SavingsPage() {
           <p className="text-xs mt-1">Crie uma meta para começar a poupar</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {goals.map((g) => {
             const pct = g.target_amount > 0 ? (g.current_amount / g.target_amount) * 100 : 0;
             const completed = pct >= 100;
             const days = daysUntil(g.deadline);
             const overdue = days !== null && days < 0 && !completed;
+            const progressColor = completed ? '#22c55e' : pct >= 75 ? '#eab308' : '#10b981';
+            const radius = 38;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDashoffset = circumference - (Math.min(pct, 100) / 100) * circumference;
 
             return (
-              <div key={g.id} className="card border border-dark-600" style={{ borderLeft: `3px solid ${completed ? '#22c55e' : '#10b981'}` }}>
-                <div className="flex items-start justify-between mb-3">
+              <div
+                key={g.id}
+                className="rounded-2xl p-5 transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:shadow-black/20 animate-fade-in"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                }}
+              >
+                {/* Header: actions */}
+                <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-sm font-semibold text-white">{g.name}</h3>
+                    <h3 className="text-base font-bold text-white">{g.name}</h3>
                     {g.deadline && (
-                      <p className={`text-xs mt-0.5 ${overdue ? 'text-red-400' : 'text-gray-500'}`}>
-                        {overdue ? `Vencida há ${Math.abs(days!)}d` : completed ? 'Concluída!' : `${days}d restantes`}
+                      <p className={`text-xs mt-0.5 ${overdue ? 'text-red-400' : completed ? 'text-green-400' : 'text-gray-500'}`}>
+                        {overdue ? `Vencida há ${Math.abs(days!)} dias` : completed ? 'Concluída!' : `${days} dias restantes`}
                       </p>
                     )}
                   </div>
@@ -176,35 +189,60 @@ export default function SavingsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-end justify-between mb-2">
-                  <span className="text-lg font-bold text-white">{fmt(g.current_amount)}</span>
-                  <span className="text-xs text-gray-500">de {fmt(g.target_amount)}</span>
+                {/* Circular progress + values */}
+                <div className="flex items-center gap-5">
+                  <div className="relative flex-shrink-0">
+                    <svg width="96" height="96" viewBox="0 0 96 96">
+                      <circle cx="48" cy="48" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                      <circle
+                        cx="48" cy="48" r={radius} fill="none"
+                        stroke={progressColor} strokeWidth="6" strokeLinecap="round"
+                        strokeDasharray={circumference} strokeDashoffset={strokeDashoffset}
+                        transform="rotate(-90 48 48)"
+                        className="transition-all duration-700"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-lg font-bold text-white">{Math.min(pct, 100).toFixed(0)}%</span>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div>
+                      <p className="text-xs text-gray-500">Acumulado</p>
+                      <p className="text-base font-bold text-white">{fmt(g.current_amount)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Objetivo</p>
+                      <p className="text-sm text-gray-300">{fmt(g.target_amount)}</p>
+                    </div>
+                    {!completed && (
+                      <p className="text-xs text-gray-500">
+                        Falta <span className="text-white font-medium">{fmt(g.target_amount - g.current_amount)}</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="h-2 bg-dark-700 rounded-full overflow-hidden mb-2">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min(pct, 100)}%`,
-                      backgroundColor: completed ? '#22c55e' : pct >= 75 ? '#eab308' : '#10b981',
-                    }}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-semibold ${completed ? 'text-green-400' : 'text-gray-400'}`}>
-                    {pct.toFixed(0)}%
-                  </span>
-                  {!completed && (
+                {/* Action button */}
+                <div className="mt-4">
+                  {!completed ? (
                     <button
                       onClick={() => { setDepositTarget(g); setDepositAmount(''); }}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors font-medium"
+                      className="w-full text-sm px-4 py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors font-medium flex items-center justify-center gap-2"
                     >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
                       Depositar
                     </button>
-                  )}
-                  {completed && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 font-semibold">Meta atingida!</span>
+                  ) : (
+                    <div className="w-full text-center text-sm px-4 py-2.5 rounded-xl bg-green-500/10 text-green-400 font-semibold flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Meta atingida!
+                    </div>
                   )}
                 </div>
               </div>

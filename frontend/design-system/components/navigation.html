@@ -1,0 +1,123 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigation - Planejix Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0f0f14; color: #fff; padding: 24px; }
+  h2 { font-size: 14px; font-weight: 600; color: #818cf8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h3 { font-size: 11px; font-weight: 500; color: #666; margin-bottom: 8px; margin-top: 24px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .sidebar {
+    width: 240px; background: #1a1a24; border: 1px solid #32324a; border-radius: 12px;
+    padding: 16px 0; overflow: hidden;
+  }
+  .sidebar-logo { text-align: center; padding: 0 16px 16px; border-bottom: 1px solid #32324a; }
+  .sidebar-logo span { font-size: 18px; font-weight: 700; color: #818cf8; }
+
+  .nav-section { padding: 12px 12px 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; color: #a1a1aa; cursor: pointer; transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: #252535; color: #fff; }
+  .nav-item.active { background: rgba(99,102,241,0.2); color: #818cf8; }
+  .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .nav-divider { height: 1px; background: #32324a; margin: 8px 12px; }
+
+  .user-section {
+    padding: 12px 12px 0; border-top: 1px solid #32324a; margin-top: 8px;
+  }
+  .user-row {
+    display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .user-row:hover { background: #252535; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: #4f46e5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .user-name { font-size: 13px; font-weight: 500; }
+  .user-handle { font-size: 11px; color: #666; }
+  .plan-badge {
+    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 99px;
+    margin-top: 2px; display: inline-block;
+  }
+  .plan-pro { background: rgba(99,102,241,0.2); color: #818cf8; }
+  .plan-free { background: rgba(156,163,175,0.2); color: #9ca3af; }
+
+  .topbar {
+    background: #1a1a24; border: 1px solid #32324a; border-radius: 12px;
+    height: 56px; display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    margin-top: 20px;
+  }
+  .topbar-title { font-size: 16px; font-weight: 600; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .topbar-copyright { font-size: 11px; color: #555; }
+
+  .meta { font-size: 10px; color: #555; margin-top: 16px; }
+</style>
+</head>
+<body>
+  <h2>Navegação</h2>
+
+  <h3>Sidebar</h3>
+  <div class="sidebar">
+    <div class="sidebar-logo"><span>Planejix</span></div>
+    <div class="nav-section">
+      <div class="nav-item active">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        Transações
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Metas
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Economia
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        Categorias
+      </div>
+    </div>
+    <div class="user-section">
+      <div class="user-row">
+        <div class="avatar">J</div>
+        <div>
+          <div class="user-name">Jefferson</div>
+          <div class="user-handle">@jeffbonis</div>
+          <span class="plan-badge plan-pro">PRO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Topbar</h3>
+  <div class="topbar">
+    <svg width="20" height="20" fill="none" stroke="#a1a1aa" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <span class="topbar-title">Dashboard</span>
+    <div class="topbar-right">
+      <div style="position:relative">
+        <svg width="20" height="20" fill="none" stroke="#a1a1aa" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <div style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:#ef4444;border-radius:99px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #1a1a24">2</div>
+      </div>
+      <span class="topbar-copyright">Diephyz Corporation &copy;</span>
+    </div>
+  </div>
+
+  <div class="meta">Sidebar: 256px fixed · active: brand-500/20 bg · Topbar: h-16 sticky top-0 · Bell badge: red-500</div>
+</body>
+</html>

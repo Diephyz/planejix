@@ -1,0 +1,96 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inputs - Planejix Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0f0f14; color: #fff; padding: 24px; }
+  h2 { font-size: 14px; font-weight: 600; color: #818cf8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h3 { font-size: 11px; font-weight: 500; color: #666; margin-bottom: 8px; margin-top: 24px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .field { margin-bottom: 16px; max-width: 360px; }
+  .label { font-size: 14px; font-weight: 500; color: #a1a1aa; margin-bottom: 4px; display: block; }
+  .input {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #252535; border: 1px solid #32324a; color: #fff; border-radius: 8px;
+    padding: 8px 12px; width: 100%; font-size: 14px; outline: none; transition: all 0.2s;
+  }
+  .input::placeholder { color: #555; }
+  .input:focus { border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1; }
+  .input.error { border-color: #ef4444; }
+  .input:disabled { opacity: 0.5; cursor: not-allowed; }
+  .hint { font-size: 12px; color: #555; margin-top: 4px; }
+  .error-msg { font-size: 12px; color: #ef4444; margin-top: 4px; }
+
+  .select {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #252535; border: 1px solid #32324a; color: #fff; border-radius: 8px;
+    padding: 8px 12px; width: 100%; font-size: 14px; outline: none;
+    appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+  }
+  .select:focus { border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1; }
+
+  .checkbox-row { display: flex; align-items: center; gap: 8px; }
+  .checkbox {
+    width: 18px; height: 18px; border-radius: 4px; border: 1px solid #32324a;
+    background: #252535; accent-color: #6366f1; cursor: pointer;
+  }
+
+  .meta { font-size: 10px; color: #555; margin-top: 16px; }
+</style>
+</head>
+<body>
+  <h2>Inputs & Forms</h2>
+
+  <h3>Text Input</h3>
+  <div class="field">
+    <label class="label">Nome completo</label>
+    <input class="input" type="text" placeholder="Seu nome completo" value="Jefferson Bonis">
+    <div class="hint">Usado para lembretes de vencimento</div>
+  </div>
+
+  <h3>Estados</h3>
+  <div class="field">
+    <label class="label">E-mail</label>
+    <input class="input" type="email" placeholder="seu@email.com">
+  </div>
+  <div class="field">
+    <label class="label">Valor (focused)</label>
+    <input class="input" type="text" value="R$ 1.250,00" style="border-color:#6366f1;box-shadow:0 0 0 1px #6366f1">
+  </div>
+  <div class="field">
+    <label class="label">Campo com erro</label>
+    <input class="input error" type="text" value="">
+    <div class="error-msg">Este campo é obrigatório</div>
+  </div>
+  <div class="field">
+    <label class="label">Usuário (disabled)</label>
+    <input class="input" type="text" value="jeffbonis" disabled>
+  </div>
+
+  <h3>Select</h3>
+  <div class="field">
+    <label class="label">Categoria</label>
+    <select class="select">
+      <option>Alimentação</option>
+      <option>Transporte</option>
+      <option>Lazer</option>
+    </select>
+  </div>
+
+  <h3>Checkbox</h3>
+  <div class="field">
+    <div class="checkbox-row">
+      <input class="checkbox" type="checkbox" checked>
+      <span style="font-size:14px;color:#d4d4d8">Lembrar-me por e-mail</span>
+    </div>
+  </div>
+
+  <div class="meta">input-field (dark-700 + border-dark-600) · focus: brand-500 ring · error: red-500 border</div>
+</body>
+</html>

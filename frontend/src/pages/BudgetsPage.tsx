@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { budgetsAPI, categoriesAPI } from '../api/api';
 import type { Budget, Category } from '../types';
 import Modal from '../components/shared/Modal';
+import { CardsSkeleton } from '../components/shared/Skeleton';
 
 const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
@@ -134,16 +135,22 @@ export default function BudgetsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <div className="w-7 h-7 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <CardsSkeleton count={4} />
       ) : budgets.length === 0 ? (
-        <div className="card text-center py-12 text-gray-500">
-          <svg className="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <p>Nenhuma meta criada</p>
-          <p className="text-xs mt-1">Crie metas para controlar seus gastos por categoria</p>
+        <div className="card text-center py-16 animate-fade-in">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-brand-500/10 flex items-center justify-center">
+            <svg className="w-10 h-10 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <p className="text-white font-semibold">Nenhuma meta criada</p>
+          <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">Defina limites de gastos por categoria e acompanhe seu progresso mensal</p>
+          <button onClick={openCreate} className="btn-primary mt-5 inline-flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Criar primeira meta
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

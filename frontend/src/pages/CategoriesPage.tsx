@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { categoriesAPI } from '../api/api';
 import type { Category } from '../types';
 import Modal from '../components/shared/Modal';
+import { useToast } from '../context/ToastContext';
+import { CardsSkeleton } from '../components/shared/Skeleton';
 
 const PRESET_COLORS = [
   '#ef4444', '#f97316', '#f59e0b', '#eab308',
@@ -10,10 +12,12 @@ const PRESET_COLORS = [
 ];
 
 export default function CategoriesPage() {
+  const { toast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Category | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [name, setName] = useState('');
   const [color, setColor] = useState('#6366f1');
   const [saving, setSaving] = useState(false);
@@ -58,6 +62,7 @@ export default function CategoriesPage() {
         await categoriesAPI.create({ name: name.trim(), color });
       }
       setFormOpen(false);
+      toast(editTarget ? 'Categoria atualizada' : 'Categoria criada');
       fetchCategories();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
@@ -67,13 +72,16 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleDelete = async (cat: Category) => {
-    if (!confirm(`Excluir a categoria "${cat.name}"? As transações vinculadas ficarão sem categoria.`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await categoriesAPI.delete(cat.id);
+      await categoriesAPI.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      toast('Categoria excluída');
       fetchCategories();
     } catch {
-      alert('Erro ao excluir categoria');
+      toast('Erro ao excluir categoria', 'error');
+      setDeleteTarget(null);
     }
   };
 
@@ -93,15 +101,22 @@ export default function CategoriesPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <div className="w-7 h-7 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <CardsSkeleton count={6} />
       ) : categories.length === 0 ? (
-        <div className="card text-center py-12 text-gray-500">
-          <svg className="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-          </svg>
-          <p>Nenhuma categoria</p>
+        <div className="card text-center py-16 animate-fade-in">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-brand-500/10 flex items-center justify-center">
+            <svg className="w-10 h-10 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          </div>
+          <p className="text-white font-semibold">Nenhuma categoria</p>
+          <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">Organize suas transações criando categorias personalizadas com cores</p>
+          <button onClick={openAdd} className="btn-primary mt-5 inline-flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Criar primeira categoria
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -123,7 +138,7 @@ export default function CategoriesPage() {
                   </svg>
                 </button>
                 <button
-                  onClick={() => handleDelete(cat)}
+                  onClick={() => setDeleteTarget(cat)}
                   className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,6 +203,25 @@ export default function CategoriesPage() {
             <button onClick={handleSave} disabled={saving} className="btn-primary flex-1">
               {saving ? 'Salvando...' : editTarget ? 'Salvar' : 'Criar'}
             </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete confirmation */}
+      <Modal open={deleteTarget !== null} onClose={() => setDeleteTarget(null)} title="Excluir Categoria" maxWidth="max-w-sm">
+        <div className="space-y-4">
+          {deleteTarget && (
+            <div className="flex items-center gap-3 p-3 bg-dark-700 rounded-lg">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: deleteTarget.color + '33' }}>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: deleteTarget.color }} />
+              </div>
+              <span className="text-sm text-white">{deleteTarget.name}</span>
+            </div>
+          )}
+          <p className="text-sm text-gray-300">As transações vinculadas ficarão sem categoria. Deseja continuar?</p>
+          <div className="flex gap-3">
+            <button onClick={() => setDeleteTarget(null)} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleDelete} className="btn-danger flex-1">Excluir</button>
           </div>
         </div>
       </Modal>

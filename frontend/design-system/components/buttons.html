@@ -1,0 +1,82 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buttons - Planejix Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0f0f14; color: #fff; padding: 24px; }
+  h2 { font-size: 14px; font-weight: 600; color: #818cf8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h3 { font-size: 11px; font-weight: 500; color: #666; margin-bottom: 8px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+  .btn {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 8px;
+    border: none; cursor: pointer; transition: all 0.2s; display: inline-flex;
+    align-items: center; gap: 6px;
+  }
+  .btn-primary { background: #6366f1; color: #fff; }
+  .btn-primary:hover { background: #4f46e5; }
+  .btn-secondary { background: #252535; color: #fff; border: 1px solid #32324a; }
+  .btn-secondary:hover { background: #32324a; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-ghost { background: transparent; color: #818cf8; }
+  .btn-ghost:hover { background: rgba(99,102,241,0.1); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-sm { font-size: 12px; padding: 6px 12px; }
+  .btn-lg { font-size: 16px; padding: 10px 24px; }
+
+  .btn-icon { width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+
+  .meta { font-size: 10px; color: #555; margin-top: 12px; }
+</style>
+</head>
+<body>
+  <h2>Botões</h2>
+
+  <h3>Variantes</h3>
+  <div class="row">
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-secondary">Secondary</button>
+    <button class="btn btn-danger">Danger</button>
+    <button class="btn btn-ghost">Ghost</button>
+  </div>
+  <div class="meta">btn-primary (#6366f1) · btn-secondary (dark-700 + border) · btn-danger (#dc2626) · btn-ghost (transparent)</div>
+
+  <h3>Tamanhos</h3>
+  <div class="row">
+    <button class="btn btn-primary btn-sm">Small</button>
+    <button class="btn btn-primary">Default</button>
+    <button class="btn btn-primary btn-lg">Large</button>
+  </div>
+
+  <h3>Estados</h3>
+  <div class="row">
+    <button class="btn btn-primary">Normal</button>
+    <button class="btn btn-primary" style="background:#4f46e5">Hover</button>
+    <button class="btn btn-primary" disabled>Disabled</button>
+    <button class="btn btn-primary" style="box-shadow:0 0 0 2px #0f0f14, 0 0 0 4px #818cf8">Focused</button>
+  </div>
+
+  <h3>Com ícone</h3>
+  <div class="row">
+    <button class="btn btn-primary">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Adicionar
+    </button>
+    <button class="btn btn-secondary">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+      Baixar PDF
+    </button>
+    <button class="btn btn-icon btn-secondary">
+      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    </button>
+  </div>
+</body>
+</html>

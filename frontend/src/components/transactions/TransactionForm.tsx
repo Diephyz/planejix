@@ -4,6 +4,23 @@ import { transactionsAPI, categoriesAPI } from '../../api/api';
 import type { Category, Transaction, TransactionType, ExpenseKind } from '../../types';
 import { useToast } from '../../context/ToastContext';
 
+function DiscardModal({ open, onClose, onDiscard }: { open: boolean; onClose: () => void; onDiscard: () => void }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-xs rounded-2xl p-6 animate-scale-in"
+        style={{ background: 'rgba(20,20,31,0.95)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
+        <p className="text-sm text-gray-300 mb-4">Deseja descartar as alterações?</p>
+        <div className="flex gap-3">
+          <button onClick={onClose} className="btn-secondary flex-1 text-sm">Continuar editando</button>
+          <button onClick={onDiscard} className="btn-danger flex-1 text-sm">Descartar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface TransactionFormProps {
   open: boolean;
   onClose: () => void;
@@ -29,6 +46,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
   const isDirty = useRef(false);
 
   useEffect(() => {
@@ -68,7 +86,16 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
   const markDirty = () => { isDirty.current = true; };
 
   const handleClose = () => {
-    if (isDirty.current && !window.confirm('Deseja descartar as alterações?')) return;
+    if (isDirty.current) {
+      setShowDiscard(true);
+      return;
+    }
+    reset();
+    onClose();
+  };
+
+  const handleDiscard = () => {
+    setShowDiscard(false);
     reset();
     onClose();
   };
@@ -310,6 +337,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
           </button>
         </div>
       </form>
+      <DiscardModal open={showDiscard} onClose={() => setShowDiscard(false)} onDiscard={handleDiscard} />
     </Modal>
   );
 }

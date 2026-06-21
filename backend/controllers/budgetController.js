@@ -38,6 +38,10 @@ exports.update = (req, res) => {
   const { userId } = req.user;
   const { id } = req.params;
   const { amount, period } = req.body;
+
+  if (!amount || Number(amount) <= 0) return res.status(400).json({ error: 'Valor inválido' });
+  if (period && !['monthly', 'annual'].includes(period)) return res.status(400).json({ error: 'Período inválido' });
+
   const budget = db.prepare('SELECT id FROM budgets WHERE id = ? AND user_id = ?').get(id, userId);
   if (!budget) return res.status(404).json({ error: 'Meta não encontrada' });
 

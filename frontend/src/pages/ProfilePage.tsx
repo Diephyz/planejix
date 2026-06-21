@@ -27,8 +27,9 @@ export default function ProfilePage() {
       const res = await profileAPI.update({ name: name || undefined, email: email || undefined });
       if (token) setAuthUser(token, res.data);
       toast('Perfil atualizado com sucesso');
-    } catch (err: any) {
-      toast(err.response?.data?.error || 'Erro ao atualizar perfil', 'error');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast(msg || 'Erro ao atualizar perfil', 'error');
     } finally {
       setSaving(false);
     }

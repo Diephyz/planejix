@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 declare global {
   interface Window {
@@ -19,6 +20,7 @@ declare global {
 export default function GoogleLoginButton() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const btnRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function GoogleLoginButton() {
             navigate('/');
           } catch (err: unknown) {
             const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
-            alert(msg || 'Erro ao autenticar com Google');
+            toast(msg || 'Erro ao autenticar com Google', 'error');
           }
         },
       });

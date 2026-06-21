@@ -284,6 +284,11 @@ exports.update = (req, res) => {
   const { id } = req.params;
   const { type, kind, description, amount, date, category_id, notes, recurring } = req.body;
 
+  if (!type || !['income', 'expense'].includes(type)) return res.status(400).json({ error: 'Tipo inválido' });
+  if (kind && !['fixed', 'variable', 'custom'].includes(kind)) return res.status(400).json({ error: 'Subtipo inválido' });
+  if (!description || !amount || !date) return res.status(400).json({ error: 'Descrição, valor e data são obrigatórios' });
+  if (Number(amount) <= 0) return res.status(400).json({ error: 'Valor deve ser maior que zero' });
+
   const transaction = db.prepare('SELECT id FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
   if (!transaction) return res.status(404).json({ error: 'Transação não encontrada' });
 

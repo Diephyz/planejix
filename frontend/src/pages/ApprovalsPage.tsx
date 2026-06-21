@@ -66,8 +66,8 @@ export default function ApprovalsPage() {
   return (
     <div className="p-4 sm:p-6 max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Aprovações</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <h1 className="text-2xl font-bold text-white">Aprovações</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Cadastros aguardando liberação de acesso
         </p>
       </div>
@@ -87,29 +87,29 @@ export default function ApprovalsPage() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden sm:block bg-white dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-600 overflow-hidden">
+          <div className="hidden sm:block card p-0 overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-dark-700 text-gray-500 dark:text-gray-400 text-xs uppercase">
+              <thead className="text-gray-500 text-xs uppercase">
                 <tr>
                   <th className="px-4 py-3 text-left">Usuário</th>
                   <th className="px-4 py-3 text-left">Cadastro</th>
                   <th className="px-4 py-3 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-dark-600">
+              <tbody className="divide-y divide-white/[0.04]">
                 {pending.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <UserAvatar name={u.name} username={u.username} />
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">{u.username}</p>
-                          {u.name && <p className="text-xs text-gray-500 dark:text-gray-400">{u.name}</p>}
-                          {u.email && <p className="text-xs text-gray-500 dark:text-gray-400">{u.email}</p>}
+                          <p className="font-medium text-white">{u.username}</p>
+                          {u.name && <p className="text-xs text-gray-500">{u.name}</p>}
+                          {u.email && <p className="text-xs text-gray-500">{u.email}</p>}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
+                    <td className="px-4 py-3 text-gray-500 text-xs">
                       {formatDate(u.created_at)}
                     </td>
                     <td className="px-4 py-3">
@@ -153,13 +153,13 @@ export default function ApprovalsPage() {
           {/* Mobile cards */}
           <div className="sm:hidden space-y-3">
             {pending.map((u) => (
-              <div key={u.id} className="bg-white dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-600 p-4">
+              <div key={u.id} className="card">
                 <div className="flex items-start gap-3 mb-4">
                   <UserAvatar name={u.name} username={u.username} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 dark:text-white">{u.username}</p>
-                    {u.name && <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{u.name}</p>}
-                    {u.email && <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{u.email}</p>}
+                    <p className="font-semibold text-white">{u.username}</p>
+                    {u.name && <p className="text-sm text-gray-500 truncate">{u.name}</p>}
+                    {u.email && <p className="text-xs text-gray-500 truncate">{u.email}</p>}
                     <p className="text-xs text-gray-400 mt-1">Cadastrado em {formatDate(u.created_at)}</p>
                   </div>
                 </div>

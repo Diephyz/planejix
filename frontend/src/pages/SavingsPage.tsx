@@ -75,8 +75,9 @@ export default function SavingsPage() {
       setFormOpen(false);
       await loadGoals();
       toast(editingGoal ? 'Meta atualizada com sucesso' : 'Meta criada com sucesso');
-    } catch (err: any) {
-      setFormError(err.response?.data?.error || 'Erro ao salvar meta');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      setFormError(msg || 'Erro ao salvar meta');
     } finally {
       setSaving(false);
     }

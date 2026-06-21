@@ -87,8 +87,9 @@ export default function AdminPage() {
       setCreateOpen(false);
       setCreateForm({ username: '', password: '', name: '', expires_in_days: 30 });
       await loadUsers();
-    } catch (err: any) {
-      setCreateError(err.response?.data?.error || 'Erro ao criar usuário.');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      setCreateError(msg || 'Erro ao criar usuário.');
     } finally {
       setCreating(false);
     }

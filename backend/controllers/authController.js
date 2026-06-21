@@ -98,7 +98,7 @@ exports.googleAuth = async (req, res) => {
     }
 
     const token = signToken(user.id, user.username);
-    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null, is_admin: !!user.is_admin } });
+    res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null, is_admin: !!user.is_admin, plan: user.plan || 'free' } });
   } catch (err) {
     console.error('Google auth error:', err.message);
     res.status(401).json({ error: 'Falha ao autenticar com Google' });
@@ -106,9 +106,9 @@ exports.googleAuth = async (req, res) => {
 };
 
 exports.me = (req, res) => {
-  const user = db.prepare('SELECT id, username, name, email, is_admin, avatar_url FROM users WHERE id = ?').get(req.user.userId);
+  const user = db.prepare('SELECT id, username, name, email, is_admin, avatar_url, plan FROM users WHERE id = ?').get(req.user.userId);
   if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
-  res.json({ id: user.id, username: user.username, name: user.name || null, email: user.email || null, is_admin: !!user.is_admin, avatar_url: user.avatar_url || null });
+  res.json({ id: user.id, username: user.username, name: user.name || null, email: user.email || null, is_admin: !!user.is_admin, avatar_url: user.avatar_url || null, plan: user.plan || 'free' });
 };
 
 exports.login = (req, res) => {
@@ -131,5 +131,5 @@ exports.login = (req, res) => {
   }
 
   const token = signToken(user.id, user.username);
-  res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, is_admin: !!user.is_admin } });
+  res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, is_admin: !!user.is_admin, plan: user.plan || 'free' } });
 };

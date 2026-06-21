@@ -78,4 +78,34 @@ async function sendReminderEmail({ to, name, description, amount, date, type }) 
   }
 }
 
-module.exports = { sendReminderEmail, isConfigured: () => smtpConfigured || !!getTransporter() };
+const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+async function sendReportEmail({ to, name, year, month, pdfBuffer }) {
+  const t = getTransporter();
+  if (!t) {
+    console.warn('[Relatório] SMTP não configurado — pulando envio de relatório.');
+    return;
+  }
+
+  const monthName = MONTH_NAMES[month - 1];
+  const greeting = name ? `Olá, ${name}!` : 'Olá!';
+
+  try {
+    await t.sendMail({
+      from: process.env.SMTP_FROM_EMAIL || 'Planejix <no-reply@planejix.app>',
+      to,
+      subject: `Relatório Financeiro — ${monthName} ${year}`,
+      html: `<p>${greeting}</p><p>Segue em anexo seu relatório financeiro de <strong>${monthName}/${year}</strong>.</p><p>— Planejix</p>`,
+      attachments: [{
+        filename: `Planejix_Relatorio_${year}_${String(month).padStart(2, '0')}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf',
+      }],
+    });
+    console.log(`[Relatório] E-mail com PDF enviado para ${to} (${monthName}/${year})`);
+  } catch (err) {
+    console.error(`[Relatório] Falha ao enviar relatório para ${to}:`, err.message);
+  }
+}
+
+module.exports = { sendReminderEmail, sendReportEmail, isConfigured: () => smtpConfigured || !!getTransporter() };

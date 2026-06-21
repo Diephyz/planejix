@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Transaction, TransactionFilters, Category, Budget, AdminUser, AppNotification } from '../types';
+import type { Transaction, TransactionFilters, Category, Budget, AdminUser, AppNotification, SavingsGoal } from '../types';
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 
@@ -83,6 +83,21 @@ export const adminAPI = {
     api.put<AdminUser>(`/admin/users/${id}`, { expires_in_days }),
   deleteUser: (id: number) =>
     api.delete(`/admin/users/${id}`),
+  updatePlan: (id: number, plan: 'free' | 'pro') =>
+    api.patch(`/admin/users/${id}/plan`, { plan }),
+};
+
+export const savingsAPI = {
+  getAll: () =>
+    api.get<SavingsGoal[]>('/savings'),
+  create: (data: { name: string; target_amount: number; deadline?: string }) =>
+    api.post<SavingsGoal>('/savings', data),
+  update: (id: number, data: { name?: string; target_amount?: number; deadline?: string }) =>
+    api.put<SavingsGoal>(`/savings/${id}`, data),
+  deposit: (id: number, amount: number) =>
+    api.patch<SavingsGoal>(`/savings/${id}/deposit`, { deposit_amount: amount }),
+  delete: (id: number) =>
+    api.delete(`/savings/${id}`),
 };
 
 export const notificationsAPI = {

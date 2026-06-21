@@ -68,6 +68,23 @@ try { db.exec("ALTER TABLE transactions ADD COLUMN installment_total INTEGER DEF
 try { db.exec("ALTER TABLE transactions ADD COLUMN installment_current INTEGER DEFAULT NULL"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN installment_group_id INTEGER DEFAULT NULL"); } catch {}
 
+// Savings goals
+db.exec(`
+  CREATE TABLE IF NOT EXISTS savings_goals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    target_amount REAL NOT NULL CHECK(target_amount > 0),
+    current_amount REAL NOT NULL DEFAULT 0,
+    deadline TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+`);
+
+// Subscription plan support
+try { db.exec("ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'"); } catch {}
+
 // Due-date reminder support (e-mail): flags to avoid sending the same reminder twice
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_3d_sent_at TEXT DEFAULT NULL"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_due_sent_at TEXT DEFAULT NULL"); } catch {}

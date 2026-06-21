@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { authAPI } from '../api/api';
-import type { User } from '../types';
+import type { User, PlanTier } from '../types';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  plan: PlanTier;
+  isPro: boolean;
   loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
@@ -55,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated: !!token && !!user, isAdmin: !!user?.is_admin, loading, login, logout }}
+      value={{ user, token, isAuthenticated: !!token && !!user, isAdmin: !!user?.is_admin, plan: user?.plan || 'free', isPro: user?.plan === 'pro' || !!user?.is_admin, loading, login, logout }}
     >
       {children}
     </AuthContext.Provider>

@@ -10,7 +10,7 @@ function authMiddleware(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = db.prepare('SELECT is_admin, expires_at FROM users WHERE id = ?').get(decoded.userId);
+    const user = db.prepare('SELECT is_admin, expires_at, plan FROM users WHERE id = ?').get(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ error: 'Usuário não encontrado' });
@@ -20,7 +20,7 @@ function authMiddleware(req, res, next) {
       return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
     }
 
-    req.user = { userId: decoded.userId, username: decoded.username, isAdmin: !!user.is_admin };
+    req.user = { userId: decoded.userId, username: decoded.username, isAdmin: !!user.is_admin, plan: user.plan || 'free' };
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Token inválido ou expirado' });

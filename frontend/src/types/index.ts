@@ -1,9 +1,12 @@
+export type PlanTier = 'free' | 'pro';
+
 export interface User {
   id: number;
   username: string;
   name?: string | null;
   avatar_url?: string | null;
   is_admin?: boolean;
+  plan?: PlanTier;
 }
 
 export interface AdminUser {
@@ -15,6 +18,7 @@ export interface AdminUser {
   approved: number;
   expires_at: string | null;
   created_at: string;
+  plan?: PlanTier;
 }
 
 export type TransactionType = 'income' | 'expense';
@@ -87,6 +91,12 @@ export interface AnnualSummary {
   byCategoryYear: CategorySlice[];
   byCategoryMonth: CategorySlice[];
   largestExpense: number;
+  previousMonth?: {
+    totalIncome: number;
+    totalExpenses: number;
+    balance: number;
+    largestExpense: number;
+  };
 }
 
 export interface TransactionFilters {
@@ -96,6 +106,16 @@ export interface TransactionFilters {
   category_id?: number | '';
   date_from?: string;
   date_to?: string;
+}
+
+export interface SavingsGoal {
+  id: number;
+  user_id: number;
+  name: string;
+  target_amount: number;
+  current_amount: number;
+  deadline: string | null;
+  created_at: string;
 }
 
 export interface AppNotification {

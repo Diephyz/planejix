@@ -45,6 +45,17 @@ export default function AdminPage() {
   const [deleting, setDeleting] = useState(false);
 
   const [approvingId, setApprovingId] = useState<number | null>(null);
+  const [updatingPlanId, setUpdatingPlanId] = useState<number | null>(null);
+
+  async function handlePlanChange(userId: number, plan: 'free' | 'pro') {
+    setUpdatingPlanId(userId);
+    try {
+      await adminAPI.updatePlan(userId, plan);
+      await loadUsers();
+    } catch {} finally {
+      setUpdatingPlanId(null);
+    }
+  }
 
   async function loadUsers() {
     try {
@@ -154,6 +165,7 @@ export default function AdminPage() {
                 <th className="px-4 py-3 text-left hidden sm:table-cell">Nome</th>
                 <th className="px-4 py-3 text-left hidden md:table-cell">Validade</th>
                 <th className="px-4 py-3 text-left">Status</th>
+                <th className="px-4 py-3 text-left hidden sm:table-cell">Plano</th>
                 <th className="px-4 py-3 text-left hidden md:table-cell">Criado em</th>
                 <th className="px-4 py-3 text-right">Ações</th>
               </tr>
@@ -175,6 +187,21 @@ export default function AdminPage() {
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
                         {status.label}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      {u.is_admin ? (
+                        <span className="text-xs text-purple-400 font-medium">Full</span>
+                      ) : (
+                        <select
+                          value={u.plan || 'free'}
+                          onChange={(e) => handlePlanChange(u.id, e.target.value as 'free' | 'pro')}
+                          disabled={updatingPlanId === u.id}
+                          className="text-xs bg-dark-700 border border-dark-500 rounded-lg px-2 py-1 text-white focus:outline-none focus:border-brand-500 disabled:opacity-50"
+                        >
+                          <option value="free">Free</option>
+                          <option value="pro">Pro</option>
+                        </select>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{formatDate(u.created_at)}</td>
                     <td className="px-4 py-3 text-right">

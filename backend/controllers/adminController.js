@@ -160,3 +160,19 @@ exports.rejectUser = (req, res) => {
   db.prepare('DELETE FROM users WHERE id = ?').run(id);
   res.json({ success: true });
 };
+
+exports.updatePlan = (req, res) => {
+  const { id } = req.params;
+  const { plan } = req.body;
+
+  if (!['free', 'pro'].includes(plan)) {
+    return res.status(400).json({ error: 'Plano inválido (use "free" ou "pro")' });
+  }
+
+  const user = db.prepare('SELECT id, is_admin FROM users WHERE id = ?').get(id);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+  if (user.is_admin) return res.status(400).json({ error: 'Admin sempre tem acesso total' });
+
+  db.prepare('UPDATE users SET plan = ? WHERE id = ?').run(plan, id);
+  res.json({ success: true, plan });
+};

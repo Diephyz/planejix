@@ -36,6 +36,15 @@ const navItems = [
     ),
   },
   {
+    to: '/savings',
+    label: 'Economia',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    ),
+  },
+  {
     to: '/categories',
     label: 'Categorias',
     icon: (
@@ -56,7 +65,7 @@ const navItems = [
 ];
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, plan } = useAuth();
   const location = useLocation();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 
@@ -193,6 +202,13 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               <p className={`text-gray-500 dark:text-gray-400 truncate ${user?.name ? 'text-xs' : 'text-sm'}`}>
                 {user?.username}
               </p>
+              {!isAdmin && (
+                <span className={`inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                  plan === 'pro' ? 'bg-brand-500/20 text-brand-400' : 'bg-gray-500/20 text-gray-400'
+                }`}>
+                  {plan === 'pro' ? 'PRO' : 'FREE'}
+                </span>
+              )}
             </div>
           </div>
 

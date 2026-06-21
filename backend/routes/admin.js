@@ -12,6 +12,7 @@ router.post('/users', adminController.createUser);
 router.patch('/users/:id/approve', adminController.approveUser);
 router.patch('/users/:id/reject', adminController.rejectUser);
 router.put('/users/:id', adminController.updateExpiry);
+router.patch('/users/:id/plan', adminController.updatePlan);
 router.delete('/users/:id', adminController.deleteUser);
 
 module.exports = router;

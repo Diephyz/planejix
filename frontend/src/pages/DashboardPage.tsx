@@ -5,6 +5,8 @@ import MonthlyBarChart from '../components/dashboard/MonthlyBarChart';
 import AnnualLineChart from '../components/dashboard/AnnualLineChart';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
 import CategoryDonutChart from '../components/dashboard/CategoryDonutChart';
+import { useAuth } from '../context/AuthContext';
+import { generateMonthlyReport } from '../utils/generatePdf';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
@@ -16,11 +18,27 @@ interface StatCardProps {
   title: string;
   value: number;
   icon: React.ReactNode;
-  accentColor: string;   // hex, ex: '#22c55e'
+  accentColor: string;
   textClass: string;
+  previousValue?: number;
+  invertTrend?: boolean; // true for expenses (lower is better)
 }
 
-function StatCard({ title, value, icon, accentColor, textClass }: StatCardProps) {
+function StatCard({ title, value, icon, accentColor, textClass, previousValue, invertTrend }: StatCardProps) {
+  let trend: React.ReactNode = null;
+  if (previousValue !== undefined && previousValue > 0) {
+    const pct = ((value - previousValue) / previousValue) * 100;
+    if (Math.abs(pct) >= 0.5) {
+      const isUp = pct > 0;
+      const isGood = invertTrend ? !isUp : isUp;
+      trend = (
+        <span className={`text-[10px] font-semibold ${isGood ? 'text-green-400' : 'text-red-400'}`}>
+          {isUp ? '↑' : '↓'} {Math.abs(pct).toFixed(0)}% vs mês anterior
+        </span>
+      );
+    }
+  }
+
   return (
     <div
       className="rounded-2xl p-4 flex items-center gap-3"
@@ -39,6 +57,7 @@ function StatCard({ title, value, icon, accentColor, textClass }: StatCardProps)
       <div className="min-w-0 flex-1">
         <p className="text-xs text-gray-500 font-medium truncate">{title}</p>
         <p className={`text-sm font-bold mt-0.5 truncate ${textClass}`}>{fmt(value)}</p>
+        {trend}
       </div>
     </div>
   );
@@ -72,6 +91,7 @@ function KindRow({ label, value, total, color }: KindRowProps) {
 
 // ── Dashboard principal ───────────────────────────────────────────────────────
 export default function DashboardPage() {
+  const { isPro } = useAuth();
   const [year, setYear] = useState(currentYear);
   const [month, setMonth] = useState(currentMonth);
   const [summary, setSummary] = useState<AnnualSummary | null>(null);
@@ -177,6 +197,7 @@ export default function DashboardPage() {
           icon={iconEntradas}
           accentColor="#22c55e"
           textClass="text-green-400"
+          previousValue={summary.previousMonth?.totalIncome}
         />
         <StatCard
           title="Total Saídas"
@@ -184,6 +205,8 @@ export default function DashboardPage() {
           icon={iconSaidas}
           accentColor="#ef4444"
           textClass="text-red-400"
+          previousValue={summary.previousMonth?.totalExpenses}
+          invertTrend
         />
         <StatCard
           title="Saldo"
@@ -191,6 +214,7 @@ export default function DashboardPage() {
           icon={iconSaldo}
           accentColor="#818cf8"
           textClass={summary.annual.balance >= 0 ? 'text-white' : 'text-red-400'}
+          previousValue={summary.previousMonth?.balance}
         />
         <StatCard
           title="Maior Gasto"
@@ -198,6 +222,8 @@ export default function DashboardPage() {
           icon={iconMaior}
           accentColor="#eab308"
           textClass="text-yellow-400"
+          previousValue={summary.previousMonth?.largestExpense}
+          invertTrend
         />
 
         {/* Breakdown por tipo */}
@@ -261,6 +287,19 @@ export default function DashboardPage() {
               );
             })}
           </div>
+        )}
+
+        {/* Botão Baixar PDF (desktop sidebar) */}
+        {isPro && summary && (
+          <button
+            onClick={() => generateMonthlyReport(summary, year, month)}
+            className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-xl text-xs font-medium bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Baixar PDF
+          </button>
         )}
       </aside>
 

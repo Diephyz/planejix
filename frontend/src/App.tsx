@@ -11,6 +11,8 @@ import ImportPage from './pages/ImportPage';
 import BudgetsPage from './pages/BudgetsPage';
 import AdminPage from './pages/AdminPage';
 import ApprovalsPage from './pages/ApprovalsPage';
+import UpgradePage from './pages/UpgradePage';
+import SavingsPage from './pages/SavingsPage';
 import type { ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="budgets" element={<BudgetsPage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="import" element={<ImportPage />} />
+            <Route path="savings" element={<SavingsPage />} />
+            <Route path="upgrade" element={<UpgradePage />} />
             <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             <Route path="approvals" element={<AdminRoute><ApprovalsPage /></AdminRoute>} />
           </Route>

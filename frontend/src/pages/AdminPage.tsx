@@ -135,20 +135,21 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gerenciar Usuários</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Crie e gerencie contas com prazo de validade</p>
+          <h1 className="text-xl font-bold text-white">Gerenciar Usuários</h1>
+          <p className="text-sm text-gray-500 mt-1">Crie e gerencie contas com prazo de validade</p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium transition-colors"
+          className="btn-primary flex items-center gap-2 text-sm"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Criar Usuário
+          <span className="hidden sm:inline">Criar Usuário</span>
+          <span className="sm:hidden">Criar</span>
         </button>
       </div>
 
@@ -157,9 +158,9 @@ export default function AdminPage() {
       ) : error ? (
         <div className="text-center py-12 text-red-400">{error}</div>
       ) : (
-        <div className="bg-white dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-600 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-dark-700 text-gray-500 dark:text-gray-400 text-xs uppercase">
+        <div className="card p-0 overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
+            <thead className="text-gray-500 text-xs uppercase" style={{ background: 'rgba(255,255,255,0.03)' }}>
               <tr>
                 <th className="px-4 py-3 text-left">Usuário</th>
                 <th className="px-4 py-3 text-left hidden sm:table-cell">Nome</th>
@@ -170,11 +171,11 @@ export default function AdminPage() {
                 <th className="px-4 py-3 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-dark-600">
+            <tbody className="divide-y divide-white/[0.04]">
               {users.map((u) => {
                 const status = getExpiryStatus(u.expires_at, u.is_admin, u.approved);
                 return (
-                  <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
                       {u.username}
                       {u.is_admin ? (

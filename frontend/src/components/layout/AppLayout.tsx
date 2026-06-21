@@ -7,14 +7,13 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-dark-900">
+    <div className="min-h-screen bg-gray-100 dark:bg-dark-950">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="lg:ml-64 flex flex-col min-h-screen">
+      <div className="lg:ml-[260px] flex flex-col min-h-screen">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-3 sm:p-4 md:p-6">
           <Outlet />
         </main>
-
       </div>
     </div>
   );

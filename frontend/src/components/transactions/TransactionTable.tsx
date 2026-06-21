@@ -54,9 +54,9 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
   return (
     <>
       <div className="card overflow-x-auto p-0">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm min-w-[500px]">
           <thead>
-            <tr className="border-b border-dark-600 text-left">
+            <tr className="text-left" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <th className="text-gray-400 font-medium px-5 py-3">Data</th>
               <th className="text-gray-400 font-medium px-5 py-3">Descrição</th>
               <th className="text-gray-400 font-medium px-5 py-3 hidden md:table-cell">Categoria</th>
@@ -67,7 +67,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
           </thead>
           <tbody>
             {transactions.map((t) => (
-              <tr key={t.id} className="border-b border-dark-700 last:border-0 hover:bg-dark-700/40 transition-colors">
+              <tr key={t.id} className="last:border-0 hover:bg-white/[0.02] transition-colors">
                 <td className="px-5 py-3 text-gray-400 whitespace-nowrap">{formatDate(t.date)}</td>
                 <td className="px-5 py-3 font-medium text-white max-w-[200px]">
                   <span className="truncate block">{t.description}</span>

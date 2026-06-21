@@ -42,7 +42,7 @@ export default function NotificationBell() {
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+        className="relative p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.05] transition-all"
         title="Notificações"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,37 +56,45 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl shadow-lg z-50 overflow-hidden bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-dark-600">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">Notificações</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Contas próximas do vencimento</p>
+        <div
+          className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl z-50 overflow-hidden animate-scale-in"
+          style={{
+            background: 'rgba(20,20,31,0.95)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
+          }}
+        >
+          <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <p className="text-sm font-semibold text-white">Notificações</p>
+            <p className="text-xs text-gray-500 mt-0.5">Contas próximas do vencimento</p>
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-gray-100 dark:divide-dark-600">
+          <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                Nenhuma conta vencendo nos próximos dias 🎉
+              <div className="px-4 py-6 text-center text-sm text-gray-500">
+                Nenhuma conta vencendo nos próximos dias
               </div>
             ) : (
               notifications.map((n) => {
                 const isToday = n.type === 'due_today';
                 return (
-                  <div key={n.id} className="px-4 py-3 flex items-start gap-3">
+                  <div key={n.id} className="px-4 py-3 flex items-start gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <span
                       className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${
                         isToday ? 'bg-red-500' : 'bg-yellow-500'
                       }`}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{n.description}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      <p className="text-[13px] font-medium text-white truncate">{n.description}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
                         {fmt(n.amount)} · vence em {fmtDate(n.date)}
                       </p>
                       <span
-                        className={`inline-block mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        className={`inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                           isToday
-                            ? 'bg-red-500/15 text-red-500'
-                            : 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400'
+                            ? 'bg-red-500/15 text-red-400'
+                            : 'bg-yellow-500/15 text-yellow-400'
                         }`}
                       >
                         {isToday ? 'Vence hoje' : 'Vence em 3 dias'}

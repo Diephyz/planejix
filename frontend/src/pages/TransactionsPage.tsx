@@ -120,18 +120,18 @@ export default function TransactionsPage() {
       </div>
 
       {/* Summary strip */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="card border border-green-500/20 py-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+        <div className="card py-3 flex sm:block items-center justify-between" style={{ borderLeft: '2px solid rgba(34,197,94,0.4)' }}>
           <p className="text-xs text-gray-400">Entradas</p>
-          <p className="text-sm font-bold text-green-400 mt-0.5">{fmt(totalIncome)}</p>
+          <p className="text-sm font-bold text-green-400 sm:mt-0.5">{fmt(totalIncome)}</p>
         </div>
-        <div className="card border border-red-500/20 py-3">
+        <div className="card py-3 flex sm:block items-center justify-between" style={{ borderLeft: '2px solid rgba(239,68,68,0.4)' }}>
           <p className="text-xs text-gray-400">Saídas</p>
-          <p className="text-sm font-bold text-red-400 mt-0.5">{fmt(totalExpense)}</p>
+          <p className="text-sm font-bold text-red-400 sm:mt-0.5">{fmt(totalExpense)}</p>
         </div>
-        <div className="card border border-brand-500/20 py-3">
+        <div className="card py-3 flex sm:block items-center justify-between" style={{ borderLeft: '2px solid rgba(99,102,241,0.4)' }}>
           <p className="text-xs text-gray-400">Saldo</p>
-          <p className={`text-sm font-bold mt-0.5 ${totalIncome - totalExpense >= 0 ? 'text-white' : 'text-red-400'}`}>
+          <p className={`text-sm font-bold sm:mt-0.5 ${totalIncome - totalExpense >= 0 ? 'text-white' : 'text-red-400'}`}>
             {fmt(totalIncome - totalExpense)}
           </p>
         </div>

@@ -4,7 +4,6 @@ import { transactionsAPI, budgetsAPI, notificationsAPI } from '../api/api';
 import type { AnnualSummary, Transaction, Budget, AppNotification } from '../types';
 import MonthlyBarChart from '../components/dashboard/MonthlyBarChart';
 import AnnualLineChart from '../components/dashboard/AnnualLineChart';
-import CategoryDonutChart from '../components/dashboard/CategoryDonutChart';
 import { useAuth } from '../context/AuthContext';
 import { generateMonthlyReport } from '../utils/generatePdf';
 import WelcomeModal from '../components/shared/WelcomeModal';
@@ -230,6 +229,73 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
   );
 }
 
+// ── Top categories (replaces donut) ──────────────────────────────────────────
+function TopCategories({ year, month }: { year: number; month: number }) {
+  const [data, setData] = useState<{ name: string; color: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    transactionsAPI
+      .getByCategory(year, month)
+      .then((res) => setData(res.data.filter((d) => d.value > 0)))
+      .catch(() => setData([]))
+      .finally(() => setLoading(false));
+  }, [year, month]);
+
+  const total = data.reduce((s, d) => s + d.value, 0);
+
+  return (
+    <div className="card h-full flex flex-col">
+      <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+        <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+        </svg>
+        Gastos por categoria
+      </h3>
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : data.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center text-sm text-gray-500">
+          Nenhum gasto registrado
+        </div>
+      ) : (
+        <div className="space-y-3 flex-1">
+          {data.slice(0, 6).map((cat, i) => {
+            const pct = total > 0 ? (cat.value / total) * 100 : 0;
+            return (
+              <div key={cat.name}>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-white opacity-30 w-4 text-right flex-shrink-0">{i + 1}</span>
+                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
+                    <span className="text-[13px] text-gray-300 truncate">{cat.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <span className="text-[13px] font-bold text-white">{fmt(cat.value)}</span>
+                    <span className="text-[11px] text-gray-500 w-10 text-right">{pct.toFixed(0)}%</span>
+                  </div>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden ml-6" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{ backgroundColor: cat.color, width: `${pct}%`, opacity: 0.8 }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          {data.length > 6 && (
+            <p className="text-[11px] text-gray-500 text-center mt-2">+{data.length - 6} categorias</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Dashboard principal ──────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { isPro } = useAuth();
@@ -377,9 +443,9 @@ export default function DashboardPage() {
         <UpcomingPayments items={upcoming} />
       </div>
 
-      {/* ─── Row 2: Donut + Recent transactions ──────────────────────── */}
+      {/* ─── Row 2: Top categories + Recent transactions ─────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <CategoryDonutChart mode="monthly" />
+        <TopCategories year={year} month={month} />
         <EnhancedRecentTransactions transactions={recent} />
       </div>
 

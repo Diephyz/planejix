@@ -57,31 +57,39 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 
 - **API layer**: `api/api.ts` — single axios instance. Exports `authAPI`, `transactionsAPI`, `categoriesAPI`, `budgetsAPI`, `adminAPI`, `notificationsAPI`. Request interceptor attaches JWT; response interceptor redirects to `/login` on 401.
 - **Auth state**: `context/AuthContext.tsx` (`useAuth` hook) — persists token + user (`{ id, username, name }`) in `localStorage` under `expense_token` / `expense_user`.
-- **Routing** (`App.tsx`): Public: `/login`. Private (inside `PrivateRoute > AppLayout`): `/` (Dashboard), `/transactions`, `/budgets`, `/categories`, `/import`.
+- **Routing** (`App.tsx`): Public: `/login`. Private (inside `PrivateRoute > AppLayout`): `/` (Dashboard), `/transactions`, `/budgets`, `/savings`, `/categories`, `/import`, `/profile`, `/upgrade`. Admin: `/admin`, `/approvals`.
 - **Vite proxy**: `/api/*` → `http://localhost:3001`. Configured in `vite.config.ts`.
-- **Theme**: Tailwind `darkMode: 'class'`. `index.html` has an inline script that reads `localStorage('theme')` and adds/removes `class="dark"` on `<html>` before React mounts (prevents flash). Toggle button lives in `Sidebar.tsx` — writes preference back to `localStorage`. All core component classes in `index.css` use `dark:` variants.
-- **Charts**: Recharts — `MonthlyBarChart`, `AnnualLineChart`, `CategoryDonutChart` (active-shape donut with hover label). All use `<ResponsiveContainer>` inside an explicit-height parent. To avoid selection squares on click: no `<Tooltip>`, CSS `outline:none` on `.recharts-wrapper`, and `onMouseDown preventDefault`.
+- **Theme**: Tailwind `darkMode: 'class'`. Premium dark palette (`#08080d` → `#3d3d54`). Glassmorphism cards with `backdrop-filter: blur(20px)` and rgba borders. Sidebar with gradient background. All component classes in `index.css` use rgba/glass pattern (no `dark:` variants needed for most components).
+- **Design system**: Claude Design project "Planejix Design System" with 9 HTML previews (tokens: colors, typography, animations; components: buttons, cards, inputs, toasts, skeleton, navigation).
+- **Charts**: Recharts — `MonthlyBarChart`, `AnnualLineChart`, `TopCategories` (ranked list with progress bars, replaces CategoryDonutChart). Glass tooltips (`glass-tooltip` class). Gradient fills on bar/area charts.
+- **UX polish**: animated counters (`useAnimatedValue`), skeleton loading, toast notifications, focus-visible rings, active:scale on buttons, animated dark mode toggle, custom select chevron, floating orbs on login page.
 - **Types**: all shared TypeScript interfaces in `src/types/index.ts`.
 
 ### Pages & Key Components
 
 | Route | Component | Notes |
 |---|---|---|
-| `/login` | `LoginPage.tsx` | Tabbed login + register. Register has optional Name field. Google OAuth button in both tabs. |
-| `/` | `DashboardPage.tsx` | KPI cards, budget alerts (≥80%), expense-by-kind strip, donut charts, bar/line charts, recent transactions. |
-| `/transactions` | `TransactionsPage.tsx` | Paginated (10/page) table, export to Excel, edit + delete with confirmation modal, date-range filter toggle. |
-| `/budgets` | `BudgetsPage.tsx` | Budget goals per category with progress bars (green/yellow/red). CRUD via modal. Pulls `getProgress` which returns `spent` and `percent`. |
-| `/categories` | `CategoriesPage.tsx` | Inline CRUD for user categories. |
+| `/login` | `LoginPage.tsx` | Tabbed login + register with animated floating orbs, input icons (user/lock), Google OAuth. WhatsApp contact button on register. |
+| `/` | `DashboardPage.tsx` | 5 KPI cards (receitas, despesas, saldo, maior gasto, saúde financeira) + budget alerts chips + area chart + upcoming payments + top categories ranking + recent transactions with category icons + bar chart. Quick actions (nova transação, PDF). |
+| `/transactions` | `TransactionsPage.tsx` | Paginated (10/page) table, summary strip, export to Excel, edit + delete with modal, date-range filter toggle, responsive grid filters. |
+| `/budgets` | `BudgetsPage.tsx` | Budget goals per category with progress bars (green/yellow/red). CRUD via modal. Skeleton loading. |
+| `/savings` | `SavingsPage.tsx` | Savings goals with circular SVG progress, deposit modal, CRUD. Free plan limit (3). |
+| `/categories` | `CategoriesPage.tsx` | Grid cards with color swatches. CRUD with toast + delete confirmation modal. |
 | `/import` | `ImportPage.tsx` | Drag-and-drop Excel/CSV import via SheetJS (`xlsx`). Preview table with row validation before bulk create. |
+| `/profile` | `ProfilePage.tsx` | Avatar, name/email editing, plan display with feature limits. |
+| `/upgrade` | `UpgradePage.tsx` | Free vs Pro comparison with glassmorphism cards, feature icons, benefits section. |
 
 ### Component Notes
 
-- **`TransactionForm`**: accepts optional `transaction?: Transaction` prop — when provided, switches to edit mode (pre-fills form, calls `PUT /transactions/:id`). Has a recurring toggle (stored as `INTEGER 0/1` in SQLite — always use `!!t.recurring` in JSX to avoid rendering `0`).
-- **`TransactionTable`**: `onEdit` prop triggers edit flow in parent. Delete uses a `Modal` confirmation (not `window.confirm`).
-- **`TransactionFilters`**: calendar button toggles between month/year selectors and free date-range (`date_from` / `date_to`) inputs.
-- **`Sidebar`**: manages theme toggle state, shows `user.name` (primary) + `user.username` (secondary). Includes Metas nav item.
-- **`NotificationBell`** (`components/layout/NotificationBell.tsx`): bell icon + badge in `Topbar`, present on every authenticated page. Fetches `notificationsAPI.getUpcoming()` on mount (i.e. every time the user opens/reloads Planejix) and shows a dropdown listing expenses due today (red "Vence hoje") or in 3 days (yellow "Vence em 3 dias"). Closes on outside click via `mousedown` listener + ref. Does not depend on/affect the e-mail reminder flags — it's a live "current state" view, not a one-time push.
-- **`BudgetsPage`**: progress bar color: green < 80%, yellow 80–100%, red > 100%. Shows "Limite excedido" label when over budget.
+- **`TransactionForm`**: accepts optional `transaction?: Transaction` prop — edit mode pre-fills. Recurring toggle + installment support. Uses `DiscardModal` (not `window.confirm`) for unsaved changes.
+- **`TransactionTable`**: `onEdit` prop triggers edit flow. Delete uses `Modal` confirmation. Horizontal scroll on mobile with `min-w-[500px]`.
+- **`TransactionFilters`**: `grid-cols-2` on mobile, `flex-wrap` on desktop. Calendar toggle for date-range. Custom select chevrons.
+- **`Sidebar`**: 260px glass sidebar with gradient bg, animated sun/moon theme toggle, nav items with active glow, section labels (Menu/Admin), user info with plan badge.
+- **`Topbar`**: blur(20px) glass header, notification bell, sticky.
+- **`NotificationBell`**: bell icon + badge in `Topbar`. Glass dropdown (`animate-scale-in`). Fetches `notificationsAPI.getUpcoming()` on mount.
+- **`Modal`**: glass design with gradient bg, scale-in animation, custom `modal-scroll` scrollbar.
+- **Security**: `helmet` (security headers), `express.json({ limit: '1mb' })`, global rate limit (300/15min on `/api`), auth rate limit (20/15min). `trust proxy` enabled for Oracle Cloud.
+- **`BudgetsPage`**: progress bar color: green < 80%, yellow 80–100%, red > 100%. Skeleton loading. Enhanced empty state with CTA.
 
 ## API Endpoints
 

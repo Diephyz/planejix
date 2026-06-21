@@ -21,19 +21,26 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const title = pageTitles[location.pathname] ?? 'Planejix - Carteira Inteligente';
 
   return (
-    <header className="h-16 bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-dark-600 flex items-center px-4 gap-4 sticky top-0 z-10">
+    <header
+      className="h-16 flex items-center px-5 gap-4 sticky top-0 z-10"
+      style={{
+        background: 'rgba(12,12,20,0.7)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
+      }}
+    >
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+        className="lg:hidden p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.05] transition-all"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h1>
+      <h1 className="text-base font-semibold text-white">{title}</h1>
       <div className="ml-auto flex items-center gap-3">
         <NotificationBell />
-        <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">Diephyz Corporation ©</span>
+        <span className="text-[11px] text-gray-600 hidden sm:block font-medium">Diephyz Corporation ©</span>
       </div>
     </header>
   );

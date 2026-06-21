@@ -5,7 +5,7 @@ interface SkeletonProps {
 
 function Skeleton({ className = '', style }: SkeletonProps) {
   return (
-    <div className={`animate-pulse rounded-lg bg-dark-700/60 ${className}`} style={style} />
+    <div className={`animate-pulse rounded-xl ${className}`} style={{ background: 'rgba(255,255,255,0.04)', ...style }} />
   );
 }
 

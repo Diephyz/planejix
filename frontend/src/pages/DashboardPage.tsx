@@ -46,22 +46,23 @@ function StatCard({ title, value, icon, accentColor, textClass, previousValue, i
 
   return (
     <div
-      className="rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20"
+      className="rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:translate-y-[-2px]"
       style={{
-        background: 'rgba(255,255,255,0.04)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderLeft: `3px solid ${accentColor}`,
+        background: 'rgba(255,255,255,0.03)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.05)',
+        borderLeft: `2px solid ${accentColor}`,
+        boxShadow: `0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.03)`,
       }}
     >
       <div
         className="p-2.5 rounded-xl flex-shrink-0"
-        style={{ backgroundColor: `${accentColor}18` }}
+        style={{ background: `linear-gradient(135deg, ${accentColor}15, ${accentColor}08)` }}
       >
         <div style={{ color: accentColor }}>{icon}</div>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-gray-500 font-medium truncate">{title}</p>
+        <p className="text-[11px] text-gray-500 font-medium truncate uppercase tracking-wider">{title}</p>
         <p className={`text-sm font-bold mt-0.5 truncate ${textClass}`}>{fmt(animatedValue)}</p>
         {trend}
       </div>
@@ -234,7 +235,7 @@ export default function DashboardPage() {
         {/* Breakdown por tipo */}
         <div
           className="rounded-2xl p-4 space-y-4"
-          style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)' }}
         >
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Por Tipo</p>
           <KindRow

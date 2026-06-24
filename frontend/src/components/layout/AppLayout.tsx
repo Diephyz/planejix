@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import BottomNav from './BottomNav';
-import FloatingActionButton from '../shared/FloatingActionButton';
+// FAB removed — BottomNav handles mobile navigation
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,7 +18,6 @@ export default function AppLayout() {
         </main>
       </div>
       <BottomNav />
-      <FloatingActionButton />
     </div>
   );
 }

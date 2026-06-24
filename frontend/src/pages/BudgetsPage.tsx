@@ -97,7 +97,7 @@ export default function BudgetsPage() {
   const yearOptions = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold text-white dark:text-white">Metas Financeiras</h2>

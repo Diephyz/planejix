@@ -203,6 +203,33 @@
   animation: float-orb 10s ease-in-out infinite reverse;
 }
 
+@media (max-width: 640px) {
+  .card { @apply p-3.5 rounded-xl; }
+  .btn-primary, .btn-secondary, .btn-danger { @apply text-sm px-3 py-2; }
+  .input-field { @apply text-[14px] py-2.5; }
+  .label { @apply text-[12px]; }
+  .glass-tooltip {
+    max-width: 260px !important;
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }

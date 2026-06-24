@@ -150,7 +150,7 @@ export default function ImportPage() {
   const invalidCount = preview.filter((r) => !r._valid).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 pb-20 lg:pb-0">
       <div>
         <h2 className="text-xl font-bold text-white">Importar do Excel</h2>
         <p className="text-sm text-gray-400 mt-0.5">Importe transações a partir de um arquivo .xlsx ou .csv</p>

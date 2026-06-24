@@ -15,6 +15,7 @@ import ApprovalsPage from './pages/ApprovalsPage';
 import UpgradePage from './pages/UpgradePage';
 import SavingsPage from './pages/SavingsPage';
 import ProfilePage from './pages/ProfilePage';
+import InstallPrompt from './components/shared/InstallPrompt';
 import type { ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -27,6 +28,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
       <BrowserRouter>
+        <InstallPrompt />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Navigate to="/login" replace />} />

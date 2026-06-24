@@ -92,7 +92,7 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold text-white dark:text-white">Transações</h2>
@@ -120,18 +120,18 @@ export default function TransactionsPage() {
       </div>
 
       {/* Summary strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-        <div className="card py-3 flex sm:block items-center justify-between" style={{ borderLeft: '2px solid rgba(34,197,94,0.4)' }}>
-          <p className="text-xs text-gray-400">Entradas</p>
-          <p className="text-sm font-bold text-green-400 sm:mt-0.5">{fmt(totalIncome)}</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-xl p-3 sm:p-4" style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.12)' }}>
+          <p className="text-[10px] sm:text-xs text-gray-400">Entradas</p>
+          <p className="text-xs sm:text-sm font-bold text-emerald-400 mt-0.5">{fmt(totalIncome)}</p>
         </div>
-        <div className="card py-3 flex sm:block items-center justify-between" style={{ borderLeft: '2px solid rgba(239,68,68,0.4)' }}>
-          <p className="text-xs text-gray-400">Saídas</p>
-          <p className="text-sm font-bold text-red-400 sm:mt-0.5">{fmt(totalExpense)}</p>
+        <div className="rounded-xl p-3 sm:p-4" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.12)' }}>
+          <p className="text-[10px] sm:text-xs text-gray-400">Saídas</p>
+          <p className="text-xs sm:text-sm font-bold text-red-400 mt-0.5">{fmt(totalExpense)}</p>
         </div>
-        <div className="card py-3 flex sm:block items-center justify-between" style={{ borderLeft: '2px solid rgba(99,102,241,0.4)' }}>
-          <p className="text-xs text-gray-400">Saldo</p>
-          <p className={`text-sm font-bold sm:mt-0.5 ${totalIncome - totalExpense >= 0 ? 'text-white' : 'text-red-400'}`}>
+        <div className="rounded-xl p-3 sm:p-4" style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.12)' }}>
+          <p className="text-[10px] sm:text-xs text-gray-400">Saldo</p>
+          <p className={`text-xs sm:text-sm font-bold mt-0.5 ${totalIncome - totalExpense >= 0 ? 'text-white' : 'text-red-400'}`}>
             {fmt(totalIncome - totalExpense)}
           </p>
         </div>
@@ -147,10 +147,11 @@ export default function TransactionsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-400">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">
                 Página {page} de {totalPages} — {transactions.length} registros
               </p>
+              <p className="text-xs text-gray-500 sm:hidden">{page}/{totalPages}</p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage(1)}

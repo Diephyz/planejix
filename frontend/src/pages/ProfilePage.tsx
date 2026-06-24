@@ -39,14 +39,14 @@ export default function ProfilePage() {
   const initials = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-5 sm:space-y-6 pb-20 lg:pb-0">
       <div>
         <h2 className="text-xl font-bold text-white">Meu Perfil</h2>
         <p className="text-sm text-gray-400 mt-0.5">Gerencie suas informações pessoais</p>
       </div>
 
       {/* Avatar + Plan */}
-      <div className="card flex items-center gap-5">
+      <div className="card flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left">
         {user?.avatar_url ? (
           <img src={user.avatar_url} alt="avatar" className="w-20 h-20 rounded-2xl object-cover flex-shrink-0 ring-2 ring-brand-600/30" />
         ) : (
@@ -124,7 +124,7 @@ export default function ProfilePage() {
       {/* Plan details */}
       <div className="card space-y-4">
         <h3 className="text-sm font-semibold text-white">Seu plano</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { label: 'Transações/mês', value: isPro ? 'Ilimitado' : '50' },
             { label: 'Metas de economia', value: isPro ? 'Ilimitado' : '3' },

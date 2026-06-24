@@ -21,6 +21,60 @@ const kindLabels: Record<string, string> = {
   custom: 'Outros',
 };
 
+function MobileCard({ t, onEdit, onDelete }: { t: Transaction; onEdit: () => void; onDelete: () => void }) {
+  const catColor = t.category_color || (t.type === 'income' ? '#10B981' : '#6366f1');
+  return (
+    <div
+      className="p-3.5 rounded-xl transition-colors"
+      style={{ background: 'rgba(18,18,30,0.7)', border: '1px solid rgba(255,255,255,0.05)' }}
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5" style={{ background: `${catColor}15` }}>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: catColor }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[13px] font-medium text-white truncate">{t.description}</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">
+                {formatDate(t.date)}
+                {t.category_name && <span> · {t.category_name}</span>}
+                {t.kind && <span> · {kindLabels[t.kind]}</span>}
+              </p>
+            </div>
+            <span className={`text-[13px] font-bold flex-shrink-0 ${t.type === 'income' ? 'text-emerald-400' : 'text-red-400'}`}>
+              {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+            </span>
+          </div>
+          {t.notes && <p className="text-[11px] text-gray-500 mt-1 truncate">{t.notes}</p>}
+          <div className="flex items-center gap-2 mt-2">
+            {!!t.recurring && (
+              <span className="text-[10px] text-brand-500 bg-brand-600/10 px-2 py-0.5 rounded-full font-medium">Recorrente</span>
+            )}
+            {t.installment_total && t.installment_current && (
+              <span className="text-[10px] text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full font-medium">
+                {t.installment_current}/{t.installment_total}x
+              </span>
+            )}
+            <div className="ml-auto flex items-center gap-1">
+              <button onClick={onEdit} className="p-1.5 text-gray-500 hover:text-brand-500 rounded-lg transition-colors cursor-pointer">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button onClick={onDelete} className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg transition-colors cursor-pointer">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function TransactionTable({ transactions, onRefresh, onEdit }: TableProps) {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [confirmId, setConfirmId] = useState<number | null>(null);
@@ -53,14 +107,27 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
 
   return (
     <>
-      <div className="card overflow-x-auto p-0">
+      {/* Mobile: card layout */}
+      <div className="space-y-2 sm:hidden">
+        {transactions.map((t) => (
+          <MobileCard
+            key={t.id}
+            t={t}
+            onEdit={() => onEdit(t)}
+            onDelete={() => setConfirmId(t.id)}
+          />
+        ))}
+      </div>
+
+      {/* Desktop: table layout */}
+      <div className="card overflow-x-auto p-0 hidden sm:block">
         <table className="w-full text-sm min-w-[500px]">
           <thead>
             <tr className="text-left" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <th className="text-gray-400 font-medium px-5 py-3">Data</th>
               <th className="text-gray-400 font-medium px-5 py-3">Descrição</th>
               <th className="text-gray-400 font-medium px-5 py-3 hidden md:table-cell">Categoria</th>
-              <th className="text-gray-400 font-medium px-5 py-3 hidden sm:table-cell">Tipo</th>
+              <th className="text-gray-400 font-medium px-5 py-3">Tipo</th>
               <th className="text-gray-400 font-medium px-5 py-3 text-right">Valor</th>
               <th className="px-5 py-3" />
             </tr>
@@ -82,9 +149,6 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
                   )}
                   {t.installment_total && t.installment_current && (
                     <span className="inline-flex items-center gap-1 text-xs font-semibold mt-0.5 px-1.5 py-0.5 rounded-md bg-orange-500/15 text-orange-400 w-fit">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
                       {t.installment_current}/{t.installment_total}
                     </span>
                   )}
@@ -92,29 +156,19 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
                 <td className="px-5 py-3 hidden md:table-cell">
                   {t.category_name ? (
                     <span className="flex items-center gap-2">
-                      <span
-                        className="w-2 h-2 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: t.category_color || '#6b7280' }}
-                      />
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: t.category_color || '#6b7280' }} />
                       <span className="text-gray-300">{t.category_name}</span>
                     </span>
                   ) : (
                     <span className="text-gray-500">—</span>
                   )}
                 </td>
-                <td className="px-5 py-3 hidden sm:table-cell">
-                  <div className="flex flex-col gap-0.5">
-                    <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium w-fit ${
-                      t.type === 'income'
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-red-500/20 text-red-400'
-                    }`}>
-                      {t.type === 'income' ? 'Entrada' : 'Saída'}
-                    </span>
-                    {t.kind && (
-                      <span className="text-xs text-gray-500">{kindLabels[t.kind]}</span>
-                    )}
-                  </div>
+                <td className="px-5 py-3">
+                  <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
+                    t.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {t.type === 'income' ? 'Entrada' : 'Saída'}
+                  </span>
                 </td>
                 <td className={`px-5 py-3 text-right font-semibold whitespace-nowrap ${
                   t.type === 'income' ? 'text-green-400' : 'text-red-400'
@@ -125,8 +179,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => onEdit(t)}
-                      className="p-1.5 text-gray-500 hover:text-brand-500 hover:bg-brand-700/20 rounded-lg transition-colors"
-                      title="Editar"
+                      className="p-1.5 text-gray-500 hover:text-brand-500 hover:bg-brand-700/20 rounded-lg transition-colors cursor-pointer"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -135,8 +188,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
                     <button
                       onClick={() => setConfirmId(t.id)}
                       disabled={deleting === t.id}
-                      className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-                      title="Excluir"
+                      className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -150,17 +202,12 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
         </table>
       </div>
 
-      {/* Delete confirmation modal */}
       <Modal open={confirmId !== null} onClose={() => setConfirmId(null)} title="Excluir Transação" maxWidth="max-w-sm">
         <div className="space-y-4">
-          <p className="text-gray-300">Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.</p>
+          <p className="text-gray-300">Tem certeza que deseja excluir esta transação?</p>
           <div className="flex gap-3">
-            <button onClick={() => setConfirmId(null)} className="btn-secondary flex-1">
-              Cancelar
-            </button>
-            <button onClick={handleDelete} className="btn-danger flex-1">
-              Excluir
-            </button>
+            <button onClick={() => setConfirmId(null)} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleDelete} className="btn-danger flex-1">Excluir</button>
           </div>
         </div>
       </Modal>

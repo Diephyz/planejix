@@ -112,7 +112,7 @@ export default function SavingsPage() {
   const canCreate = isPro || goals.length < 3;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold text-white">Metas de Economia</h2>
@@ -148,7 +148,7 @@ export default function SavingsPage() {
           <p className="text-xs mt-1">Crie uma meta para começar a poupar</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {goals.map((g) => {
             const pct = g.target_amount > 0 ? (g.current_amount / g.target_amount) * 100 : 0;
             const completed = pct >= 100;

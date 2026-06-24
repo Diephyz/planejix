@@ -82,14 +82,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A0A12 0%, #0E1A14 40%, #0A0A12 100%)' }}>
+    <div className="min-h-dvh flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A0A12 0%, #0E1A14 40%, #0A0A12 100%)' }}>
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-15 blur-3xl pointer-events-none animate-float-orb" style={{ background: 'radial-gradient(circle, #10B981, transparent 70%)' }} />
       <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-12 blur-3xl pointer-events-none animate-float-orb-reverse" style={{ background: 'radial-gradient(circle, #059669, transparent 70%)' }} />
       <div className="absolute top-[30%] right-[15%] w-[250px] h-[250px] rounded-full opacity-8 blur-3xl pointer-events-none animate-float-orb" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)', animationDelay: '-3s' }} />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         <div className="text-center mb-6">
-          <img src="/logo.png" alt="Planejix" className="h-36 sm:h-44 w-auto mx-auto mb-2 drop-shadow-2xl" />
+          <img src="/logo.png" alt="Planejix" className="h-28 sm:h-44 w-auto mx-auto mb-2 drop-shadow-2xl" />
           <p className="text-gray-500 text-[13px]">Controle seus gastos com facilidade</p>
         </div>
 

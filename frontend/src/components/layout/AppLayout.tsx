@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import BottomNav from './BottomNav';
+import FloatingActionButton from '../shared/FloatingActionButton';
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -11,10 +13,12 @@ export default function AppLayout() {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="lg:ml-[260px] flex flex-col min-h-screen">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-3 sm:p-4 md:p-6">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 pb-20 lg:pb-6">
           <Outlet />
         </main>
       </div>
+      <BottomNav />
+      <FloatingActionButton />
     </div>
   );
 }

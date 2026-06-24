@@ -7,11 +7,6 @@ interface BeforeInstallPromptEvent extends Event {
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e as BeforeInstallPromptEvent;
-});
-
 function isMobile() {
   return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
@@ -31,12 +26,22 @@ export default function InstallPrompt() {
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
   useEffect(() => {
-    if (!isMobile() || isStandalone()) return;
+    const promptHandler = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt = e as BeforeInstallPromptEvent;
+    };
+    window.addEventListener('beforeinstallprompt', promptHandler);
+
+    if (!isMobile() || isStandalone()) {
+      return () => window.removeEventListener('beforeinstallprompt', promptHandler);
+    }
 
     const dismissed = localStorage.getItem('planejix_install_dismissed');
     if (dismissed) {
       const dismissedAt = Number(dismissed);
-      if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) return;
+      if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) {
+        return () => window.removeEventListener('beforeinstallprompt', promptHandler);
+      }
     }
 
     const checkAfterLogin = () => {
@@ -49,7 +54,10 @@ export default function InstallPrompt() {
     checkAfterLogin();
 
     window.addEventListener('storage', checkAfterLogin);
-    return () => window.removeEventListener('storage', checkAfterLogin);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', promptHandler);
+      window.removeEventListener('storage', checkAfterLogin);
+    };
   }, []);
 
   const handleInstall = async () => {

@@ -76,7 +76,7 @@ export default function TransactionFilters({ filters, categories, onChange }: Fi
 
         <button
           onClick={toggleDateRange}
-          className={`btn-secondary text-sm px-3 py-2 flex items-center justify-center gap-1.5 ${showDateRange ? 'border-brand-500 text-brand-400' : ''}`}
+          className={`btn-secondary text-sm px-3 py-2 flex items-center justify-center gap-1.5 ${showDateRange ? 'border-brand-500 text-brand-500' : ''}`}
           title="Filtrar por período personalizado"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

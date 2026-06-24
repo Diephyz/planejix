@@ -185,7 +185,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
                 onClick={() => { setKind(k); markDirty(); }}
                 className={`flex-1 py-2.5 text-[12px] font-medium transition-all ${
                   kind === k
-                    ? 'bg-brand-500/20 text-brand-400'
+                    ? 'bg-brand-500/20 text-brand-500'
                     : 'text-gray-500 hover:text-gray-300'
                 }`}
               >

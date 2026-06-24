@@ -48,9 +48,9 @@ export default function ProfilePage() {
       {/* Avatar + Plan */}
       <div className="card flex items-center gap-5">
         {user?.avatar_url ? (
-          <img src={user.avatar_url} alt="avatar" className="w-20 h-20 rounded-2xl object-cover flex-shrink-0 ring-2 ring-brand-500/30" />
+          <img src={user.avatar_url} alt="avatar" className="w-20 h-20 rounded-2xl object-cover flex-shrink-0 ring-2 ring-brand-600/30" />
         ) : (
-          <div className="w-20 h-20 bg-brand-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white flex-shrink-0 ring-2 ring-brand-500/30">
+          <div className="w-20 h-20 bg-brand-700 rounded-2xl flex items-center justify-center text-2xl font-bold text-white flex-shrink-0 ring-2 ring-brand-600/30">
             {initials}
           </div>
         )}
@@ -59,12 +59,12 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-400">@{user?.username}</p>
           <div className="mt-2 flex items-center gap-2">
             <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full ${
-              isPro ? 'bg-brand-500/20 text-brand-400' : 'bg-gray-500/20 text-gray-400'
+              isPro ? 'bg-brand-600/20 text-brand-500' : 'bg-gray-500/20 text-gray-400'
             }`}>
               {isPro ? 'PRO' : 'FREE'}
             </span>
             {!isPro && (
-              <a href="/upgrade" className="text-xs text-brand-400 hover:text-brand-300 underline">
+              <a href="/upgrade" className="text-xs text-brand-500 hover:text-brand-500 underline">
                 Fazer upgrade
               </a>
             )}
@@ -140,7 +140,7 @@ export default function ProfilePage() {
         {!isPro && (
           <a
             href="/upgrade"
-            className="block w-full text-center text-sm px-4 py-2.5 rounded-xl bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors font-medium"
+            className="block w-full text-center text-sm px-4 py-2.5 rounded-xl bg-brand-600/10 text-brand-500 hover:bg-brand-600/20 transition-colors font-medium"
           >
             Ver planos e fazer upgrade
           </a>

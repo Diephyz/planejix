@@ -84,7 +84,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-20 lg:hidden"
@@ -92,7 +91,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed top-0 left-0 h-full w-[260px] z-30
@@ -101,17 +99,15 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           lg:translate-x-0
         `}
         style={{
-          background: 'linear-gradient(180deg, rgba(14,14,22,0.95) 0%, rgba(10,10,18,0.98) 100%)',
+          background: 'linear-gradient(180deg, rgba(10,10,18,0.97) 0%, rgba(8,8,14,0.99) 100%)',
           backdropFilter: 'blur(24px)',
-          borderRight: '1px solid rgba(255,255,255,0.04)',
+          borderRight: '1px solid rgba(16,185,129,0.06)',
         }}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-center px-6 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+        <div className="flex items-center justify-center px-6 py-5" style={{ borderBottom: '1px solid rgba(16,185,129,0.06)' }}>
           <img src="/logo.png" alt="Planejix" className="h-28 w-auto" />
         </div>
 
-        {/* Nav */}
         <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
           <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest px-3 mb-2">Menu</p>
           {navItems.map((item) => {
@@ -124,43 +120,43 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 to={item.to}
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${isActive
                     ? 'text-white'
                     : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
                 style={isActive ? {
-                  background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 100%)',
-                  border: '1px solid rgba(99,102,241,0.2)',
-                  boxShadow: '0 2px 12px rgba(99,102,241,0.1)',
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 100%)',
+                  border: '1px solid rgba(16,185,129,0.2)',
+                  boxShadow: '0 2px 12px rgba(16,185,129,0.08)',
                 } : undefined}
               >
-                <span style={isActive ? { color: '#818cf8' } : undefined}>{item.icon}</span>
+                <span style={isActive ? { color: '#34d399' } : undefined}>{item.icon}</span>
                 {item.label}
               </NavLink>
             );
           })}
           {isAdmin && (
             <>
-              <div className="h-px my-3 mx-3" style={{ background: 'rgba(255,255,255,0.04)' }} />
+              <div className="h-px my-3 mx-3" style={{ background: 'rgba(16,185,129,0.06)' }} />
               <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest px-3 mb-2">Admin</p>
               <NavLink
                 to="/approvals"
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${location.pathname.startsWith('/approvals')
                     ? 'text-white'
                     : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
                 style={location.pathname.startsWith('/approvals') ? {
-                  background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 100%)',
-                  border: '1px solid rgba(99,102,241,0.2)',
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 100%)',
+                  border: '1px solid rgba(16,185,129,0.2)',
                 } : undefined}
               >
-                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={location.pathname.startsWith('/approvals') ? { color: '#818cf8' } : undefined}>
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={location.pathname.startsWith('/approvals') ? { color: '#34d399' } : undefined}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Aprovações
@@ -169,18 +165,18 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 to="/admin"
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${location.pathname.startsWith('/admin')
                     ? 'text-white'
                     : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
                 style={location.pathname.startsWith('/admin') ? {
-                  background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 100%)',
-                  border: '1px solid rgba(99,102,241,0.2)',
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 100%)',
+                  border: '1px solid rgba(16,185,129,0.2)',
                 } : undefined}
               >
-                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={location.pathname.startsWith('/admin') ? { color: '#818cf8' } : undefined}>
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={location.pathname.startsWith('/admin') ? { color: '#34d399' } : undefined}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 Usuários
@@ -189,12 +185,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           )}
         </nav>
 
-        {/* Bottom section */}
-        <div className="px-3 py-4 space-y-1" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-          {/* Theme toggle */}
+        <div className="px-3 py-4 space-y-1" style={{ borderTop: '1px solid rgba(16,185,129,0.06)' }}>
           <button
             onClick={() => setIsDark((d) => !d)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-gray-300 hover:bg-white/[0.03] transition-all duration-200 w-full"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-gray-300 hover:bg-white/[0.03] transition-all duration-200 w-full cursor-pointer"
           >
             <div className="relative w-[18px] h-[18px] flex-shrink-0">
               <svg
@@ -215,17 +209,16 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             {isDark ? 'Tema Claro' : 'Tema Escuro'}
           </button>
 
-          {/* User info */}
           <div
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-white/[0.03] transition-all duration-200"
             onClick={() => { onClose(); navigate('/profile'); }}
           >
             {user?.avatar_url ? (
-              <img src={user.avatar_url} alt="avatar" className="w-9 h-9 rounded-xl object-cover flex-shrink-0 ring-1 ring-white/10" />
+              <img src={user.avatar_url} alt="avatar" className="w-9 h-9 rounded-xl object-cover flex-shrink-0 ring-1 ring-brand-600/30" />
             ) : (
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+                style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}
               >
                 {initials}
               </div>
@@ -242,8 +235,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               <span
                 className="text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
                 style={plan === 'pro' ? {
-                  background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2))',
-                  color: '#a5b4fc',
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.2))',
+                  color: '#6ee7b7',
                 } : {
                   background: 'rgba(255,255,255,0.05)',
                   color: '#666',
@@ -256,7 +249,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-all duration-200 w-full"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-all duration-200 w-full cursor-pointer"
           >
             <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

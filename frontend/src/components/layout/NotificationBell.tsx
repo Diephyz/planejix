@@ -59,9 +59,9 @@ export default function NotificationBell() {
         <div
           className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl z-50 overflow-hidden animate-scale-in"
           style={{
-            background: 'rgba(20,20,31,0.95)',
+            background: 'rgba(14,14,24,0.97)',
             backdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid rgba(16,185,129,0.1)',
             boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
           }}
         >

@@ -24,14 +24,14 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     <header
       className="h-16 flex items-center px-5 gap-4 sticky top-0 z-10"
       style={{
-        background: 'rgba(12,12,20,0.7)',
+        background: 'rgba(10,10,18,0.75)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        borderBottom: '1px solid rgba(16,185,129,0.06)',
       }}
     >
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.05] transition-all"
+        className="lg:hidden p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />

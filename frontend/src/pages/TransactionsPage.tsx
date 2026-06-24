@@ -188,7 +188,7 @@ export default function TransactionsPage() {
                         onClick={() => setPage(p as number)}
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                           page === p
-                            ? 'bg-brand-500 text-white'
+                            ? 'bg-brand-600 text-white'
                             : 'text-gray-400 hover:text-white hover:bg-dark-700'
                         }`}
                       >

@@ -180,7 +180,7 @@ export default function SavingsPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => openEdit(g)} className="p-1.5 text-gray-500 hover:text-brand-400 hover:bg-brand-900/20 rounded-lg transition-colors" title="Editar">
+                    <button onClick={() => openEdit(g)} className="p-1.5 text-gray-500 hover:text-brand-500 hover:bg-brand-600/10 rounded-lg transition-colors" title="Editar">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
@@ -265,7 +265,7 @@ export default function SavingsPage() {
               type="text"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
+              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
               placeholder="Ex: Viagem, Reserva de emergência..."
             />
           </div>
@@ -277,7 +277,7 @@ export default function SavingsPage() {
               min="0.01"
               value={form.target_amount}
               onChange={(e) => setForm((f) => ({ ...f, target_amount: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
+              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
               placeholder="5000.00"
             />
           </div>
@@ -287,7 +287,7 @@ export default function SavingsPage() {
               type="date"
               value={form.deadline}
               onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"
+              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-600"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
@@ -295,7 +295,7 @@ export default function SavingsPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-brand-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
             >
               {saving ? 'Salvando...' : editingGoal ? 'Salvar' : 'Criar Meta'}
             </button>
@@ -315,7 +315,7 @@ export default function SavingsPage() {
             min="0.01"
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value)}
-            className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
+            className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
             placeholder="Valor do depósito"
           />
           <div className="flex gap-3">

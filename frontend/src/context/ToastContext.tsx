@@ -34,7 +34,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const colors: Record<ToastType, string> = {
     success: 'bg-green-500/15 border-green-500/30 text-green-400',
     error: 'bg-red-500/15 border-red-500/30 text-red-400',
-    info: 'bg-brand-500/15 border-brand-500/30 text-brand-400',
+    info: 'bg-brand-500/15 border-brand-500/30 text-brand-500',
   };
 
   const icons: Record<ToastType, ReactNode> = {

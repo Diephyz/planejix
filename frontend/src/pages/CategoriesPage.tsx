@@ -104,8 +104,8 @@ export default function CategoriesPage() {
         <CardsSkeleton count={6} />
       ) : categories.length === 0 ? (
         <div className="card text-center py-16 animate-fade-in">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-brand-500/10 flex items-center justify-center">
-            <svg className="w-10 h-10 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-brand-600/10 flex items-center justify-center">
+            <svg className="w-10 h-10 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
           </div>
@@ -131,7 +131,7 @@ export default function CategoriesPage() {
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={() => openEdit(cat)}
-                  className="p-1.5 text-gray-400 hover:text-brand-400 hover:bg-brand-900/20 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-brand-500 hover:bg-brand-600/10 rounded-lg transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

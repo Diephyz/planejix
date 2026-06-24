@@ -220,7 +220,7 @@ export default function AdminPage() {
                           ) : (
                             <button
                               onClick={() => { setRenewTarget(u); setRenewDays(30); }}
-                              className="text-xs px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors font-medium"
+                              className="text-xs px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 hover:bg-brand-500/20 transition-colors font-medium"
                             >
                               Renovar
                             </button>

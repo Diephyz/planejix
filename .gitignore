@@ -9,6 +9,7 @@ backend/database/expenses.db-wal
 # Environment variables (contain secrets)
 backend/.env
 frontend/.env
+automation/.env
 
 # Build output
 frontend/dist/

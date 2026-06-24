@@ -219,7 +219,7 @@ export default function ImportPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         {fileName ? (
-          <p className="text-brand-400 font-medium">{fileName}</p>
+          <p className="text-brand-500 font-medium">{fileName}</p>
         ) : (
           <>
             <p className="text-gray-300 font-medium">Clique para selecionar ou arraste o arquivo</p>

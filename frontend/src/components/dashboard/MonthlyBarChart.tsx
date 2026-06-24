@@ -46,15 +46,15 @@ export default function MonthlyBarChart({ data }: { data: MonthlySummary[] }) {
           <BarChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
             <defs>
               <linearGradient id="gradEntradas" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#22c55e" stopOpacity={1} />
-                <stop offset="100%" stopColor="#22c55e" stopOpacity={0.4} />
+                <stop offset="0%" stopColor="#10B981" stopOpacity={1} />
+                <stop offset="100%" stopColor="#10B981" stopOpacity={0.4} />
               </linearGradient>
               <linearGradient id="gradSaidas" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#ef4444" stopOpacity={1} />
                 <stop offset="100%" stopColor="#ef4444" stopOpacity={0.4} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#32324a" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(16,185,129,0.08)" />
             <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false} />
             <YAxis
               tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
@@ -62,7 +62,7 @@ export default function MonthlyBarChart({ data }: { data: MonthlySummary[] }) {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff08' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(16,185,129,0.04)' }} />
             <Legend wrapperStyle={{ color: '#9ca3af', fontSize: 12 }} />
             <Bar dataKey="Entradas" fill="url(#gradEntradas)" radius={[4, 4, 0, 0]} maxBarSize={40} />
             <Bar dataKey="Saídas" fill="url(#gradSaidas)" radius={[4, 4, 0, 0]} maxBarSize={40} />

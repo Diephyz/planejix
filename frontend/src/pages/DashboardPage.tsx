@@ -17,7 +17,6 @@ const fmt = (v: number) =>
 
 const fmtDate = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR');
 
-// ── KPI Card (horizontal no topo) ────────────────────────────────────────────
 interface KpiProps {
   label: string;
   value: number;
@@ -37,7 +36,7 @@ function KpiCard({ label, value, icon, color, textClass, previousValue, invertTr
       const isUp = pct > 0;
       const isGood = invertTrend ? !isUp : isUp;
       trend = (
-        <span className={`text-[10px] font-semibold ${isGood ? 'text-green-400' : 'text-red-400'}`}>
+        <span className={`text-[10px] font-semibold ${isGood ? 'text-emerald-400' : 'text-red-400'}`}>
           {isUp ? '↑' : '↓'} {Math.abs(pct).toFixed(0)}%
         </span>
       );
@@ -47,7 +46,7 @@ function KpiCard({ label, value, icon, color, textClass, previousValue, invertTr
     <div
       className="rounded-2xl p-4 transition-all duration-300 hover:translate-y-[-2px] min-w-0"
       style={{
-        background: 'rgba(255,255,255,0.03)',
+        background: 'rgba(18,18,30,0.7)',
         border: '1px solid rgba(255,255,255,0.05)',
         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
       }}
@@ -64,18 +63,17 @@ function KpiCard({ label, value, icon, color, textClass, previousValue, invertTr
   );
 }
 
-// ── Health indicator ─────────────────────────────────────────────────────────
 function HealthBadge({ income, expenses }: { income: number; expenses: number }) {
   const ratio = income > 0 ? (expenses / income) * 100 : 100;
-  let status: string, statusColor: string, bgColor: string, emoji: string;
+  let status: string, statusColor: string, bgColor: string;
   if (ratio <= 50) {
-    status = 'Excelente'; statusColor = '#22c55e'; bgColor = 'rgba(34,197,94,0.1)'; emoji = '🟢';
+    status = 'Excelente'; statusColor = '#10B981'; bgColor = 'rgba(16,185,129,0.08)';
   } else if (ratio <= 75) {
-    status = 'Saudável'; statusColor = '#22c55e'; bgColor = 'rgba(34,197,94,0.08)'; emoji = '🟢';
+    status = 'Saudável'; statusColor = '#10B981'; bgColor = 'rgba(16,185,129,0.06)';
   } else if (ratio <= 95) {
-    status = 'Atenção'; statusColor = '#eab308'; bgColor = 'rgba(234,179,8,0.08)'; emoji = '🟡';
+    status = 'Atenção'; statusColor = '#F59E0B'; bgColor = 'rgba(245,158,11,0.06)';
   } else {
-    status = 'Crítico'; statusColor = '#ef4444'; bgColor = 'rgba(239,68,68,0.08)'; emoji = '🔴';
+    status = 'Crítico'; statusColor = '#ef4444'; bgColor = 'rgba(239,68,68,0.06)';
   }
   return (
     <div
@@ -83,7 +81,7 @@ function HealthBadge({ income, expenses }: { income: number; expenses: number })
       style={{ background: bgColor, border: `1px solid ${statusColor}20` }}
     >
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm">{emoji}</span>
+        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: statusColor, boxShadow: `0 0 8px ${statusColor}40` }} />
         <span className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Saúde</span>
       </div>
       <p className="text-lg font-bold" style={{ color: statusColor }}>{status}</p>
@@ -92,13 +90,12 @@ function HealthBadge({ income, expenses }: { income: number; expenses: number })
   );
 }
 
-// ── Upcoming payments ────────────────────────────────────────────────────────
 function UpcomingPayments({ items }: { items: AppNotification[] }) {
   if (items.length === 0) {
     return (
       <div className="card h-full flex flex-col">
         <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           Próximos vencimentos
@@ -112,7 +109,7 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
   return (
     <div className="card h-full flex flex-col">
       <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-        <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         Próximos vencimentos
@@ -125,11 +122,11 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
               key={n.id}
               className="flex items-center gap-3 px-3 py-2 rounded-xl"
               style={{
-                background: isToday ? 'rgba(239,68,68,0.06)' : 'rgba(234,179,8,0.06)',
-                border: `1px solid ${isToday ? 'rgba(239,68,68,0.15)' : 'rgba(234,179,8,0.15)'}`,
+                background: isToday ? 'rgba(239,68,68,0.06)' : 'rgba(245,158,11,0.06)',
+                border: `1px solid ${isToday ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}`,
               }}
             >
-              <div className={`w-1.5 h-8 rounded-full flex-shrink-0 ${isToday ? 'bg-red-500' : 'bg-yellow-500'}`} />
+              <div className={`w-1.5 h-8 rounded-full flex-shrink-0 ${isToday ? 'bg-red-500' : 'bg-amber-500'}`} />
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-medium text-white truncate">{n.description}</p>
                 <p className="text-[11px] text-gray-500">{fmtDate(n.date)} {isToday ? '· Vence hoje!' : '· Em 3 dias'}</p>
@@ -143,7 +140,6 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
   );
 }
 
-// ── Recent transactions with category icons ──────────────────────────────────
 const CATEGORY_ICONS: Record<string, string> = {
   'Alimentação': 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z',
   'Transporte': 'M8 17h8M8 17v-4m8 4v-4m-8 0h8m-8 0H5a1 1 0 01-1-1V8a4 4 0 014-4h8a4 4 0 014 4v4a1 1 0 01-1 1h-3',
@@ -179,7 +175,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
     return (
       <div className="card">
         <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           Transações recentes
@@ -191,7 +187,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
   return (
     <div className="card">
       <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-        <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
         Transações recentes
@@ -203,7 +199,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
             <div className="space-y-1.5">
               {g.items.slice(0, 4).map((t) => {
                 const iconPath = CATEGORY_ICONS[t.category_name || ''] || DEFAULT_ICON;
-                const catColor = t.category_color || (t.type === 'income' ? '#22c55e' : '#6366f1');
+                const catColor = t.category_color || (t.type === 'income' ? '#10B981' : '#6366f1');
                 return (
                   <div key={t.id} className="flex items-center gap-3 py-1.5 px-2 rounded-xl hover:bg-white/[0.02] transition-colors">
                     <div className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center" style={{ background: `${catColor}15` }}>
@@ -215,7 +211,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
                       <p className="text-[13px] font-medium text-white truncate">{t.description}</p>
                       <p className="text-[11px] text-gray-500 truncate">{t.category_name || 'Sem categoria'}</p>
                     </div>
-                    <span className={`text-[13px] font-bold flex-shrink-0 ${t.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`text-[13px] font-bold flex-shrink-0 ${t.type === 'income' ? 'text-emerald-400' : 'text-red-400'}`}>
                       {t.type === 'income' ? '+' : '-'}{fmt(t.amount)}
                     </span>
                   </div>
@@ -229,7 +225,6 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
   );
 }
 
-// ── Top categories (replaces donut) ──────────────────────────────────────────
 function TopCategories({ year, month }: { year: number; month: number }) {
   const [data, setData] = useState<{ name: string; color: string; value: number }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -248,7 +243,7 @@ function TopCategories({ year, month }: { year: number; month: number }) {
   return (
     <div className="card h-full flex flex-col">
       <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-        <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
         </svg>
         Gastos por categoria
@@ -296,7 +291,6 @@ function TopCategories({ year, month }: { year: number; month: number }) {
   );
 }
 
-// ── Dashboard principal ──────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { isPro } = useAuth();
   const navigate = useNavigate();
@@ -339,8 +333,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-
-      {/* ─── Header + Quick Actions + Period Selector ─────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold text-white">Visão Geral</h2>
@@ -374,13 +366,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ─── KPI Cards (horizontal, all screens) ──────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard
           label="Receitas"
           value={summary.annual.totalIncome}
           icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" /></svg>}
-          color="#22c55e" textClass="text-green-400"
+          color="#10B981" textClass="text-emerald-400"
           previousValue={summary.previousMonth?.totalIncome}
         />
         <KpiCard
@@ -395,21 +386,20 @@ export default function DashboardPage() {
           label="Saldo"
           value={summary.annual.balance}
           icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-          color="#818cf8" textClass={summary.annual.balance >= 0 ? 'text-white' : 'text-red-400'}
+          color="#6366f1" textClass={summary.annual.balance >= 0 ? 'text-white' : 'text-red-400'}
           previousValue={summary.previousMonth?.balance}
         />
         <KpiCard
           label="Maior gasto"
           value={summary.largestExpense}
           icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
-          color="#eab308" textClass="text-yellow-400"
+          color="#F59E0B" textClass="text-amber-400"
           previousValue={summary.previousMonth?.largestExpense}
           invertTrend
         />
         <HealthBadge income={summary.annual.totalIncome} expenses={summary.annual.totalExpenses} />
       </div>
 
-      {/* ─── Budget alerts ────────────────────────────────────────────── */}
       {budgetAlerts.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
           {budgetAlerts.map((b) => {
@@ -419,9 +409,9 @@ export default function DashboardPage() {
                 key={b.id}
                 className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
                 style={{
-                  background: over ? 'rgba(239,68,68,0.06)' : 'rgba(234,179,8,0.06)',
-                  border: `1px solid ${over ? 'rgba(239,68,68,0.15)' : 'rgba(234,179,8,0.15)'}`,
-                  color: over ? '#f87171' : '#facc15',
+                  background: over ? 'rgba(239,68,68,0.06)' : 'rgba(245,158,11,0.06)',
+                  border: `1px solid ${over ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}`,
+                  color: over ? '#f87171' : '#fbbf24',
                 }}
               >
                 <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -435,7 +425,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ─── Row 1: Area chart (main) + Upcoming payments ─────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2">
           <AnnualLineChart data={summary.monthly} />
@@ -443,13 +432,11 @@ export default function DashboardPage() {
         <UpcomingPayments items={upcoming} />
       </div>
 
-      {/* ─── Row 2: Top categories + Recent transactions ─────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <TopCategories year={year} month={month} />
         <EnhancedRecentTransactions transactions={recent} />
       </div>
 
-      {/* ─── Row 3: Bar chart (secondary) ─────────────────────────────── */}
       <MonthlyBarChart data={summary.monthly} />
 
       <WelcomeModal

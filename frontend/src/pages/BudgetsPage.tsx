@@ -267,16 +267,16 @@ export default function BudgetsPage() {
           </div>
           <div>
             <label className="label">Período</label>
-            <div className="flex rounded-lg overflow-hidden border border-dark-600">
+            <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
               {(['monthly', 'annual'] as const).map((p) => (
                 <button
                   key={p}
                   type="button"
                   onClick={() => setFormData({ ...formData, period: p })}
-                  className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                  className={`flex-1 py-2.5 text-[13px] font-medium transition-all ${
                     formData.period === p
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-dark-700 text-gray-400 hover:text-white'
+                      ? 'bg-brand-500/20 text-brand-400'
+                      : 'text-gray-500 hover:text-gray-300'
                   }`}
                 >
                   {p === 'monthly' ? 'Mensal' : 'Anual'}

@@ -148,14 +148,14 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
         {/* Type toggle */}
         <div>
           <label className="label">Tipo</label>
-          <div className="flex rounded-lg overflow-hidden border border-dark-600">
+          <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
             <button
               type="button"
               onClick={() => { setType('income'); markDirty(); }}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 py-2.5 text-[13px] font-medium transition-all ${
                 type === 'income'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:text-white'
+                  ? 'bg-green-500/20 text-green-400'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
               Entrada
@@ -163,10 +163,10 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
             <button
               type="button"
               onClick={() => { setType('expense'); markDirty(); }}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 py-2.5 text-[13px] font-medium transition-all ${
                 type === 'expense'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:text-white'
+                  ? 'bg-red-500/20 text-red-400'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
               Saída
@@ -177,16 +177,16 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
         {/* Kind */}
         <div>
           <label className="label">Subtipo</label>
-          <div className="flex rounded-lg overflow-hidden border border-dark-600">
+          <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
             {(['fixed', 'variable', 'custom'] as ExpenseKind[]).map((k) => (
               <button
                 key={k}
                 type="button"
                 onClick={() => { setKind(k); markDirty(); }}
-                className={`flex-1 py-2 text-xs font-medium transition-colors ${
+                className={`flex-1 py-2.5 text-[12px] font-medium transition-all ${
                   kind === k
-                    ? 'bg-brand-500 text-white'
-                    : 'bg-dark-700 text-gray-400 hover:text-white'
+                    ? 'bg-brand-500/20 text-brand-400'
+                    : 'text-gray-500 hover:text-gray-300'
                 }`}
               >
                 {k === 'fixed' ? 'Fixo' : k === 'variable' ? 'Variável' : 'Outros'}

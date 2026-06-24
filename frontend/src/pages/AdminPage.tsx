@@ -183,8 +183,8 @@ export default function AdminPage() {
                         <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded">admin</span>
                       ) : null}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{u.name || '—'}</td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{formatDate(u.expires_at)}</td>
+                    <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">{u.name || '—'}</td>
+                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{formatDate(u.expires_at)}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
                         {status.label}
@@ -198,14 +198,14 @@ export default function AdminPage() {
                           value={u.plan || 'free'}
                           onChange={(e) => handlePlanChange(u.id, e.target.value as 'free' | 'pro')}
                           disabled={updatingPlanId === u.id}
-                          className="text-xs bg-dark-700 border border-dark-500 rounded-lg px-2 py-1 text-white focus:outline-none focus:border-brand-500 disabled:opacity-50"
+                          className="input-field text-xs py-1 px-2 w-20 disabled:opacity-50"
                         >
                           <option value="free">Free</option>
                           <option value="pro">Pro</option>
                         </select>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{formatDate(u.created_at)}</td>
+                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{formatDate(u.created_at)}</td>
                     <td className="px-4 py-3 text-right">
                       {!u.is_admin && (
                         <div className="flex items-center justify-end gap-2">
@@ -249,64 +249,29 @@ export default function AdminPage() {
       <Modal open={createOpen} onClose={() => { setCreateOpen(false); setCreateError(''); }} title="Criar Usuário">
         <div className="space-y-4">
           {createError && (
-            <div className="text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">{createError}</div>
+            <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">{createError}</p>
           )}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Nome (opcional)</label>
-            <input
-              type="text"
-              value={createForm.name}
-              onChange={(e) => setCreateForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
-              placeholder="Nome completo"
-            />
+            <label className="label">Nome (opcional)</label>
+            <input type="text" value={createForm.name} onChange={(e) => setCreateForm((f) => ({ ...f, name: e.target.value }))} className="input-field" placeholder="Nome completo" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Usuário *</label>
-            <input
-              type="text"
-              value={createForm.username}
-              onChange={(e) => setCreateForm((f) => ({ ...f, username: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
-              placeholder="nome_usuario"
-            />
+            <label className="label">Usuário *</label>
+            <input type="text" value={createForm.username} onChange={(e) => setCreateForm((f) => ({ ...f, username: e.target.value }))} className="input-field" placeholder="nome_usuario" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Senha *</label>
-            <input
-              type="password"
-              value={createForm.password}
-              onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
-              placeholder="Mínimo 6 caracteres"
-            />
+            <label className="label">Senha *</label>
+            <input type="password" value={createForm.password} onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))} className="input-field" placeholder="Mínimo 6 caracteres" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Prazo de validade</label>
-            <select
-              value={createForm.expires_in_days}
-              onChange={(e) => setCreateForm((f) => ({ ...f, expires_in_days: Number(e.target.value) }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"
-            >
-              {EXPIRY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
+            <label className="label">Prazo de validade</label>
+            <select value={createForm.expires_in_days} onChange={(e) => setCreateForm((f) => ({ ...f, expires_in_days: Number(e.target.value) }))} className="input-field">
+              {EXPIRY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </div>
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              onClick={() => { setCreateOpen(false); setCreateError(''); }}
-              className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleCreate}
-              disabled={creating}
-              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              {creating ? 'Criando...' : 'Criar Usuário'}
-            </button>
+          <div className="flex gap-3 pt-2">
+            <button onClick={() => { setCreateOpen(false); setCreateError(''); }} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleCreate} disabled={creating} className="btn-primary flex-1">{creating ? 'Criando...' : 'Criar Usuário'}</button>
           </div>
         </div>
       </Modal>
@@ -314,29 +279,13 @@ export default function AdminPage() {
       {/* Modal: Renovar prazo */}
       <Modal open={!!renewTarget} onClose={() => setRenewTarget(null)} title={`Renovar prazo — ${renewTarget?.username}`}>
         <div className="space-y-4">
-          <p className="text-sm text-gray-400">
-            Selecione o novo prazo de validade a partir de hoje.
-          </p>
-          <select
-            value={renewDays}
-            onChange={(e) => setRenewDays(Number(e.target.value))}
-            className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"
-          >
-            {EXPIRY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
+          <p className="text-[13px] text-gray-400">Selecione o novo prazo de validade a partir de hoje.</p>
+          <select value={renewDays} onChange={(e) => setRenewDays(Number(e.target.value))} className="input-field">
+            {EXPIRY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
-          <div className="flex justify-end gap-3 pt-2">
-            <button onClick={() => setRenewTarget(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">
-              Cancelar
-            </button>
-            <button
-              onClick={handleRenew}
-              disabled={renewing}
-              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              {renewing ? 'Salvando...' : 'Salvar'}
-            </button>
+          <div className="flex gap-3 pt-2">
+            <button onClick={() => setRenewTarget(null)} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleRenew} disabled={renewing} className="btn-primary flex-1">{renewing ? 'Salvando...' : 'Salvar'}</button>
           </div>
         </div>
       </Modal>
@@ -344,21 +293,13 @@ export default function AdminPage() {
       {/* Modal: Confirmar exclusão */}
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Excluir usuário">
         <div className="space-y-4">
-          <p className="text-sm text-gray-300">
-            Tem certeza que deseja excluir o usuário <span className="font-semibold text-white">{deleteTarget?.username}</span>?
-            Todos os dados (transações, categorias, metas) serão removidos permanentemente.
+          <p className="text-[13px] text-gray-300">
+            Tem certeza que deseja excluir <span className="font-semibold text-white">{deleteTarget?.username}</span>?
+            Todos os dados serão removidos permanentemente.
           </p>
-          <div className="flex justify-end gap-3 pt-2">
-            <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">
-              Cancelar
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              {deleting ? 'Excluindo...' : 'Excluir'}
-            </button>
+          <div className="flex gap-3 pt-2">
+            <button onClick={() => setDeleteTarget(null)} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleDelete} disabled={deleting} className="btn-danger flex-1">{deleting ? 'Excluindo...' : 'Excluir'}</button>
           </div>
         </div>
       </Modal>

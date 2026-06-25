@@ -136,7 +136,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto pb-20 lg:pb-0">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold text-white">Gerenciar Usuários</h1>
@@ -159,7 +159,52 @@ export default function AdminPage() {
       ) : error ? (
         <div className="text-center py-12 text-red-400">{error}</div>
       ) : (
-        <div className="card p-0 overflow-x-auto">
+        <>
+        {/* Mobile card view */}
+        <div className="space-y-2 sm:hidden">
+          {users.map((u) => {
+            const status = getExpiryStatus(u.expires_at, u.is_admin, u.approved);
+            return (
+              <div key={u.id} className="card">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {u.username}
+                      {u.is_admin && <span className="ml-2 text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded">admin</span>}
+                    </p>
+                    {u.name && <p className="text-[11px] text-gray-500">{u.name}</p>}
+                  </div>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${status.color}`}>{status.label}</span>
+                </div>
+                <div className="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                  <span>Criado: {formatDate(u.created_at)}</span>
+                  {!u.is_admin && (
+                    <span className="text-brand-500 font-medium">{(u.plan || 'free').toUpperCase()}</span>
+                  )}
+                </div>
+                {!u.is_admin && (
+                  <div className="flex items-center gap-2">
+                    {!u.approved ? (
+                      <button onClick={() => handleApprove(u)} disabled={approvingId === u.id} className="text-xs px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors font-medium disabled:opacity-50 flex-1 cursor-pointer">
+                        {approvingId === u.id ? '...' : 'Aprovar'}
+                      </button>
+                    ) : (
+                      <button onClick={() => { setRenewTarget(u); setRenewDays(30); }} className="text-xs px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 hover:bg-brand-500/20 transition-colors font-medium flex-1 cursor-pointer">
+                        Renovar
+                      </button>
+                    )}
+                    <button onClick={() => setDeleteTarget(u)} className="text-xs px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors font-medium cursor-pointer">
+                      Excluir
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop table view */}
+        <div className="card p-0 overflow-x-auto hidden sm:block">
           <table className="w-full text-sm min-w-[640px]">
             <thead className="text-gray-500 text-xs uppercase" style={{ background: 'rgba(255,255,255,0.03)' }}>
               <tr>
@@ -243,6 +288,7 @@ export default function AdminPage() {
             <div className="text-center py-10 text-gray-400">Nenhum usuário cadastrado.</div>
           )}
         </div>
+        </>
       )}
 
       {/* Modal: Criar usuário */}

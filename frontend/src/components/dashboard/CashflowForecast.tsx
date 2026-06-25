@@ -32,18 +32,18 @@ export default function CashflowForecast({ data }: { data: MonthlySummary[] }) {
         </svg>
         <span className="text-[12px] font-semibold text-white">Projeção próximo mês</span>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <div>
           <p className="text-[10px] text-gray-500 uppercase tracking-wider">Receita média</p>
-          <p className="text-[13px] font-bold text-emerald-400">{fmt(avgIncome)}</p>
+          <p className="text-[12px] sm:text-[13px] font-bold text-emerald-400 truncate">{fmt(avgIncome)}</p>
         </div>
         <div>
           <p className="text-[10px] text-gray-500 uppercase tracking-wider">Despesa média</p>
-          <p className="text-[13px] font-bold text-red-400">{fmt(avgExpenses)}</p>
+          <p className="text-[12px] sm:text-[13px] font-bold text-red-400 truncate">{fmt(avgExpenses)}</p>
         </div>
         <div>
           <p className="text-[10px] text-gray-500 uppercase tracking-wider">Saldo projetado</p>
-          <p className="text-[13px] font-bold" style={{ color: trendColor }}>{fmt(projected)}</p>
+          <p className="text-[12px] sm:text-[13px] font-bold truncate" style={{ color: trendColor }}>{fmt(projected)}</p>
         </div>
       </div>
       <p className="text-[11px] text-gray-500 mt-2">

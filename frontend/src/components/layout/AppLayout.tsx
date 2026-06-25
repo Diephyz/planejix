@@ -12,7 +12,7 @@ export default function AppLayout() {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="lg:ml-[260px] min-h-screen flex flex-col">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-3 sm:p-4 md:p-6 pb-24 lg:pb-6 overflow-y-auto">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 pb-24 lg:pb-6">
           <Outlet />
         </main>
       </div>

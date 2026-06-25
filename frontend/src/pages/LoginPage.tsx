@@ -89,7 +89,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         <div className="text-center mb-6">
-          <img src="/logo.png" alt="Planejix" className="h-36 sm:h-48 w-auto mx-auto mb-2 dark:brightness-[1.8] dark:contrast-[1.1]" />
+          <img src="/logo.png" alt="Planejix" className="h-36 sm:h-48 w-auto mx-auto mb-2" />
           <p className="text-gray-500 text-[13px]">Controle seus gastos com facilidade</p>
         </div>
 

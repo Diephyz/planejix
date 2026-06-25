@@ -105,7 +105,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         }}
       >
         <div className="flex items-center justify-center px-6 py-5" style={{ borderBottom: '1px solid rgba(16,185,129,0.06)' }}>
-          <img src="/logo.png" alt="Planejix" className="h-28 w-auto" />
+          <img src="/logo.png" alt="Planejix" className="h-20 w-auto dark:brightness-[1.8] dark:contrast-[1.1]" />
         </div>
 
         <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">

@@ -1,4 +1,8 @@
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { paymentsAPI } from '../api/api';
+import { useToast } from '../context/ToastContext';
 
 const features = [
   { name: 'Dashboard e gráficos', free: true, pro: true, icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
@@ -46,7 +50,33 @@ function renderCell(value: boolean | string) {
 
 export default function UpgradePage() {
   const { plan, isAdmin } = useAuth();
+  const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const isPro = plan === 'pro' || isAdmin;
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const status = searchParams.get('status');
+    if (status === 'approved') {
+      toast('Pagamento aprovado! Seu plano Pro está ativo.');
+    } else if (status === 'rejected') {
+      toast('Pagamento não aprovado. Tente novamente.', 'error');
+    } else if (status === 'pending') {
+      toast('Pagamento pendente. Será ativado automaticamente ao confirmar.');
+    }
+  }, [searchParams, toast]);
+
+  const handleUpgrade = async () => {
+    setLoading(true);
+    try {
+      const res = await paymentsAPI.createPreference();
+      window.location.href = res.data.init_point;
+    } catch {
+      toast('Erro ao iniciar pagamento. Tente novamente.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 animate-fade-in pb-20 lg:pb-0">
@@ -64,11 +94,11 @@ export default function UpgradePage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Free */}
         <div
           className={`rounded-2xl p-6 transition-all duration-300 ${!isPro ? 'ring-2 ring-brand-600/50' : ''}`}
           style={{
             background: 'rgba(18,18,30,0.7)',
-            backdropFilter: 'blur(12px)',
             border: '1px solid rgba(255,255,255,0.06)',
           }}
         >
@@ -106,11 +136,11 @@ export default function UpgradePage() {
           )}
         </div>
 
+        {/* Pro */}
         <div
           className={`rounded-2xl p-6 relative overflow-hidden transition-all duration-300 ${isPro ? 'ring-2 ring-brand-600/50' : ''}`}
           style={{
             background: 'linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(5,150,105,0.06) 100%)',
-            backdropFilter: 'blur(12px)',
             border: '1px solid rgba(16,185,129,0.2)',
           }}
         >
@@ -137,7 +167,7 @@ export default function UpgradePage() {
             </div>
 
             <div className="mb-6">
-              <span className="text-3xl font-bold text-white">Pro</span>
+              <span className="text-3xl font-bold text-white">R$ 19,90</span>
               <span className="text-sm text-gray-400 ml-1">/mês</span>
             </div>
 
@@ -156,19 +186,50 @@ export default function UpgradePage() {
                 Plano atual
               </div>
             ) : (
-              <div className="text-center rounded-xl py-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p className="text-xs text-gray-400">Entre em contato com o administrador</p>
-                <p className="text-[10px] text-gray-600 mt-0.5">para fazer upgrade do seu plano</p>
-              </div>
+              <button
+                onClick={handleUpgrade}
+                disabled={loading}
+                className="w-full py-3 rounded-xl text-white font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50"
+                style={{
+                  background: 'linear-gradient(135deg, #10B981, #059669)',
+                  boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+                }}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Preparando pagamento...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Assinar Pro — R$ 19,90/mês
+                  </span>
+                )}
+              </button>
             )}
           </div>
         </div>
       </div>
 
+      {/* Payment info */}
+      {!isPro && (
+        <div className="rounded-xl p-4 text-center" style={{ background: 'rgba(18,18,30,0.5)', border: '1px solid rgba(255,255,255,0.04)' }}>
+          <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Pagamento seguro via Mercado Pago · Cancele quando quiser
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', title: 'Dados seguros', desc: 'Seus dados ficam protegidos e criptografados' },
-          { icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', title: 'Sem contrato', desc: 'Mude ou cancele seu plano quando quiser' },
+          { icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', title: 'Sem contrato', desc: 'Cancele a qualquer momento sem multa' },
           { icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', title: 'Suporte', desc: 'Atendimento prioritário para plano Pro' },
         ].map((item) => (
           <div key={item.title} className="rounded-xl p-4 text-center" style={{ background: 'rgba(18,18,30,0.5)', border: '1px solid rgba(16,185,129,0.06)' }}>

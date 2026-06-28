@@ -15,6 +15,7 @@ const budgetRoutes = require('./routes/budgets');
 const adminRoutes = require('./routes/admin');
 const notificationRoutes = require('./routes/notifications');
 const savingsRoutes = require('./routes/savings');
+const paymentRoutes = require('./routes/payments');
 const { startRecurringJob } = require('./jobs/recurringTransactions');
 const { startExpenseReminderJob } = require('./jobs/expenseReminders');
 const { startMonthlyReportJob } = require('./jobs/monthlyReport');
@@ -61,6 +62,7 @@ app.use('/api/budgets', budgetRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/savings', savingsRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

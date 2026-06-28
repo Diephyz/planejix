@@ -151,3 +151,91 @@ exports.login = (req, res) => {
   const token = signToken(user.id, user.username);
   res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, is_admin: !!user.is_admin, plan: user.plan || 'free' } });
 };
+
+exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'E-mail é obrigatório' });
+
+  const user = db.prepare('SELECT id, username, email FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+  if (!user) {
+    return res.json({ message: 'Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha.' });
+  }
+
+  const crypto = require('crypto');
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+  try { db.exec('ALTER TABLE users ADD COLUMN reset_token TEXT'); } catch {}
+  try { db.exec('ALTER TABLE users ADD COLUMN reset_token_expires TEXT'); } catch {}
+
+  db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?')
+    .run(resetToken, expires, user.id);
+
+  const { sendEmail } = require('../services/emailService');
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+  sendEmail({
+    to: user.email,
+    subject: 'Planejix — Redefinir senha',
+    html: `
+      <div style="font-family: 'IBM Plex Sans', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+        <h2 style="color: #10B981;">Redefinir sua senha</h2>
+        <p>Olá ${user.username},</p>
+        <p>Recebemos uma solicitação para redefinir sua senha. Clique no botão abaixo (válido por 1 hora):</p>
+        <a href="${resetLink}" style="display: inline-block; background: #10B981; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">Redefinir senha</a>
+        <p style="color: #888; font-size: 13px;">Se você não solicitou, ignore este e-mail.</p>
+      </div>
+    `,
+  });
+
+  res.json({ message: 'Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha.' });
+};
+
+exports.resetPassword = (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) return res.status(400).json({ error: 'Token e nova senha são obrigatórios' });
+  if (password.length < 6) return res.status(400).json({ error: 'Senha deve ter pelo menos 6 caracteres' });
+
+  const user = db.prepare('SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > ?')
+    .get(token, new Date().toISOString());
+
+  if (!user) return res.status(400).json({ error: 'Link expirado ou inválido. Solicite novamente.' });
+
+  const hash = bcrypt.hashSync(password, 12);
+  db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?')
+    .run(hash, user.id);
+
+  res.json({ message: 'Senha redefinida com sucesso!' });
+};
+
+exports.deleteAccount = (req, res) => {
+  const userId = req.user.userId;
+
+  db.prepare('DELETE FROM transactions WHERE user_id = ?').run(userId);
+  db.prepare('DELETE FROM categories WHERE user_id = ?').run(userId);
+  db.prepare('DELETE FROM budgets WHERE user_id = ?').run(userId);
+  db.prepare('DELETE FROM savings_goals WHERE user_id = ?').run(userId);
+  db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+
+  res.json({ message: 'Conta excluída com sucesso' });
+};
+
+exports.exportData = (req, res) => {
+  const userId = req.user.userId;
+
+  const user = db.prepare('SELECT username, name, email, created_at FROM users WHERE id = ?').get(userId);
+  const transactions = db.prepare('SELECT * FROM transactions WHERE user_id = ?').all(userId);
+  const categories = db.prepare('SELECT * FROM categories WHERE user_id = ?').all(userId);
+  const budgets = db.prepare('SELECT * FROM budgets WHERE user_id = ?').all(userId);
+  const savings = db.prepare('SELECT * FROM savings_goals WHERE user_id = ?').all(userId);
+
+  res.json({
+    user,
+    transactions,
+    categories,
+    budgets,
+    savings,
+    exported_at: new Date().toISOString(),
+  });
+};

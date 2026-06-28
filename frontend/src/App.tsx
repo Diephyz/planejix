@@ -15,7 +15,11 @@ import ApprovalsPage from './pages/ApprovalsPage';
 import UpgradePage from './pages/UpgradePage';
 import SavingsPage from './pages/SavingsPage';
 import ProfilePage from './pages/ProfilePage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import InstallPrompt from './components/shared/InstallPrompt';
+import CookieConsent from './components/shared/CookieConsent';
 import type { ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -29,8 +33,10 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <InstallPrompt />
+        <CookieConsent />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route
             path="/"
@@ -48,6 +54,8 @@ export default function App() {
             <Route path="savings" element={<SavingsPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="upgrade" element={<UpgradePage />} />
+            <Route path="privacy" element={<PrivacyPage />} />
+            <Route path="terms" element={<TermsPage />} />
             <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             <Route path="approvals" element={<AdminRoute><ApprovalsPage /></AdminRoute>} />
           </Route>

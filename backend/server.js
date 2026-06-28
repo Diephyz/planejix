@@ -18,6 +18,7 @@ const savingsRoutes = require('./routes/savings');
 const { startRecurringJob } = require('./jobs/recurringTransactions');
 const { startExpenseReminderJob } = require('./jobs/expenseReminders');
 const { startMonthlyReportJob } = require('./jobs/monthlyReport');
+const { startBackupJob } = require('./jobs/backup');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -71,4 +72,5 @@ app.listen(PORT, () => {
   startRecurringJob();
   startExpenseReminderJob();
   startMonthlyReportJob();
+  startBackupJob();
 });

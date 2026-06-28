@@ -179,6 +179,11 @@ export default function LoginPage() {
                 <button type="submit" className="btn-primary w-full mt-2" disabled={loading}>
                   {loading ? 'Entrando...' : 'Entrar'}
                 </button>
+                <div className="text-right mt-2">
+                  <a href="/reset-password" className="text-xs text-gray-500 hover:text-brand-500 transition-colors">
+                    Esqueceu a senha?
+                  </a>
+                </div>
               </form>
 
               <div className="mt-5 space-y-3">
@@ -279,7 +284,14 @@ export default function LoginPage() {
           )}
         </div>
       </div>
-      <p className="text-center text-xs text-gray-500 mt-6">Diephyz Corporation ©</p>
+      <div className="text-center mt-6 space-y-1">
+        <p className="text-xs text-gray-500">Diephyz Corporation ©</p>
+        <div className="flex items-center justify-center gap-3 text-[11px] text-gray-600">
+          <a href="/privacy" className="hover:text-gray-400 transition-colors">Privacidade</a>
+          <span>·</span>
+          <a href="/terms" className="hover:text-gray-400 transition-colors">Termos</a>
+        </div>
+      </div>
     </div>
   );
 }

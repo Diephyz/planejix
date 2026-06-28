@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { profileAPI, authAPI } from '../api/api';
+import Modal from '../components/shared/Modal';
 
 export default function ProfilePage() {
   const { user, plan, isPro, login: setAuthUser, token, logout } = useAuth();
@@ -10,6 +11,8 @@ export default function ProfilePage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -147,6 +150,47 @@ export default function ProfilePage() {
         )}
       </div>
 
+      {/* LGPD actions */}
+      <div className="card space-y-3">
+        <h3 className="text-sm font-semibold text-white">Seus dados (LGPD)</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const res = await authAPI.exportData();
+                const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `planejix_dados_${new Date().toISOString().split('T')[0]}.json`;
+                a.click(); URL.revokeObjectURL(url);
+                toast('Dados exportados com sucesso');
+              } catch { toast('Erro ao exportar dados', 'error'); }
+            }}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/[0.03] transition-all cursor-pointer"
+            style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Exportar meus dados
+          </button>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/[0.04] transition-all cursor-pointer"
+            style={{ border: '1px solid rgba(239,68,68,0.1)' }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Excluir minha conta
+          </button>
+        </div>
+        <p className="text-[11px] text-gray-600">
+          Conforme a LGPD, você pode exportar ou excluir todos os seus dados a qualquer momento.{' '}
+          <a href="/privacy" className="text-brand-500 underline">Política de privacidade</a>
+        </p>
+      </div>
+
       {/* Logout */}
       <button
         onClick={logout}
@@ -158,6 +202,33 @@ export default function ProfilePage() {
         </svg>
         <span className="text-sm font-medium">Sair da conta</span>
       </button>
+
+      {/* Delete account modal */}
+      <Modal open={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="Excluir conta" maxWidth="max-w-sm">
+        <div className="space-y-4">
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+            <p className="text-sm text-red-400 font-medium">Esta ação é irreversível!</p>
+            <p className="text-xs text-gray-400 mt-1">Todos os seus dados (transações, categorias, metas, economia) serão excluídos permanentemente.</p>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => setShowDeleteModal(false)} className="btn-secondary flex-1">Cancelar</button>
+            <button
+              onClick={async () => {
+                setDeleting(true);
+                try {
+                  await authAPI.deleteAccount();
+                  logout();
+                } catch { toast('Erro ao excluir conta', 'error'); }
+                setDeleting(false);
+              }}
+              disabled={deleting}
+              className="btn-danger flex-1"
+            >
+              {deleting ? 'Excluindo...' : 'Excluir tudo'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

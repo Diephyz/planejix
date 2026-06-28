@@ -9,9 +9,8 @@ function DiscardModal({ open, onClose, onDiscard }: { open: boolean; onClose: ()
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-xs rounded-2xl p-6 animate-scale-in"
-        style={{ background: 'rgba(20,20,31,0.95)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
-        <p className="text-sm text-gray-300 mb-4">Deseja descartar as alterações?</p>
+      <div className="relative w-full max-w-xs rounded-2xl p-6 animate-scale-in bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 shadow-2xl">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Deseja descartar as alterações?</p>
         <div className="flex gap-3">
           <button onClick={onClose} className="btn-secondary flex-1 text-sm">Continuar editando</button>
           <button onClick={onDiscard} className="btn-danger flex-1 text-sm">Descartar</button>

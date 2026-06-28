@@ -96,11 +96,7 @@ export default function UpgradePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Free */}
         <div
-          className={`rounded-2xl p-6 transition-all duration-300 ${!isPro ? 'ring-2 ring-brand-600/50' : ''}`}
-          style={{
-            background: 'rgba(18,18,30,0.7)',
-            border: '1px solid rgba(255,255,255,0.06)',
-          }}
+          className={`rounded-2xl p-6 transition-all duration-300 bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-white/5 ${!isPro ? 'ring-2 ring-brand-600/50' : ''}`}
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-gray-500/10 flex items-center justify-center">
@@ -124,7 +120,7 @@ export default function UpgradePage() {
               <li key={f.name} className="flex items-center gap-3">
                 {renderCell(f.free)}
                 <FeatureIcon path={f.icon} />
-                <span className="text-sm text-gray-300 flex-1">{f.name}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">{f.name}</span>
               </li>
             ))}
           </ul>
@@ -216,7 +212,7 @@ export default function UpgradePage() {
 
       {/* Payment info */}
       {!isPro && (
-        <div className="rounded-xl p-4 text-center" style={{ background: 'rgba(18,18,30,0.5)', border: '1px solid rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 text-center bg-gray-50 dark:bg-dark-800/30 border border-gray-100 dark:border-white/5">
           <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -232,7 +228,7 @@ export default function UpgradePage() {
           { icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', title: 'Sem contrato', desc: 'Cancele a qualquer momento sem multa' },
           { icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', title: 'Suporte', desc: 'Atendimento prioritário para plano Pro' },
         ].map((item) => (
-          <div key={item.title} className="rounded-xl p-4 text-center" style={{ background: 'rgba(18,18,30,0.5)', border: '1px solid rgba(16,185,129,0.06)' }}>
+          <div key={item.title} className="rounded-xl p-4 text-center bg-gray-50 dark:bg-dark-800/30 border border-gray-100 dark:border-white/5">
             <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-brand-600/10 flex items-center justify-center">
               <svg className="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />

@@ -214,9 +214,9 @@ export default function LoginPage() {
 
               <div className="mt-5 space-y-3">
                 <div className="relative flex items-center gap-3">
-                  <div className="flex-1 h-px" style={{ background: 'rgba(16,185,129,0.1)' }} />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-emerald-900/30" />
                   <span className="text-xs text-gray-500">ou continue com</span>
-                  <div className="flex-1 h-px" style={{ background: 'rgba(16,185,129,0.1)' }} />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-emerald-900/30" />
                 </div>
                 <GoogleLoginButton />
               </div>
@@ -300,9 +300,9 @@ export default function LoginPage() {
 
               <div className="mt-4">
                 <div className="relative flex items-center gap-3 mb-3">
-                  <div className="flex-1 h-px" style={{ background: 'rgba(16,185,129,0.1)' }} />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-emerald-900/30" />
                   <span className="text-xs text-gray-500">precisa de ajuda?</span>
-                  <div className="flex-1 h-px" style={{ background: 'rgba(16,185,129,0.1)' }} />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-emerald-900/30" />
                 </div>
                 <WhatsAppButton message="Olá! Gostaria de solicitar a liberação do meu acesso no Planejix." />
               </div>

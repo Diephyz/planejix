@@ -103,7 +103,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           borderRight: '1px solid rgba(0,0,0,0.06)',
         }}
       >
-        <div className="flex items-center justify-center px-6 py-5" style={{ borderBottom: '1px solid rgba(16,185,129,0.06)' }}>
+        <div className="flex items-center justify-center px-6 py-5 border-b border-gray-100 dark:border-emerald-900/20">
           <img src="/logo.png" alt="Planejix" className="h-28 w-auto" />
         </div>
 
@@ -138,7 +138,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           })}
           {isAdmin && (
             <>
-              <div className="h-px my-3 mx-3" style={{ background: 'rgba(16,185,129,0.06)' }} />
+              <div className="h-px my-3 mx-3 bg-gray-100 dark:bg-emerald-900/20" />
               <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest px-3 mb-2">Admin</p>
               <NavLink
                 to="/approvals"
@@ -184,7 +184,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           )}
         </nav>
 
-        <div className="px-3 py-4 pb-20 lg:pb-4 space-y-1" style={{ borderTop: '1px solid rgba(16,185,129,0.06)' }}>
+        <div className="px-3 py-4 pb-20 lg:pb-4 space-y-1 border-t border-gray-100 dark:border-emerald-900/20">
           <button
             onClick={() => setIsDark((d) => !d)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-gray-300 hover:bg-white/[0.03] transition-all duration-200 w-full cursor-pointer"

@@ -38,11 +38,9 @@ export default function FloatingActionButton() {
             <button
               key={action.label}
               onClick={action.onClick}
-              className="flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-full text-white text-sm font-medium shadow-lg animate-scale-in cursor-pointer"
+              className="flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-full text-gray-900 dark:text-white text-sm font-medium shadow-lg animate-scale-in cursor-pointer bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700"
               style={{
-                background: 'rgba(18,18,30,0.95)',
-                border: `1px solid ${action.color}30`,
-                boxShadow: `0 4px 20px rgba(0,0,0,0.4)`,
+                boxShadow: `0 4px 20px rgba(0,0,0,0.1)`,
                 animationDelay: `${i * 50}ms`,
               }}
             >

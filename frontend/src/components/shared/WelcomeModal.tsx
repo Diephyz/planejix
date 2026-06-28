@@ -113,7 +113,7 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
           </button>
           <button
             onClick={handleNext}
-            className="w-full py-2.5 text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+            className="w-full py-2.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
           >
             {isLast ? 'Começar sozinho' : 'Próximo passo'}
           </button>

@@ -330,7 +330,7 @@ export default function SavingsPage() {
       {/* Modal: Confirmar exclusão */}
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Excluir Meta" maxWidth="max-w-sm">
         <div className="space-y-4">
-          <p className="text-gray-300">Tem certeza que deseja excluir a meta <span className="font-semibold text-gray-900 dark:text-white">"{deleteTarget?.name}"</span>?</p>
+          <p className="text-gray-700 dark:text-gray-300">Tem certeza que deseja excluir a meta <span className="font-semibold text-gray-900 dark:text-white">"{deleteTarget?.name}"</span>?</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteTarget(null)} className="btn-secondary flex-1">Cancelar</button>
             <button onClick={handleDelete} disabled={deleting} className="btn-danger flex-1 disabled:opacity-50">

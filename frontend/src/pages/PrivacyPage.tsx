@@ -11,10 +11,10 @@ export default function PrivacyPage() {
           <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">1. Informações que coletamos</h3>
           <p>O Planejix coleta apenas as informações necessárias para fornecer o serviço de gestão financeira pessoal:</p>
           <ul className="list-disc ml-5 mt-2 space-y-1 text-gray-400">
-            <li><strong className="text-gray-300">Dados de cadastro:</strong> nome, e-mail, nome de usuário e senha (armazenada com hash criptográfico bcrypt)</li>
-            <li><strong className="text-gray-300">Dados financeiros:</strong> transações, categorias, metas e orçamentos que você registra voluntariamente</li>
-            <li><strong className="text-gray-300">Dados de autenticação:</strong> tokens JWT para manter sua sessão ativa</li>
-            <li><strong className="text-gray-300">Google OAuth:</strong> se optar por login com Google, recebemos apenas seu nome, e-mail e foto de perfil</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Dados de cadastro:</strong> nome, e-mail, nome de usuário e senha (armazenada com hash criptográfico bcrypt)</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Dados financeiros:</strong> transações, categorias, metas e orçamentos que você registra voluntariamente</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Dados de autenticação:</strong> tokens JWT para manter sua sessão ativa</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Google OAuth:</strong> se optar por login com Google, recebemos apenas seu nome, e-mail e foto de perfil</li>
           </ul>
         </section>
 
@@ -44,11 +44,11 @@ export default function PrivacyPage() {
           <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">4. Seus direitos (LGPD)</h3>
           <p>De acordo com a Lei Geral de Proteção de Dados (Lei 13.709/2018), você tem direito a:</p>
           <ul className="list-disc ml-5 mt-2 space-y-1 text-gray-400">
-            <li><strong className="text-gray-300">Acesso:</strong> solicitar uma cópia de todos os seus dados pessoais</li>
-            <li><strong className="text-gray-300">Correção:</strong> atualizar dados incorretos ou incompletos</li>
-            <li><strong className="text-gray-300">Exclusão:</strong> solicitar a remoção completa dos seus dados</li>
-            <li><strong className="text-gray-300">Portabilidade:</strong> exportar seus dados em formato Excel</li>
-            <li><strong className="text-gray-300">Revogação:</strong> retirar o consentimento a qualquer momento</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Acesso:</strong> solicitar uma cópia de todos os seus dados pessoais</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Correção:</strong> atualizar dados incorretos ou incompletos</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Exclusão:</strong> solicitar a remoção completa dos seus dados</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Portabilidade:</strong> exportar seus dados em formato Excel</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Revogação:</strong> retirar o consentimento a qualquer momento</li>
           </ul>
           <p className="mt-2 text-gray-400">Para exercer qualquer desses direitos, entre em contato pelo e-mail abaixo.</p>
         </section>

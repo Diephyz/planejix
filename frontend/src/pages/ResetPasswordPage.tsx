@@ -103,7 +103,7 @@ export default function ResetPasswordPage() {
             </>
           )}
 
-          <button onClick={() => navigate('/login')} className="w-full mt-4 text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+          <button onClick={() => navigate('/login')} className="w-full mt-4 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer">
             Voltar ao login
           </button>
         </div>

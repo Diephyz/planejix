@@ -106,7 +106,7 @@ export default function InstallPrompt() {
                   </div>
                   <div>
                     <span className="text-[11px] text-brand-500 font-bold">Passo {s.step}</span>
-                    <p className="text-sm text-gray-300">{s.text}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{s.text}</p>
                   </div>
                 </div>
               ))}
@@ -162,7 +162,7 @@ export default function InstallPrompt() {
               </button>
               <button
                 onClick={handleDismiss}
-                className="w-full py-2 text-[13px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                className="w-full py-2 text-[13px] text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
               >
                 Agora não
               </button>

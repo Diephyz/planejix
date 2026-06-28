@@ -154,7 +154,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               className={`flex-1 py-2.5 text-[13px] font-medium transition-all ${
                 type === 'income'
                   ? 'bg-green-500/20 text-green-400'
-                  : 'text-gray-500 hover:text-gray-300'
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               Entrada
@@ -165,7 +165,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               className={`flex-1 py-2.5 text-[13px] font-medium transition-all ${
                 type === 'expense'
                   ? 'bg-red-500/20 text-red-400'
-                  : 'text-gray-500 hover:text-gray-300'
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               Saída
@@ -185,7 +185,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
                 className={`flex-1 py-2.5 text-[12px] font-medium transition-all ${
                   kind === k
                     ? 'bg-brand-500/20 text-brand-500'
-                    : 'text-gray-500 hover:text-gray-300'
+                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 {k === 'fixed' ? 'Fixo' : k === 'variable' ? 'Variável' : 'Outros'}
@@ -271,7 +271,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
               <div className={`w-10 h-5 rounded-full transition-colors ${recurring ? 'bg-brand-500' : 'bg-dark-600'}`} />
               <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${recurring ? 'translate-x-5' : ''}`} />
             </div>
-            <span className="text-sm text-gray-300 leading-tight">Recorrente</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300 leading-tight">Recorrente</span>
           </label>
 
           {/* Parcelado — só no modo criação */}
@@ -287,7 +287,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
                 <div className={`w-10 h-5 rounded-full transition-colors ${isInstallment ? 'bg-orange-500' : 'bg-dark-600'}`} />
                 <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isInstallment ? 'translate-x-5' : ''}`} />
               </div>
-              <span className="text-sm text-gray-300 leading-tight">Parcelado</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300 leading-tight">Parcelado</span>
             </label>
           )}
         </div>

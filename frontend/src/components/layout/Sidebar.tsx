@@ -122,7 +122,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${isActive
                     ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
+                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
                 style={isActive ? {
@@ -147,7 +147,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${location.pathname.startsWith('/approvals')
                     ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
+                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
                 style={location.pathname.startsWith('/approvals') ? {
@@ -167,7 +167,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${location.pathname.startsWith('/admin')
                     ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
+                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
                 style={location.pathname.startsWith('/admin') ? {
@@ -187,7 +187,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         <div className="px-3 py-4 pb-20 lg:pb-4 space-y-1 border-t border-gray-100 dark:border-emerald-900/20">
           <button
             onClick={() => setIsDark((d) => !d)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-gray-300 hover:bg-white/[0.03] transition-all duration-200 w-full cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/[0.03] transition-all duration-200 w-full cursor-pointer"
           >
             <div className="relative w-[18px] h-[18px] flex-shrink-0">
               <svg

@@ -30,8 +30,8 @@ export default function TermsPage() {
         <section>
           <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">4. Planos e pagamento</h3>
           <ul className="list-disc ml-5 space-y-1 text-gray-400">
-            <li><strong className="text-gray-300">Plano Free:</strong> funcionalidades básicas sem custo</li>
-            <li><strong className="text-gray-300">Plano Pro:</strong> funcionalidades avançadas mediante pagamento</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Plano Free:</strong> funcionalidades básicas sem custo</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Plano Pro:</strong> funcionalidades avançadas mediante pagamento</li>
             <li>Preços podem ser alterados com aviso prévio de 30 dias</li>
             <li>O cancelamento pode ser feito a qualquer momento</li>
           </ul>

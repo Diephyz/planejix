@@ -80,9 +80,9 @@ export default function LandingPage() {
             ))}
             <span className="ml-1 text-gray-500">5.0</span>
           </div>
-          <span className="text-gray-300">|</span>
+          <span className="text-gray-700 dark:text-gray-300">|</span>
           <span>Seguro com criptografia</span>
-          <span className="text-gray-300">|</span>
+          <span className="text-gray-700 dark:text-gray-300">|</span>
           <span>Cancele quando quiser</span>
         </div>
       </section>

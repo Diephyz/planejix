@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   if (active && payload && payload.length) {
     return (
       <div className="glass-tooltip">
-        <p className="text-gray-300 font-medium mb-1.5 text-[13px]">{label}</p>
+        <p className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 text-[13px]">{label}</p>
         {payload.map((p) => (
           <p key={p.name} className="text-[12px]" style={{ color: p.color }}>
             {p.name}: {formatCurrency(p.value)}

@@ -117,7 +117,7 @@ export default function LoginPage() {
               className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
                 tab === 'login'
                   ? 'text-brand-500 border-brand-600'
-                  : 'text-gray-500 border-transparent hover:text-gray-300'
+                  : 'text-gray-500 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               Entrar
@@ -127,7 +127,7 @@ export default function LoginPage() {
               className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
                 tab === 'register'
                   ? 'text-brand-500 border-brand-600'
-                  : 'text-gray-500 border-transparent hover:text-gray-300'
+                  : 'text-gray-500 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               Criar conta

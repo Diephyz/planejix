@@ -276,7 +276,7 @@ export default function BudgetsPage() {
                   className={`flex-1 py-2.5 text-[13px] font-medium transition-all ${
                     formData.period === p
                       ? 'bg-brand-600/20 text-brand-500'
-                      : 'text-gray-500 hover:text-gray-300'
+                      : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
                   {p === 'monthly' ? 'Mensal' : 'Anual'}
@@ -299,7 +299,7 @@ export default function BudgetsPage() {
       {/* Delete confirmation */}
       <Modal open={deleteId !== null} onClose={() => setDeleteId(null)} title="Excluir Meta" maxWidth="max-w-sm">
         <div className="space-y-4">
-          <p className="text-gray-300">Tem certeza que deseja excluir esta meta?</p>
+          <p className="text-gray-700 dark:text-gray-300">Tem certeza que deseja excluir esta meta?</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteId(null)} className="btn-secondary flex-1">Cancelar</button>
             <button onClick={handleDelete} className="btn-danger flex-1">Excluir</button>

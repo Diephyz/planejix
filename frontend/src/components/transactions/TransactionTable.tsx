@@ -156,7 +156,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
                   {t.category_name ? (
                     <span className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: t.category_color || '#6b7280' }} />
-                      <span className="text-gray-300">{t.category_name}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{t.category_name}</span>
                     </span>
                   ) : (
                     <span className="text-gray-500">—</span>
@@ -203,7 +203,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
 
       <Modal open={confirmId !== null} onClose={() => setConfirmId(null)} title="Excluir Transação" maxWidth="max-w-sm">
         <div className="space-y-4">
-          <p className="text-gray-300">Tem certeza que deseja excluir esta transação?</p>
+          <p className="text-gray-700 dark:text-gray-300">Tem certeza que deseja excluir esta transação?</p>
           <div className="flex gap-3">
             <button onClick={() => setConfirmId(null)} className="btn-secondary flex-1">Cancelar</button>
             <button onClick={handleDelete} className="btn-danger flex-1">Excluir</button>

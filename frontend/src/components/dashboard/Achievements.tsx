@@ -145,7 +145,7 @@ export default function Achievements({
       {achievements.length > 4 && (
         <button
           onClick={() => setShowAll(v => !v)}
-          className="w-full mt-3 text-[12px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+          className="w-full mt-3 text-[12px] text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
         >
           {showAll ? 'Ver menos' : `Ver todas (${achievements.length})`}
         </button>

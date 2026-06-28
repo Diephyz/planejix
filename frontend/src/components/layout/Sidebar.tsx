@@ -95,12 +95,12 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         className={`
           fixed top-0 left-0 h-full w-[260px] z-40
           flex flex-col transition-transform duration-300
+          bg-white dark:bg-dark-950
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
         `}
         style={{
-          background: 'linear-gradient(180deg, #0A0A12 0%, #080810 100%)',
-          borderRight: '1px solid rgba(16,185,129,0.06)',
+          borderRight: '1px solid rgba(0,0,0,0.06)',
         }}
       >
         <div className="flex items-center justify-center px-6 py-5" style={{ borderBottom: '1px solid rgba(16,185,129,0.06)' }}>

@@ -10,6 +10,7 @@ import SmartInsights from '../components/dashboard/SmartInsights';
 import Achievements from '../components/dashboard/Achievements';
 import CashflowForecast from '../components/dashboard/CashflowForecast';
 import AccumulatedBalance from '../components/dashboard/AccumulatedBalance';
+import MonthlyReport from '../components/dashboard/MonthlyReport';
 import { useAuth } from '../context/AuthContext';
 import { generateMonthlyReport } from '../utils/generatePdf';
 import WelcomeModal from '../components/shared/WelcomeModal';
@@ -351,11 +352,14 @@ export default function DashboardPage() {
         <EnhancedRecentTransactions transactions={recent} />
       </div>
 
-      {/* Row 3: Cashflow Forecast + Achievements */}
+      {/* Row 3: Monthly Report + Cashflow Forecast */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <MonthlyReport summary={summary} month={month} year={year} />
         <CashflowForecast data={summary.monthly} />
-        <Achievements summary={summary} transactions={recent} budgets={allBudgets} />
       </div>
+
+      {/* Row 4: Achievements */}
+      <Achievements summary={summary} transactions={recent} budgets={allBudgets} />
 
       {/* Row 4: Bar chart */}
       <MonthlyBarChart data={summary.monthly} />

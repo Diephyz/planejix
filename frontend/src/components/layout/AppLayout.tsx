@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import BottomNav from './BottomNav';
+import FinanceAssistant from '../dashboard/FinanceAssistant';
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function AppLayout() {
         </main>
       </div>
       <BottomNav />
+      <FinanceAssistant />
     </div>
   );
 }

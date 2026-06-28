@@ -34,10 +34,9 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden flex items-center justify-around h-16"
+      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden flex items-center justify-around h-16 bg-white dark:bg-dark-950"
       style={{
-        background: '#0A0A12',
-        borderTop: '1px solid rgba(16,185,129,0.08)',
+        borderTop: '1px solid rgba(0,0,0,0.06)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >

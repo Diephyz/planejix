@@ -16,7 +16,7 @@
 
   body {
     @apply bg-gray-100 text-gray-900 dark:bg-dark-950 dark:text-white;
-    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -41,13 +41,19 @@
 @layer components {
   .card {
     @apply rounded-2xl p-5 transition-all duration-300;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  :is(.dark) .card {
     background: rgba(18, 18, 30, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.06);
   }
   .card:hover {
-    border-color: rgba(16, 185, 129, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  :is(.dark) .card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
 
   .btn-primary {
@@ -66,13 +72,22 @@
 
   .btn-secondary {
     @apply font-medium px-4 py-2 rounded-xl transition-all duration-200 cursor-pointer;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #374151;
+  }
+  :is(.dark) .btn-secondary {
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.8);
   }
   .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #111;
+  }
+  :is(.dark) .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(16, 185, 129, 0.2);
     color: #fff;
   }
   .btn-secondary:active {
@@ -96,14 +111,22 @@
   .input-field {
     @apply rounded-xl px-3.5 py-2.5 w-full text-[13px]
     focus:outline-none transition-all duration-200
-    placeholder:text-gray-500;
+    placeholder:text-gray-400;
+    background: #f9fafb;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #111;
+  }
+  :is(.dark) .input-field {
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.08);
     color: #fff;
   }
   .input-field:focus {
     border-color: rgba(16, 185, 129, 0.5);
     box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    background: #fff;
+  }
+  :is(.dark) .input-field:focus {
     background: rgba(255, 255, 255, 0.06);
   }
 
@@ -120,7 +143,7 @@
   }
 
   .label {
-    @apply text-[13px] font-medium text-gray-400 mb-1.5 block;
+    @apply text-[13px] font-medium text-gray-600 dark:text-gray-400 mb-1.5 block;
   }
 
   .glass-card {
@@ -130,21 +153,29 @@
   }
 
   .glass-tooltip {
-    background: rgba(10, 10, 18, 0.92) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(16, 185, 129, 0.15) !important;
+    background: #fff !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
     border-radius: 12px !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
     padding: 10px 14px !important;
+  }
+  :is(.dark) .glass-tooltip {
+    background: rgba(10, 10, 18, 0.95) !important;
+    border-color: rgba(16, 185, 129, 0.15) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
   }
 
   .spinner {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2.5px solid rgba(255, 255, 255, 0.08);
+    border: 2.5px solid rgba(0, 0, 0, 0.08);
     border-top-color: #10B981;
     animation: spin 0.7s linear infinite;
+  }
+  :is(.dark) .spinner {
+    border-color: rgba(255, 255, 255, 0.08);
+    border-top-color: #10B981;
   }
 
   .modal-scroll::-webkit-scrollbar { width: 4px; }

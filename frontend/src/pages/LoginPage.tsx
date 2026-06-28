@@ -99,19 +99,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A0A12 0%, #0E1A14 40%, #0A0A12 100%)' }}>
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-15 blur-3xl pointer-events-none animate-float-orb" style={{ background: 'radial-gradient(circle, #10B981, transparent 70%)' }} />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-12 blur-3xl pointer-events-none animate-float-orb-reverse" style={{ background: 'radial-gradient(circle, #059669, transparent 70%)' }} />
-      <div className="absolute top-[30%] right-[15%] w-[250px] h-[250px] rounded-full opacity-8 blur-3xl pointer-events-none animate-float-orb" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)', animationDelay: '-3s' }} />
+    <div className="min-h-dvh flex flex-col items-center justify-center p-4 relative overflow-hidden bg-gray-50 dark:bg-dark-950">
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-15 blur-3xl pointer-events-none animate-float-orb hidden dark:block" style={{ background: 'radial-gradient(circle, #10B981, transparent 70%)' }} />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-12 blur-3xl pointer-events-none animate-float-orb-reverse hidden dark:block" style={{ background: 'radial-gradient(circle, #059669, transparent 70%)' }} />
+      <div className="absolute top-[30%] right-[15%] w-[250px] h-[250px] rounded-full opacity-8 blur-3xl pointer-events-none animate-float-orb hidden dark:block" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)', animationDelay: '-3s' }} />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         <div className="text-center mb-6">
           <img src="/logo.png" alt="Planejix" className="h-36 sm:h-48 w-auto mx-auto mb-2" />
-          <p className="text-gray-500 text-[13px]">Controle seus gastos com facilidade</p>
+          <p className="text-gray-400 dark:text-gray-500 text-[13px]">Controle seus gastos com facilidade</p>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-2xl shadow-black/40" style={{ background: 'rgba(12,12,20,0.85)', backdropFilter: 'blur(24px)', border: '1px solid rgba(16,185,129,0.1)' }}>
-          <div className="flex border-b mb-5 -mx-6 px-6" style={{ borderColor: 'rgba(16,185,129,0.1)' }}>
+        <div className="rounded-2xl p-6 shadow-xl shadow-black/5 dark:shadow-black/40 bg-white dark:bg-[rgba(12,12,20,0.85)]" style={{ border: '1px solid rgba(16,185,129,0.1)' }}>
+          <div className="flex border-b mb-5 -mx-6 px-6 border-gray-200 dark:border-[rgba(16,185,129,0.1)]">
             <button
               onClick={() => switchTab('login')}
               className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 cursor-pointer ${

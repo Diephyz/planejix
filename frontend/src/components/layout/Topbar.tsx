@@ -22,10 +22,9 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <header
-      className="h-16 flex items-center px-5 gap-4 sticky top-0 z-10"
+      className="h-16 flex items-center px-5 gap-4 sticky top-0 z-10 bg-white dark:bg-dark-950"
       style={{
-        background: '#0A0A12',
-        borderBottom: '1px solid rgba(16,185,129,0.06)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
       }}
     >
       <button
@@ -36,7 +35,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <h1 className="text-base font-semibold text-white">{title}</h1>
+      <h1 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h1>
       <div className="ml-auto flex items-center gap-3">
         <NotificationBell />
         <span className="text-[11px] text-gray-600 hidden sm:block font-medium">Diephyz Corporation ©</span>

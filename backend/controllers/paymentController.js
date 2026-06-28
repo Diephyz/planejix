@@ -95,6 +95,10 @@ exports.webhook = async (req, res) => {
 
 exports.status = (req, res) => {
   const userId = req.user.userId;
+
+  try { db.exec('ALTER TABLE users ADD COLUMN mp_payment_id TEXT'); } catch {}
+  try { db.exec('ALTER TABLE users ADD COLUMN plan_started_at TEXT'); } catch {}
+
   const user = db.prepare('SELECT plan, mp_payment_id, plan_started_at FROM users WHERE id = ?').get(userId);
 
   res.json({

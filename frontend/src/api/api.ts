@@ -51,6 +51,13 @@ export const transactionsAPI = {
     api.get<Transaction[]>('/transactions', { params: filters }),
   getSummary: (year: number, month: number) =>
     api.get('/transactions/summary', { params: { year, month } }),
+  getAccumulated: () =>
+    api.get<{
+      totalIncome: number;
+      totalExpenses: number;
+      totalBalance: number;
+      history: { year: number; month: number; income: number; expenses: number; balance: number; accumulated: number }[];
+    }>('/transactions/accumulated'),
   getByCategory: (year: number, month?: number) =>
     api.get<{ name: string; color: string; value: number }[]>('/transactions/by-category', { params: { year, month } }),
   create: (data: Partial<Transaction>) =>

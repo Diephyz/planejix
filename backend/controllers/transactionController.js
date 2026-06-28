@@ -162,6 +162,52 @@ exports.getSummary = (req, res) => {
   });
 };
 
+exports.getAccumulatedBalance = (req, res) => {
+  const { userId } = req.user;
+
+  const totalRow = db.prepare(`
+    SELECT
+      SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS totalIncome,
+      SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS totalExpenses
+    FROM transactions WHERE user_id = ?
+  `).get(userId);
+
+  const totalBalance = (totalRow?.totalIncome ?? 0) - (totalRow?.totalExpenses ?? 0);
+
+  const monthlyRows = db.prepare(`
+    SELECT
+      strftime('%Y', date) AS year,
+      CAST(strftime('%m', date) AS INTEGER) AS month,
+      SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS income,
+      SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS expenses
+    FROM transactions
+    WHERE user_id = ?
+    GROUP BY year, month
+    ORDER BY year, month
+  `).all(userId);
+
+  let accumulated = 0;
+  const history = monthlyRows.map(r => {
+    const balance = r.income - r.expenses;
+    accumulated += balance;
+    return {
+      year: Number(r.year),
+      month: r.month,
+      income: r.income,
+      expenses: r.expenses,
+      balance,
+      accumulated,
+    };
+  });
+
+  res.json({
+    totalIncome: totalRow?.totalIncome ?? 0,
+    totalExpenses: totalRow?.totalExpenses ?? 0,
+    totalBalance,
+    history,
+  });
+};
+
 exports.getByCategory = (req, res) => {
   const { userId } = req.user;
   const { year, month } = req.query;

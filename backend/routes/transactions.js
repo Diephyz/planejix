@@ -7,6 +7,7 @@ const transactionController = require('../controllers/transactionController');
 router.use(auth);
 
 router.get('/summary', transactionController.getSummary);
+router.get('/accumulated', transactionController.getAccumulatedBalance);
 router.get('/by-category', transactionController.getByCategory);
 router.get('/', transactionController.getAll);
 router.post('/', validateTransaction, transactionController.create);

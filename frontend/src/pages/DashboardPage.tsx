@@ -9,6 +9,7 @@ import SparklineKpi, { extractSparkData } from '../components/dashboard/Sparklin
 import SmartInsights from '../components/dashboard/SmartInsights';
 import Achievements from '../components/dashboard/Achievements';
 import CashflowForecast from '../components/dashboard/CashflowForecast';
+import AccumulatedBalance from '../components/dashboard/AccumulatedBalance';
 import { useAuth } from '../context/AuthContext';
 import { generateMonthlyReport } from '../utils/generatePdf';
 import WelcomeModal from '../components/shared/WelcomeModal';
@@ -264,6 +265,9 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Accumulated Balance - bank style */}
+      <AccumulatedBalance />
 
       {/* Smart Insights */}
       <SmartInsights summary={summary} budgetAlerts={budgetAlerts} />

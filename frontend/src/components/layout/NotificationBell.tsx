@@ -42,7 +42,7 @@ export default function NotificationBell() {
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.05] transition-all"
+        className="relative p-2 rounded-xl text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-all"
         title="Notificações"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,16 +57,10 @@ export default function NotificationBell() {
 
       {open && (
         <div
-          className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl z-50 overflow-hidden animate-scale-in"
-          style={{
-            background: 'rgba(14,14,24,0.97)',
-            backdropFilter: 'blur(24px)',
-            border: '1px solid rgba(16,185,129,0.1)',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-          }}
+          className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl z-50 overflow-hidden animate-scale-in bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 shadow-xl"
         >
-          <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-sm font-semibold text-white">Notificações</p>
+          <div className="px-4 py-3 border-b border-gray-100 dark:border-dark-700">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">Notificações</p>
             <p className="text-xs text-gray-500 mt-0.5">Contas próximas do vencimento</p>
           </div>
 
@@ -79,14 +73,14 @@ export default function NotificationBell() {
               notifications.map((n) => {
                 const isToday = n.type === 'due_today';
                 return (
-                  <div key={n.id} className="px-4 py-3 flex items-start gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div key={n.id} className="px-4 py-3 flex items-start gap-3 border-b border-gray-50 dark:border-dark-700 last:border-0">
                     <span
                       className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${
                         isToday ? 'bg-red-500' : 'bg-yellow-500'
                       }`}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-medium text-white truncate">{n.description}</p>
+                      <p className="text-[13px] font-medium text-gray-900 dark:text-white truncate">{n.description}</p>
                       <p className="text-[11px] text-gray-500 mt-0.5">
                         {fmt(n.amount)} · vence em {fmtDate(n.date)}
                       </p>

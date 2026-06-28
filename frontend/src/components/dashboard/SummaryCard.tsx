@@ -22,7 +22,7 @@ const colorMap = {
   indigo: {
     bg: 'bg-brand-500/10',
     icon: 'text-brand-500',
-    value: 'text-white',
+    value: 'text-gray-900 dark:text-white',
     border: 'border-brand-500/20',
   },
   yellow: {

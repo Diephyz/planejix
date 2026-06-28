@@ -44,7 +44,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-5 sm:space-y-6 pb-20 lg:pb-0">
       <div>
-        <h2 className="text-xl font-bold text-white">Meu Perfil</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Meu Perfil</h2>
         <p className="text-sm text-gray-400 mt-0.5">Gerencie suas informações pessoais</p>
       </div>
 
@@ -53,12 +53,12 @@ export default function ProfilePage() {
         {user?.avatar_url ? (
           <img src={user.avatar_url} alt="avatar" className="w-20 h-20 rounded-2xl object-cover flex-shrink-0 ring-2 ring-brand-600/30" />
         ) : (
-          <div className="w-20 h-20 bg-brand-700 rounded-2xl flex items-center justify-center text-2xl font-bold text-white flex-shrink-0 ring-2 ring-brand-600/30">
+          <div className="w-20 h-20 bg-brand-700 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-900 dark:text-white flex-shrink-0 ring-2 ring-brand-600/30">
             {initials}
           </div>
         )}
         <div>
-          <h3 className="text-lg font-bold text-white">{displayName}</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{displayName}</h3>
           <p className="text-sm text-gray-400">@{user?.username}</p>
           <div className="mt-2 flex items-center gap-2">
             <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full ${
@@ -77,7 +77,7 @@ export default function ProfilePage() {
 
       {/* Edit form */}
       <div className="card space-y-5">
-        <h3 className="text-sm font-semibold text-white">Informações pessoais</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Informações pessoais</h3>
 
         <div>
           <label className="label">Nome</label>
@@ -126,7 +126,7 @@ export default function ProfilePage() {
 
       {/* Plan details */}
       <div className="card space-y-4">
-        <h3 className="text-sm font-semibold text-white">Seu plano</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Seu plano</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { label: 'Transações/mês', value: isPro ? 'Ilimitado' : '50' },
@@ -136,7 +136,7 @@ export default function ProfilePage() {
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between px-3 py-2 rounded-lg bg-dark-700/50">
               <span className="text-xs text-gray-400">{item.label}</span>
-              <span className={`text-xs font-semibold ${item.value === 'Não' ? 'text-gray-500' : 'text-white'}`}>{item.value}</span>
+              <span className={`text-xs font-semibold ${item.value === 'Não' ? 'text-gray-500' : 'text-gray-900 dark:text-white'}`}>{item.value}</span>
             </div>
           ))}
         </div>
@@ -152,7 +152,7 @@ export default function ProfilePage() {
 
       {/* LGPD actions */}
       <div className="card space-y-3">
-        <h3 className="text-sm font-semibold text-white">Seus dados (LGPD)</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Seus dados (LGPD)</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <button
             onClick={async () => {
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                 toast('Dados exportados com sucesso');
               } catch { toast('Erro ao exportar dados', 'error'); }
             }}
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/[0.03] transition-all cursor-pointer"
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm text-gray-300 hover:text-gray-900 dark:text-white hover:bg-white/[0.03] transition-all cursor-pointer"
             style={{ border: '1px solid rgba(255,255,255,0.06)' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

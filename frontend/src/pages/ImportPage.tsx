@@ -152,17 +152,17 @@ export default function ImportPage() {
   return (
     <div className="space-y-5 pb-20 lg:pb-0">
       <div>
-        <h2 className="text-xl font-bold text-white">Importar do Excel</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Importar do Excel</h2>
         <p className="text-sm text-gray-400 mt-0.5">Importe transações a partir de um arquivo .xlsx ou .csv</p>
       </div>
 
       {/* Template info */}
       <div className="card">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <h3 className="text-sm font-semibold text-white">Formato esperado das colunas</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Formato esperado das colunas</h3>
           <button
             onClick={downloadTemplate}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-gray-900 dark:text-white text-xs font-medium transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -233,7 +233,7 @@ export default function ImportPage() {
         <div className="card">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-white">Pré-visualização</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Pré-visualização</h3>
               <p className="text-xs text-gray-400 mt-0.5">
                 {validCount} válida(s)
                 {invalidCount > 0 && <span className="text-red-400 ml-2">{invalidCount} com erro</span>}

@@ -73,12 +73,7 @@ export default function SparklineKpi({
 
   return (
     <div
-      className="rounded-2xl p-4 transition-all duration-300 hover:translate-y-[-2px] min-w-0"
-      style={{
-        background: 'rgba(18,18,30,0.7)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
-      }}
+      className="rounded-2xl p-4 transition-all duration-300 hover:translate-y-[-2px] min-w-0 bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-white/5"
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">

@@ -121,7 +121,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${isActive
-                    ? 'text-white'
+                    ? 'text-gray-900 dark:text-white'
                     : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
@@ -146,7 +146,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${location.pathname.startsWith('/approvals')
-                    ? 'text-white'
+                    ? 'text-gray-900 dark:text-white'
                     : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
@@ -166,7 +166,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer
                   ${location.pathname.startsWith('/admin')
-                    ? 'text-white'
+                    ? 'text-gray-900 dark:text-white'
                     : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                   }
                 `}
@@ -216,7 +216,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               <img src={user.avatar_url} alt="avatar" className="w-9 h-9 rounded-xl object-cover flex-shrink-0 ring-1 ring-brand-600/30" />
             ) : (
               <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-gray-900 dark:text-white flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}
               >
                 {initials}
@@ -224,7 +224,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             )}
             <div className="min-w-0 flex-1">
               {user?.name && (
-                <p className="text-[13px] font-medium text-white truncate">{user.name}</p>
+                <p className="text-[13px] font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
               )}
               <p className={`text-gray-500 truncate ${user?.name ? 'text-[11px]' : 'text-[13px]'}`}>
                 @{user?.username}

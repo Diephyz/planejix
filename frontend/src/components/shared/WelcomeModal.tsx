@@ -96,7 +96,7 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
         </p>
 
         {/* Title & description */}
-        <h2 className="text-xl font-bold text-white mb-2">{step.title}</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{step.title}</h2>
         <p className="text-sm text-gray-400 leading-relaxed mb-6 max-w-xs mx-auto">{step.description}</p>
 
         {/* Actions */}

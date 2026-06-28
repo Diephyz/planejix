@@ -54,7 +54,7 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
   if (items.length === 0) {
     return (
       <div className="card h-full flex flex-col">
-        <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
           <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
@@ -68,7 +68,7 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
   }
   return (
     <div className="card h-full flex flex-col">
-      <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
         <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
@@ -88,10 +88,10 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
             >
               <div className={`w-1.5 h-8 rounded-full flex-shrink-0 ${isToday ? 'bg-red-500' : 'bg-amber-500'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium text-white truncate">{n.description}</p>
+                <p className="text-[13px] font-medium text-gray-900 dark:text-white truncate">{n.description}</p>
                 <p className="text-[11px] text-gray-500">{fmtDate(n.date)} {isToday ? '· Vence hoje!' : '· Em 3 dias'}</p>
               </div>
-              <span className="text-[13px] font-bold text-white flex-shrink-0">{fmt(n.amount)}</span>
+              <span className="text-[13px] font-bold text-gray-900 dark:text-white flex-shrink-0">{fmt(n.amount)}</span>
             </div>
           );
         })}
@@ -134,7 +134,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
   if (transactions.length === 0) {
     return (
       <div className="card">
-        <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
           <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
@@ -146,7 +146,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
   }
   return (
     <div className="card">
-      <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
         <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
@@ -168,7 +168,7 @@ function EnhancedRecentTransactions({ transactions }: { transactions: Transactio
                       </svg>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-medium text-white truncate">{t.description}</p>
+                      <p className="text-[13px] font-medium text-gray-900 dark:text-white truncate">{t.description}</p>
                       <p className="text-[11px] text-gray-500 truncate">{t.category_name || 'Sem categoria'}</p>
                     </div>
                     <span className={`text-[13px] font-bold flex-shrink-0 ${t.type === 'income' ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
 
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white">Visão Geral</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Visão Geral</h2>
           <p className="text-[13px] text-gray-500 mt-0.5">{monthNames[month - 1]} de {year}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -296,7 +296,7 @@ export default function DashboardPage() {
           label="Saldo"
           value={summary.annual.balance}
           icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-          color="#6366f1" textClass={summary.annual.balance >= 0 ? 'text-white' : 'text-red-400'}
+          color="#6366f1" textClass={summary.annual.balance >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-400'}
           sparkData={balanceSparkData}
           previousValue={summary.previousMonth?.balance}
         />

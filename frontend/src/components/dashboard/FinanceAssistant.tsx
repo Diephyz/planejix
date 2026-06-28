@@ -126,7 +126,7 @@ export default function FinanceAssistant() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-30 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg cursor-pointer transition-all hover:scale-105"
+        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-30 w-12 h-12 rounded-full flex items-center justify-center text-gray-900 dark:text-white shadow-lg cursor-pointer transition-all hover:scale-105"
         style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 20px rgba(16,185,129,0.4)' }}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,12 +141,12 @@ export default function FinanceAssistant() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3" style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
         <div className="flex items-center gap-2">
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
-          <span className="text-sm font-semibold text-white">Assistente financeiro</span>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">Assistente financeiro</span>
         </div>
-        <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white cursor-pointer">
+        <button onClick={() => setOpen(false)} className="text-gray-900 dark:text-white/70 hover:text-gray-900 dark:text-white cursor-pointer">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -160,7 +160,7 @@ export default function FinanceAssistant() {
             <div
               className={`max-w-[85%] px-3 py-2 rounded-xl text-[13px] leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-emerald-500 text-white rounded-br-sm'
+                  ? 'bg-emerald-500 text-gray-900 dark:text-white rounded-br-sm'
                   : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded-bl-sm'
               }`}
             >
@@ -207,12 +207,12 @@ export default function FinanceAssistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Pergunte sobre suas finanças..."
-            className="flex-1 text-[13px] px-3 py-2 rounded-lg bg-gray-50 dark:bg-dark-700 border border-gray-200 dark:border-dark-600 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400"
+            className="flex-1 text-[13px] px-3 py-2 rounded-lg bg-gray-50 dark:bg-dark-700 border border-gray-200 dark:border-dark-600 text-gray-900 dark:text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-white disabled:opacity-30 cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-900 dark:text-white disabled:opacity-30 cursor-pointer"
             style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

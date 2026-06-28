@@ -115,7 +115,7 @@ export default function SavingsPage() {
     <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white">Metas de Economia</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Metas de Economia</h2>
           <p className="text-sm text-gray-400 mt-0.5">Defina objetivos e acompanhe seu progresso</p>
         </div>
         <button
@@ -172,7 +172,7 @@ export default function SavingsPage() {
                 {/* Header: actions */}
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-base font-bold text-white">{g.name}</h3>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">{g.name}</h3>
                     {g.deadline && (
                       <p className={`text-xs mt-0.5 ${overdue ? 'text-red-400' : completed ? 'text-green-400' : 'text-gray-500'}`}>
                         {overdue ? `Vencida há ${Math.abs(days!)} dias` : completed ? 'Concluída!' : `${days} dias restantes`}
@@ -207,14 +207,14 @@ export default function SavingsPage() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-lg font-bold text-white">{Math.min(pct, 100).toFixed(0)}%</span>
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">{Math.min(pct, 100).toFixed(0)}%</span>
                     </div>
                   </div>
 
                   <div className="flex-1 min-w-0 space-y-2">
                     <div>
                       <p className="text-xs text-gray-500">Acumulado</p>
-                      <p className="text-base font-bold text-white">{fmt(g.current_amount)}</p>
+                      <p className="text-base font-bold text-gray-900 dark:text-white">{fmt(g.current_amount)}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Objetivo</p>
@@ -222,7 +222,7 @@ export default function SavingsPage() {
                     </div>
                     {!completed && (
                       <p className="text-xs text-gray-500">
-                        Falta <span className="text-white font-medium">{fmt(g.target_amount - g.current_amount)}</span>
+                        Falta <span className="text-gray-900 dark:text-white font-medium">{fmt(g.target_amount - g.current_amount)}</span>
                       </p>
                     )}
                   </div>
@@ -265,7 +265,7 @@ export default function SavingsPage() {
               type="text"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
+              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
               placeholder="Ex: Viagem, Reserva de emergência..."
             />
           </div>
@@ -277,7 +277,7 @@ export default function SavingsPage() {
               min="0.01"
               value={form.target_amount}
               onChange={(e) => setForm((f) => ({ ...f, target_amount: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
+              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
               placeholder="5000.00"
             />
           </div>
@@ -287,15 +287,15 @@ export default function SavingsPage() {
               type="date"
               value={form.deadline}
               onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))}
-              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-600"
+              className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-brand-600"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button onClick={() => setFormOpen(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">Cancelar</button>
+            <button onClick={() => setFormOpen(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-900 dark:text-white transition-colors">Cancelar</button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-brand-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-brand-700 hover:bg-emerald-800 disabled:opacity-50 text-gray-900 dark:text-white text-sm font-medium rounded-lg transition-colors"
             >
               {saving ? 'Salvando...' : editingGoal ? 'Salvar' : 'Criar Meta'}
             </button>
@@ -315,7 +315,7 @@ export default function SavingsPage() {
             min="0.01"
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value)}
-            className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
+            className="w-full bg-dark-700 border border-dark-500 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-brand-600"
             placeholder="Valor do depósito"
           />
           <div className="flex gap-3">
@@ -330,7 +330,7 @@ export default function SavingsPage() {
       {/* Modal: Confirmar exclusão */}
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Excluir Meta" maxWidth="max-w-sm">
         <div className="space-y-4">
-          <p className="text-gray-300">Tem certeza que deseja excluir a meta <span className="font-semibold text-white">"{deleteTarget?.name}"</span>?</p>
+          <p className="text-gray-300">Tem certeza que deseja excluir a meta <span className="font-semibold text-gray-900 dark:text-white">"{deleteTarget?.name}"</span>?</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteTarget(null)} className="btn-secondary flex-1">Cancelar</button>
             <button onClick={handleDelete} disabled={deleting} className="btn-danger flex-1 disabled:opacity-50">

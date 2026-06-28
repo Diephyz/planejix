@@ -11,7 +11,7 @@ function UserAvatar({ name, username }: { name: string | null; username: string 
   const display = name || username;
   const initials = display.charAt(0).toUpperCase();
   return (
-    <div className="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+    <div className="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-gray-900 dark:text-white font-bold text-sm flex-shrink-0">
       {initials}
     </div>
   );
@@ -66,7 +66,7 @@ export default function ApprovalsPage() {
   return (
     <div className="p-4 sm:p-6 max-w-3xl mx-auto pb-20 lg:pb-0">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Aprovações</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Aprovações</h1>
         <p className="text-sm text-gray-500 mt-1">
           Cadastros aguardando liberação de acesso
         </p>
@@ -103,7 +103,7 @@ export default function ApprovalsPage() {
                       <div className="flex items-center gap-3">
                         <UserAvatar name={u.name} username={u.username} />
                         <div>
-                          <p className="font-medium text-white">{u.username}</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{u.username}</p>
                           {u.name && <p className="text-xs text-gray-500">{u.name}</p>}
                           {u.email && <p className="text-xs text-gray-500">{u.email}</p>}
                         </div>
@@ -157,7 +157,7 @@ export default function ApprovalsPage() {
                 <div className="flex items-start gap-3 mb-4">
                   <UserAvatar name={u.name} username={u.username} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-white">{u.username}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{u.username}</p>
                     {u.name && <p className="text-sm text-gray-500 truncate">{u.name}</p>}
                     {u.email && <p className="text-xs text-gray-500 truncate">{u.email}</p>}
                     <p className="text-xs text-gray-400 mt-1">Cadastrado em {formatDate(u.created_at)}</p>
@@ -205,20 +205,20 @@ export default function ApprovalsPage() {
         <div className="space-y-4">
           <p className="text-sm text-gray-300">
             Tem certeza que deseja recusar o cadastro de{' '}
-            <span className="font-semibold text-white">{rejectTarget?.username}</span>?
+            <span className="font-semibold text-gray-900 dark:text-white">{rejectTarget?.username}</span>?
             O usuário será removido e precisará se cadastrar novamente.
           </p>
           <div className="flex justify-end gap-3 pt-2">
             <button
               onClick={() => setRejectTarget(null)}
-              className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm text-gray-400 hover:text-gray-900 dark:text-white transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleReject}
               disabled={rejecting}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-gray-900 dark:text-white text-sm font-medium rounded-lg transition-colors"
             >
               {rejecting ? 'Recusando...' : 'Recusar'}
             </button>

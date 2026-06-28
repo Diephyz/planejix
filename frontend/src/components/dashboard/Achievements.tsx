@@ -107,7 +107,7 @@ export default function Achievements({
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
           <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
           </svg>
@@ -136,7 +136,7 @@ export default function Achievements({
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="text-[12px] font-medium text-white truncate">{a.title}</p>
+              <p className="text-[12px] font-medium text-gray-900 dark:text-white truncate">{a.title}</p>
               <p className="text-[10px] text-gray-500 truncate">{a.description}</p>
             </div>
           </div>

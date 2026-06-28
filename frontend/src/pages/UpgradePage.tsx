@@ -87,7 +87,7 @@ export default function UpgradePage() {
           </svg>
           {isPro ? 'Plano Pro ativo' : 'Compare os planos'}
         </div>
-        <h2 className="text-2xl font-bold text-white">Planos Planejix</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Planos Planejix</h2>
         <p className="text-sm text-gray-400 max-w-md mx-auto">
           Escolha o plano ideal para suas necessidades financeiras
         </p>
@@ -109,13 +109,13 @@ export default function UpgradePage() {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Free</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Free</h3>
               <p className="text-xs text-gray-500">Para quem está começando</p>
             </div>
           </div>
 
           <div className="mb-6">
-            <span className="text-3xl font-bold text-white">R$ 0</span>
+            <span className="text-3xl font-bold text-gray-900 dark:text-white">R$ 0</span>
             <span className="text-sm text-gray-500 ml-1">/mês</span>
           </div>
 
@@ -149,7 +149,7 @@ export default function UpgradePage() {
 
           <div className="relative">
             <div className="absolute -top-1 -right-1">
-              <span className="text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg shadow-brand-600/25" style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
+              <span className="text-gray-900 dark:text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg shadow-brand-600/25" style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
                 POPULAR
               </span>
             </div>
@@ -161,13 +161,13 @@ export default function UpgradePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Pro</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pro</h3>
                 <p className="text-xs text-gray-400">Controle total</p>
               </div>
             </div>
 
             <div className="mb-6">
-              <span className="text-3xl font-bold text-white">R$ 4,90</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">R$ 4,90</span>
               <span className="text-sm text-gray-400 ml-1">/mês</span>
             </div>
 
@@ -189,7 +189,7 @@ export default function UpgradePage() {
               <button
                 onClick={handleUpgrade}
                 disabled={loading}
-                className="w-full py-3 rounded-xl text-white font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50"
+                className="w-full py-3 rounded-xl text-gray-900 dark:text-white font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50"
                 style={{
                   background: 'linear-gradient(135deg, #10B981, #059669)',
                   boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
@@ -238,7 +238,7 @@ export default function UpgradePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
               </svg>
             </div>
-            <p className="text-sm font-semibold text-white">{item.title}</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.title}</p>
             <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
           </div>
         ))}

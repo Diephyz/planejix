@@ -53,7 +53,7 @@ export default function CategoryDonutChart({ year, month }: { year: number; mont
 
   return (
     <div className="card h-full flex flex-col">
-      <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
@@ -95,7 +95,7 @@ export default function CategoryDonutChart({ year, month }: { year: number; mont
                 <div key={cat.name} className="flex items-center gap-2 text-[12px]">
                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
                   <span className="text-gray-400 truncate flex-1">{cat.name}</span>
-                  <span className="text-white font-medium">{pct.toFixed(0)}%</span>
+                  <span className="text-gray-900 dark:text-white font-medium">{pct.toFixed(0)}%</span>
                 </div>
               );
             })}

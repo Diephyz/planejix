@@ -125,7 +125,7 @@ export default function AccumulatedBalance() {
         </div>
         <button
           onClick={toggleVisible}
-          className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer"
+          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:text-white hover:bg-white/[0.05] transition-all cursor-pointer"
         >
           {visible ? (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,11 +143,11 @@ export default function AccumulatedBalance() {
       {/* Balance */}
       <div className="flex items-baseline gap-3 mb-1">
         {visible ? (
-          <span className={`text-2xl sm:text-3xl font-bold ${data.totalBalance >= 0 ? 'text-white' : 'text-red-400'}`}>
+          <span className={`text-2xl sm:text-3xl font-bold ${data.totalBalance >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-400'}`}>
             {fmt(animatedBalance)}
           </span>
         ) : (
-          <span className="text-2xl sm:text-3xl font-bold text-white">
+          <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             R$ ••••••
           </span>
         )}
@@ -203,7 +203,7 @@ export default function AccumulatedBalance() {
                   }}
                 >
                   <div className="min-w-[60px]">
-                    <p className="text-[12px] font-medium text-white">{MONTH_NAMES[h.month - 1]} {h.year}</p>
+                    <p className="text-[12px] font-medium text-gray-900 dark:text-white">{MONTH_NAMES[h.month - 1]} {h.year}</p>
                   </div>
                   <div className="flex-1 flex items-center gap-3 text-[11px]">
                     <span className="text-emerald-400">+{fmt(h.income)}</span>

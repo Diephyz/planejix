@@ -139,7 +139,7 @@ export default function AdminPage() {
     <div className="max-w-5xl mx-auto pb-20 lg:pb-0">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-xl font-bold text-white">Gerenciar Usuários</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Gerenciar Usuários</h1>
           <p className="text-sm text-gray-500 mt-1">Crie e gerencie contas com prazo de validade</p>
         </div>
         <button
@@ -168,7 +168,7 @@ export default function AdminPage() {
               <div key={u.id} className="card">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {u.username}
                       {u.is_admin && <span className="ml-2 text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded">admin</span>}
                     </p>
@@ -222,7 +222,7 @@ export default function AdminPage() {
                 const status = getExpiryStatus(u.expires_at, u.is_admin, u.approved);
                 return (
                   <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-900 dark:text-white">
                       {u.username}
                       {u.is_admin ? (
                         <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded">admin</span>
@@ -340,7 +340,7 @@ export default function AdminPage() {
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Excluir usuário">
         <div className="space-y-4">
           <p className="text-[13px] text-gray-300">
-            Tem certeza que deseja excluir <span className="font-semibold text-white">{deleteTarget?.username}</span>?
+            Tem certeza que deseja excluir <span className="font-semibold text-gray-900 dark:text-white">{deleteTarget?.username}</span>?
             Todos os dados serão removidos permanentemente.
           </p>
           <div className="flex gap-3 pt-2">

@@ -31,7 +31,7 @@ export default function LandingPage() {
           </button>
           <button
             onClick={() => navigate('/login')}
-            className="text-sm font-medium px-4 py-2 rounded-xl text-white cursor-pointer"
+            className="text-sm font-medium px-4 py-2 rounded-xl text-gray-900 dark:text-white cursor-pointer"
             style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}
           >
             Começar grátis
@@ -57,7 +57,7 @@ export default function LandingPage() {
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <button
             onClick={() => navigate('/login')}
-            className="text-base font-medium px-8 py-3.5 rounded-xl text-white cursor-pointer transition-all hover:shadow-lg"
+            className="text-base font-medium px-8 py-3.5 rounded-xl text-gray-900 dark:text-white cursor-pointer transition-all hover:shadow-lg"
             style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}
           >
             Começar agora — R$ 4,90/mês
@@ -143,7 +143,7 @@ export default function LandingPage() {
             </ul>
             <button
               onClick={() => navigate('/login')}
-              className="w-full text-base font-medium py-3.5 rounded-xl text-white cursor-pointer transition-all hover:shadow-lg"
+              className="w-full text-base font-medium py-3.5 rounded-xl text-gray-900 dark:text-white cursor-pointer transition-all hover:shadow-lg"
               style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}
             >
               Começar agora
@@ -160,7 +160,7 @@ export default function LandingPage() {
           <p className="text-gray-500 mb-8">Junte-se a milhares de pessoas que já organizam seus gastos com o Planejix.</p>
           <button
             onClick={() => navigate('/login')}
-            className="text-base font-medium px-8 py-3.5 rounded-xl text-white cursor-pointer transition-all hover:shadow-lg"
+            className="text-base font-medium px-8 py-3.5 rounded-xl text-gray-900 dark:text-white cursor-pointer transition-all hover:shadow-lg"
             style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}
           >
             Criar minha conta

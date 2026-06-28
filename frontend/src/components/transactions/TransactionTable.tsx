@@ -25,8 +25,7 @@ function MobileCard({ t, onEdit, onDelete }: { t: Transaction; onEdit: () => voi
   const catColor = t.category_color || (t.type === 'income' ? '#10B981' : '#6366f1');
   return (
     <div
-      className="p-3.5 rounded-xl transition-colors"
-      style={{ background: 'rgba(18,18,30,0.7)', border: '1px solid rgba(255,255,255,0.05)' }}
+      className="p-3.5 rounded-xl transition-colors bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-white/5"
     >
       <div className="flex items-start gap-3">
         <div className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5" style={{ background: `${catColor}15` }}>
@@ -35,7 +34,7 @@ function MobileCard({ t, onEdit, onDelete }: { t: Transaction; onEdit: () => voi
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-[13px] font-medium text-white truncate">{t.description}</p>
+              <p className="text-[13px] font-medium text-gray-900 dark:text-white truncate">{t.description}</p>
               <p className="text-[11px] text-gray-500 mt-0.5">
                 {formatDate(t.date)}
                 {t.category_name && <span> · {t.category_name}</span>}
@@ -136,7 +135,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
             {transactions.map((t) => (
               <tr key={t.id} className="last:border-0 hover:bg-white/[0.02] transition-colors">
                 <td className="px-5 py-3 text-gray-400 whitespace-nowrap">{formatDate(t.date)}</td>
-                <td className="px-5 py-3 font-medium text-white max-w-[200px]">
+                <td className="px-5 py-3 font-medium text-gray-900 dark:text-white max-w-[200px]">
                   <span className="truncate block">{t.description}</span>
                   {t.notes && <span className="text-xs text-gray-500 truncate block">{t.notes}</span>}
                   {!!t.recurring && (

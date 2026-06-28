@@ -39,7 +39,7 @@ export default function RecentTransactions({ transactions }: { transactions: Tra
                 style={{ backgroundColor: t.category_color || (t.type === 'income' ? '#22c55e' : '#ef4444') }}
               />
               <div>
-                <p className="text-sm font-medium text-white truncate max-w-[180px]">{t.description}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[180px]">{t.description}</p>
                 <p className="text-xs text-gray-500">
                   {formatDate(t.date)}
                   {t.category_name && ` · ${t.category_name}`}

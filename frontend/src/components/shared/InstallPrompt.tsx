@@ -85,18 +85,13 @@ export default function InstallPrompt() {
     <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={handleDismiss} />
       <div
-        className="relative w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 animate-scale-in"
-        style={{
-          background: '#0E0E18',
-          border: '1px solid rgba(16,185,129,0.15)',
-          boxShadow: '0 -8px 48px rgba(0,0,0,0.5)',
-        }}
+        className="relative w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 animate-scale-in bg-white dark:bg-dark-900 border border-gray-200 dark:border-emerald-900/30 shadow-2xl"
       >
         <div className="w-10 h-1 rounded-full bg-gray-600 mx-auto mb-4 sm:hidden" />
 
         {showIOSGuide ? (
           <div className="text-center">
-            <h3 className="text-base font-bold text-white mb-3">Como instalar no iPhone</h3>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3">Como instalar no iPhone</h3>
             <div className="space-y-3 text-left">
               {[
                 { step: '1', text: 'Toque no botão de compartilhar', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' },
@@ -116,7 +111,7 @@ export default function InstallPrompt() {
                 </div>
               ))}
             </div>
-            <button onClick={handleDismiss} className="w-full mt-4 py-2.5 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
+            <button onClick={handleDismiss} className="w-full mt-4 py-2.5 text-sm text-gray-400 hover:text-gray-900 dark:text-white transition-colors cursor-pointer">
               Entendi
             </button>
           </div>
@@ -131,7 +126,7 @@ export default function InstallPrompt() {
               </svg>
             </div>
 
-            <h3 className="text-base font-bold text-white mb-1">Baixe o app Planejix!</h3>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Baixe o app Planejix!</h3>
             <p className="text-[13px] text-gray-400 leading-relaxed mb-4">
               Instale na sua tela inicial para acesso rápido, notificações e uso offline.
             </p>
@@ -157,7 +152,7 @@ export default function InstallPrompt() {
               <button
                 onClick={handleInstall}
                 disabled={installing}
-                className="w-full py-3 rounded-xl text-white font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50"
+                className="w-full py-3 rounded-xl text-gray-900 dark:text-white font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50"
                 style={{
                   background: 'linear-gradient(135deg, #10B981, #059669)',
                   boxShadow: '0 4px 14px rgba(16,185,129,0.3)',

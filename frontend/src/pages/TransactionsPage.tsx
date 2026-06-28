@@ -95,7 +95,7 @@ export default function TransactionsPage() {
     <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white dark:text-white">Transações</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white dark:text-gray-900 dark:text-white">Transações</h2>
           <p className="text-sm text-gray-400 mt-0.5">{transactions.length} registro{transactions.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ export default function TransactionsPage() {
         </div>
         <div className="rounded-xl p-3 sm:p-4" style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.12)' }}>
           <p className="text-[10px] sm:text-xs text-gray-400">Saldo</p>
-          <p className={`text-xs sm:text-sm font-bold mt-0.5 ${totalIncome - totalExpense >= 0 ? 'text-white' : 'text-red-400'}`}>
+          <p className={`text-xs sm:text-sm font-bold mt-0.5 ${totalIncome - totalExpense >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-400'}`}>
             {fmt(totalIncome - totalExpense)}
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function TransactionsPage() {
                 <button
                   onClick={() => setPage(1)}
                   disabled={page === 1}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 dark:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
@@ -165,7 +165,7 @@ export default function TransactionsPage() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 dark:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -189,8 +189,8 @@ export default function TransactionsPage() {
                         onClick={() => setPage(p as number)}
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                           page === p
-                            ? 'bg-brand-600 text-white'
-                            : 'text-gray-400 hover:text-white hover:bg-dark-700'
+                            ? 'bg-brand-600 text-gray-900 dark:text-white'
+                            : 'text-gray-400 hover:text-gray-900 dark:text-white hover:bg-dark-700'
                         }`}
                       >
                         {p}
@@ -200,7 +200,7 @@ export default function TransactionsPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 dark:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -209,7 +209,7 @@ export default function TransactionsPage() {
                 <button
                   onClick={() => setPage(totalPages)}
                   disabled={page === totalPages}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 dark:text-white hover:bg-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />

@@ -2,13 +2,13 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 pb-20 lg:pb-0 animate-fade-in">
       <div>
-        <h2 className="text-xl font-bold text-white">Política de Privacidade</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Política de Privacidade</h2>
         <p className="text-sm text-gray-400 mt-1">Última atualização: Junho de 2026</p>
       </div>
 
       <div className="card space-y-5 text-sm text-gray-300 leading-relaxed">
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">1. Informações que coletamos</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">1. Informações que coletamos</h3>
           <p>O Planejix coleta apenas as informações necessárias para fornecer o serviço de gestão financeira pessoal:</p>
           <ul className="list-disc ml-5 mt-2 space-y-1 text-gray-400">
             <li><strong className="text-gray-300">Dados de cadastro:</strong> nome, e-mail, nome de usuário e senha (armazenada com hash criptográfico bcrypt)</li>
@@ -19,18 +19,18 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">2. Como usamos seus dados</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">2. Como usamos seus dados</h3>
           <ul className="list-disc ml-5 space-y-1 text-gray-400">
             <li>Fornecer e manter o serviço de gestão financeira</li>
             <li>Enviar lembretes de vencimento por e-mail (quando configurado)</li>
             <li>Gerar relatórios e insights sobre suas finanças</li>
             <li>Melhorar a experiência do usuário</li>
           </ul>
-          <p className="mt-2 text-gray-400">Nós <strong className="text-white">nunca</strong> vendemos, compartilhamos ou cedemos seus dados pessoais ou financeiros a terceiros.</p>
+          <p className="mt-2 text-gray-400">Nós <strong className="text-gray-900 dark:text-white">nunca</strong> vendemos, compartilhamos ou cedemos seus dados pessoais ou financeiros a terceiros.</p>
         </section>
 
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">3. Armazenamento e segurança</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">3. Armazenamento e segurança</h3>
           <ul className="list-disc ml-5 space-y-1 text-gray-400">
             <li>Senhas criptografadas com bcrypt (hash irreversível)</li>
             <li>Comunicação protegida por HTTPS/SSL</li>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">4. Seus direitos (LGPD)</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">4. Seus direitos (LGPD)</h3>
           <p>De acordo com a Lei Geral de Proteção de Dados (Lei 13.709/2018), você tem direito a:</p>
           <ul className="list-disc ml-5 mt-2 space-y-1 text-gray-400">
             <li><strong className="text-gray-300">Acesso:</strong> solicitar uma cópia de todos os seus dados pessoais</li>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">5. Cookies e armazenamento local</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">5. Cookies e armazenamento local</h3>
           <p className="text-gray-400">Utilizamos localStorage para armazenar:</p>
           <ul className="list-disc ml-5 mt-2 space-y-1 text-gray-400">
             <li>Token de autenticação (para manter o login)</li>
@@ -65,12 +65,12 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">6. Retenção de dados</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">6. Retenção de dados</h3>
           <p className="text-gray-400">Seus dados são mantidos enquanto sua conta estiver ativa. Ao solicitar exclusão, todos os dados são removidos permanentemente em até 30 dias.</p>
         </section>
 
         <section>
-          <h3 className="text-base font-semibold text-white mb-2">7. Contato</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">7. Contato</h3>
           <p className="text-gray-400">Para dúvidas sobre privacidade ou exercer seus direitos LGPD:</p>
           <p className="mt-1 text-brand-500">jeffbonis@gmail.com</p>
         </section>

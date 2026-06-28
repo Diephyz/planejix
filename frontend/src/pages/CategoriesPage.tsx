@@ -89,7 +89,7 @@ export default function CategoriesPage() {
     <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">Categorias</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Categorias</h2>
           <p className="text-sm text-gray-400 mt-0.5">{categories.length} categoria{categories.length !== 1 ? 's' : ''}</p>
         </div>
         <button onClick={openAdd} className="btn-primary flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function CategoriesPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
           </div>
-          <p className="text-white font-semibold">Nenhuma categoria</p>
+          <p className="text-gray-900 dark:text-white font-semibold">Nenhuma categoria</p>
           <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">Organize suas transações criando categorias personalizadas com cores</p>
           <button onClick={openAdd} className="btn-primary mt-5 inline-flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@ export default function CategoriesPage() {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: cat.color + '33' }}>
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: cat.color }} />
                 </div>
-                <span className="font-medium text-white truncate">{cat.name}</span>
+                <span className="font-medium text-gray-900 dark:text-white truncate">{cat.name}</span>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button
@@ -191,7 +191,7 @@ export default function CategoriesPage() {
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: color + '33' }}>
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
             </div>
-            <span className="text-sm text-white">{name || 'Prévia da categoria'}</span>
+            <span className="text-sm text-gray-900 dark:text-white">{name || 'Prévia da categoria'}</span>
           </div>
 
           {error && (
@@ -215,7 +215,7 @@ export default function CategoriesPage() {
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: deleteTarget.color + '33' }}>
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: deleteTarget.color }} />
               </div>
-              <span className="text-sm text-white">{deleteTarget.name}</span>
+              <span className="text-sm text-gray-900 dark:text-white">{deleteTarget.name}</span>
             </div>
           )}
           <p className="text-sm text-gray-300">As transações vinculadas ficarão sem categoria. Deseja continuar?</p>

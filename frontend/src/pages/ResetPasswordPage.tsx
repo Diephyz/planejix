@@ -54,16 +54,16 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #0A0A12 0%, #0E1A14 40%, #0A0A12 100%)' }}>
+    <div className="min-h-dvh flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-dark-950">
       <div className="w-full max-w-sm relative z-10 animate-fade-in">
         <div className="text-center mb-6">
           <img src="/logo.png" alt="Planejix" className="h-24 w-auto mx-auto mb-2" />
         </div>
 
-        <div className="rounded-2xl p-6" style={{ background: '#0C0C14', border: '1px solid rgba(16,185,129,0.1)' }}>
+        <div className="rounded-2xl p-6 bg-white dark:bg-dark-900 border border-gray-200 dark:border-emerald-900/30 shadow-xl">
           {token ? (
             <>
-              <h2 className="text-lg font-bold text-white mb-1">Nova senha</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Nova senha</h2>
               <p className="text-sm text-gray-400 mb-5">Digite sua nova senha abaixo</p>
 
               {message && <div className="bg-green-900/30 border border-green-700 text-green-400 px-4 py-3 rounded-lg mb-4 text-sm">{message}</div>}
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
             </>
           ) : (
             <>
-              <h2 className="text-lg font-bold text-white mb-1">Esqueceu a senha?</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Esqueceu a senha?</h2>
               <p className="text-sm text-gray-400 mb-5">Informe seu e-mail para receber o link de redefinição</p>
 
               {message && <div className="bg-green-900/30 border border-green-700 text-green-400 px-4 py-3 rounded-lg mb-4 text-sm">{message}</div>}

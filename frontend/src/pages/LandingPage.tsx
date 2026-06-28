@@ -117,7 +117,7 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="px-4 sm:px-6 pt-12 sm:pt-20 pb-16 sm:pb-24 max-w-6xl mx-auto text-center">
-        <img src="/logo.png" alt="Planejix" className="h-32 sm:h-40 w-auto mx-auto mb-8" />
+        <img src="/logo-landing.png" alt="Planejix" className="h-40 sm:h-52 w-auto mx-auto mb-8" />
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium mb-6 border border-emerald-100">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />

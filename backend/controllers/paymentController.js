@@ -73,7 +73,7 @@ exports.webhook = async (req, res) => {
       if (paymentData.status === 'approved') {
         const userId = parseInt(paymentData.external_reference);
         if (userId) {
-          db.prepare('UPDATE users SET plan = ? WHERE id = ?').run('pro', userId);
+          db.prepare('UPDATE users SET plan = ?, approved = 1 WHERE id = ?').run('pro', userId);
 
           try { db.exec('ALTER TABLE users ADD COLUMN mp_payment_id TEXT'); } catch {}
           try { db.exec('ALTER TABLE users ADD COLUMN plan_started_at TEXT'); } catch {}

@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authAPI } from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import GoogleLoginButton from '../components/auth/GoogleLoginButton';
@@ -42,6 +42,19 @@ export default function LoginPage() {
   const [regLoading, setRegLoading] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [showRegPassword, setShowRegPassword] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [paymentMsg, setPaymentMsg] = useState('');
+
+  useEffect(() => {
+    const payment = searchParams.get('payment');
+    if (payment === 'approved') {
+      setPaymentMsg('Pagamento confirmado! Faça login para acessar o Planejix.');
+    } else if (payment === 'rejected') {
+      setPaymentMsg('Pagamento não aprovado. Tente novamente ou entre em contato.');
+    } else if (payment === 'pending') {
+      setPaymentMsg('Pagamento pendente. Você será liberado assim que confirmar.');
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -64,7 +77,11 @@ export default function LoginPage() {
     setRegError('');
     setRegLoading(true);
     try {
-      await authAPI.register(regUsername, regPassword, regName || undefined, regEmail || undefined);
+      const res = await authAPI.register(regUsername, regPassword, regName || undefined, regEmail || undefined);
+      if (res.data.payment_url) {
+        window.location.href = res.data.payment_url;
+        return;
+      }
       setRegSuccess(true);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
@@ -119,6 +136,15 @@ export default function LoginPage() {
 
           {tab === 'login' ? (
             <>
+              {paymentMsg && (
+                <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${
+                  paymentMsg.includes('confirmado') ? 'bg-green-900/30 border border-green-700 text-green-400' :
+                  paymentMsg.includes('pendente') ? 'bg-yellow-900/30 border border-yellow-700 text-yellow-400' :
+                  'bg-red-900/30 border border-red-700 text-red-400'
+                }`}>
+                  {paymentMsg}
+                </div>
+              )}
               {error && (
                 <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-3 rounded-lg mb-4 text-sm">
                   {error}
@@ -202,10 +228,10 @@ export default function LoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Cadastro enviado!</h3>
+              <h3 className="text-white font-semibold text-lg mb-2">Cadastro realizado!</h3>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">
                 Seu cadastro foi recebido com sucesso.<br />
-                Aguarde a aprovação do administrador para acessar o sistema.
+                Realize o pagamento para liberar seu acesso ao Planejix.
               </p>
               <div className="space-y-3">
                 <button

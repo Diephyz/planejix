@@ -20,7 +20,7 @@ function signToken(userId, username) {
   return jwt.sign({ userId, username }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
   const { username, password, name, email } = req.body;
   if (!username || !password || !name || !email) {
     return res.status(400).json({ error: 'Nome, username, e-mail e senha são obrigatórios' });
@@ -43,10 +43,53 @@ exports.register = (req, res) => {
   }
 
   const hash = bcrypt.hashSync(password, 12);
-  db.prepare('INSERT INTO users (username, password, name, email, approved) VALUES (?, ?, ?, ?, 0)')
+  const result = db.prepare('INSERT INTO users (username, password, name, email, approved) VALUES (?, ?, ?, ?, 0)')
     .run(username, hash, name || null, email || null);
 
-  res.status(201).json({ message: 'Cadastro realizado! Aguarde a aprovação do administrador para acessar o sistema.' });
+  const userId = Number(result.lastInsertRowid);
+
+  try {
+    const { MercadoPagoConfig, Preference } = require('mercadopago');
+    if (process.env.MP_ACCESS_TOKEN) {
+      const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+      const preference = new Preference(client);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3001}`;
+
+      const prefResult = await preference.create({
+        body: {
+          items: [{
+            id: 'planejix-acesso',
+            title: 'Planejix — Acesso ao App',
+            description: 'Acesso completo ao Planejix com todas as funcionalidades',
+            quantity: 1,
+            currency_id: 'BRL',
+            unit_price: parseFloat(process.env.MP_PRO_PRICE || '19.90'),
+          }],
+          payer: { name: name || username, email: email || undefined },
+          back_urls: {
+            success: `${frontendUrl}/login?payment=approved`,
+            failure: `${frontendUrl}/login?payment=rejected`,
+            pending: `${frontendUrl}/login?payment=pending`,
+          },
+          auto_return: 'approved',
+          notification_url: `${backendUrl}/api/payments/webhook`,
+          external_reference: String(userId),
+          statement_descriptor: 'PLANEJIX',
+        },
+      });
+
+      return res.status(201).json({
+        message: 'Cadastro realizado! Redirecionando para pagamento...',
+        payment_url: prefResult.init_point,
+        user_id: userId,
+      });
+    }
+  } catch (err) {
+    console.error('[Register] Erro ao criar preferência MP:', err.message);
+  }
+
+  res.status(201).json({ message: 'Cadastro realizado! Aguarde a aprovação do administrador.' });
 };
 
 exports.googleAuth = async (req, res) => {

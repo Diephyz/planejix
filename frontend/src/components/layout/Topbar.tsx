@@ -24,8 +24,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     <header
       className="h-16 flex items-center px-5 gap-4 sticky top-0 z-10"
       style={{
-        background: 'rgba(10,10,18,0.75)',
-        backdropFilter: 'blur(20px)',
+        background: '#0A0A12',
         borderBottom: '1px solid rgba(16,185,129,0.06)',
       }}
     >

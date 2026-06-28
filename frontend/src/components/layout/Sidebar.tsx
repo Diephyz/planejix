@@ -99,8 +99,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           lg:translate-x-0
         `}
         style={{
-          background: 'linear-gradient(180deg, rgba(10,10,18,0.97) 0%, rgba(8,8,14,0.99) 100%)',
-          backdropFilter: 'blur(24px)',
+          background: 'linear-gradient(180deg, #0A0A12 0%, #080810 100%)',
           borderRight: '1px solid rgba(16,185,129,0.06)',
         }}
       >

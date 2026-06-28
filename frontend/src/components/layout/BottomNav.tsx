@@ -36,8 +36,7 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-30 lg:hidden flex items-center justify-around h-16"
       style={{
-        background: 'rgba(10,10,18,0.97)',
-        backdropFilter: 'blur(20px)',
+        background: '#0A0A12',
         borderTop: '1px solid rgba(16,185,129,0.08)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}

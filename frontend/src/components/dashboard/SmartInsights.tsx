@@ -125,7 +125,7 @@ export default function SmartInsights({ summary, budgetAlerts }: { summary: Annu
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke={style.iconColor} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={insight.icon} />
             </svg>
-            <p className="text-[13px] text-gray-600 dark:text-gray-300">{insight.text}</p>
+            <p className="text-[13px] text-gray-800 dark:text-gray-300">{insight.text}</p>
           </div>
         );
       })}

@@ -86,14 +86,14 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     <>
       {open && (
         <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-20 lg:hidden"
+          className="fixed inset-0 bg-black/70 z-[35] lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
         className={`
-          fixed top-0 left-0 h-full w-[260px] z-30
+          fixed top-0 left-0 h-full w-[260px] z-40
           flex flex-col transition-transform duration-300
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
@@ -184,7 +184,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           )}
         </nav>
 
-        <div className="px-3 py-4 space-y-1" style={{ borderTop: '1px solid rgba(16,185,129,0.06)' }}>
+        <div className="px-3 py-4 pb-20 lg:pb-4 space-y-1" style={{ borderTop: '1px solid rgba(16,185,129,0.06)' }}>
           <button
             onClick={() => setIsDark((d) => !d)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-gray-300 hover:bg-white/[0.03] transition-all duration-200 w-full cursor-pointer"

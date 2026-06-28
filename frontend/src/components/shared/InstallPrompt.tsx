@@ -44,19 +44,11 @@ export default function InstallPrompt() {
       }
     }
 
-    const checkAfterLogin = () => {
-      const token = localStorage.getItem('expense_token');
-      if (token) {
-        setTimeout(() => setShow(true), 1500);
-      }
-    };
+    const timer = setTimeout(() => setShow(true), 3000);
 
-    checkAfterLogin();
-
-    window.addEventListener('storage', checkAfterLogin);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', promptHandler);
-      window.removeEventListener('storage', checkAfterLogin);
     };
   }, []);
 
@@ -91,16 +83,15 @@ export default function InstallPrompt() {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleDismiss} />
+      <div className="absolute inset-0 bg-black/60" onClick={handleDismiss} />
       <div
-        className="relative w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 animate-scale-in mb-0 sm:mb-0"
+        className="relative w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 animate-scale-in"
         style={{
-          background: 'linear-gradient(180deg, rgba(18,18,30,0.98) 0%, rgba(10,10,18,0.99) 100%)',
+          background: '#0E0E18',
           border: '1px solid rgba(16,185,129,0.15)',
           boxShadow: '0 -8px 48px rgba(0,0,0,0.5)',
         }}
       >
-        {/* Handle bar for mobile sheet feel */}
         <div className="w-10 h-1 rounded-full bg-gray-600 mx-auto mb-4 sm:hidden" />
 
         {showIOSGuide ? (
@@ -140,16 +131,16 @@ export default function InstallPrompt() {
               </svg>
             </div>
 
-            <h3 className="text-base font-bold text-white mb-1">Instalar o Planejix</h3>
+            <h3 className="text-base font-bold text-white mb-1">Baixe o app Planejix!</h3>
             <p className="text-[13px] text-gray-400 leading-relaxed mb-4">
-              Acesse direto da tela inicial, com carregamento rápido e suporte offline.
+              Instale na sua tela inicial para acesso rápido, notificações e uso offline.
             </p>
 
             <div className="flex items-center justify-center gap-5 mb-4">
               {[
                 { icon: 'M13 10V3L4 14h7v7l9-11h-7z', label: 'Rápido' },
                 { icon: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z', label: 'Tela inicial' },
-                { icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', label: 'Offline' },
+                { icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-9.33-5A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', label: 'Notificações' },
               ].map((item) => (
                 <div key={item.label} className="flex flex-col items-center gap-1">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>

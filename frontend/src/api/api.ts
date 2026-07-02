@@ -66,6 +66,8 @@ export const transactionsAPI = {
     api.put<Transaction>(`/transactions/${id}`, data),
   delete: (id: number) =>
     api.delete(`/transactions/${id}`),
+  deleteBulk: (year: number, month: number) =>
+    api.delete('/transactions/bulk', { params: { year, month } }),
 };
 
 export const budgetsAPI = {

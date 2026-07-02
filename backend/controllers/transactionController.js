@@ -366,3 +366,21 @@ exports.remove = (req, res) => {
   db.prepare('DELETE FROM transactions WHERE id = ?').run(id);
   res.json({ success: true });
 };
+
+exports.removeBulk = (req, res) => {
+  const { userId } = req.user;
+  const { year, month } = req.query;
+
+  if (!year || !month) {
+    return res.status(400).json({ error: 'Ano e mês são obrigatórios' });
+  }
+
+  const result = db.prepare(`
+    DELETE FROM transactions
+    WHERE user_id = ?
+      AND strftime('%Y', date) = ?
+      AND strftime('%m', date) = ?
+  `).run(userId, String(year), String(month).padStart(2, '0'));
+
+  res.json({ success: true, deleted: result.changes });
+};

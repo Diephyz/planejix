@@ -42,6 +42,7 @@ export default function LoginPage() {
   const [regLoading, setRegLoading] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [showRegPassword, setShowRegPassword] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [searchParams] = useSearchParams();
   const [paymentMsg, setPaymentMsg] = useState('');
 
@@ -293,7 +294,25 @@ export default function LoginPage() {
                     </button>
                   </div>
                 </div>
-                <button type="submit" className="btn-primary w-full mt-2" disabled={regLoading}>
+                {/* Aceite dos termos */}
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
+                    required
+                  />
+                  <span className="text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                    Li e aceito os{' '}
+                    <a href="/terms" target="_blank" className="text-brand-500 hover:underline font-medium">Termos de Uso</a>
+                    {' '}e a{' '}
+                    <a href="/privacy" target="_blank" className="text-brand-500 hover:underline font-medium">Política de Privacidade</a>
+                    , incluindo o tratamento de dados conforme a LGPD.
+                  </span>
+                </label>
+
+                <button type="submit" className="btn-primary w-full mt-2" disabled={regLoading || !termsAccepted}>
                   {regLoading ? 'Criando conta...' : 'Criar conta'}
                 </button>
               </form>

@@ -108,4 +108,58 @@ async function sendReportEmail({ to, name, year, month, pdfBuffer }) {
   }
 }
 
-module.exports = { sendReminderEmail, sendReportEmail, isConfigured: () => smtpConfigured || !!getTransporter() };
+async function sendWelcomeEmail({ to, name }) {
+  const t = getTransporter();
+  if (!t) {
+    console.warn('[Boas-vindas] SMTP não configurado — pulando e-mail de boas-vindas.');
+    return;
+  }
+
+  const greeting = name ? `Olá, ${name}!` : 'Olá!';
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #1f2937; line-height: 1.6; max-width: 560px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 32px 24px; border-radius: 12px 12px 0 0; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px; font-weight: 700;">Planejix</h1>
+        <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px;">Carteira Inteligente</p>
+      </div>
+      <div style="background: #f9fafb; padding: 32px 24px; border-radius: 0 0 12px 12px; border: 1px solid #e5e7eb;">
+        <p style="font-size: 16px; font-weight: 600; margin: 0 0 12px;">${greeting}</p>
+        <p style="color: #4b5563; margin: 0 0 16px;">Seja muito bem-vindo(a) ao <strong>Planejix</strong>! Estamos felizes em ter você aqui.</p>
+        <p style="color: #4b5563; margin: 0 0 24px;">Com o Planejix você pode:</p>
+        <ul style="color: #4b5563; padding-left: 20px; margin: 0 0 24px;">
+          <li style="margin-bottom: 8px;">📊 Visualizar seus gastos e receitas em gráficos claros</li>
+          <li style="margin-bottom: 8px;">🎯 Definir metas de orçamento por categoria</li>
+          <li style="margin-bottom: 8px;">💰 Acompanhar seu saldo acumulado ao longo do tempo</li>
+          <li style="margin-bottom: 8px;">🔔 Receber alertas de contas a vencer</li>
+        </ul>
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="https://planejix.vercel.app" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 15px;">
+            Acessar o Planejix →
+          </a>
+        </div>
+        <p style="color: #9ca3af; font-size: 12px; margin: 24px 0 0; text-align: center;">
+          Dúvidas? Fale conosco a qualquer momento.<br/>
+          — Equipe Planejix
+        </p>
+      </div>
+    </div>
+  `;
+
+  const text = `${greeting}\n\nSeja bem-vindo(a) ao Planejix!\n\nAcesse agora: https://planejix.vercel.app\n\n— Equipe Planejix`;
+
+  try {
+    await t.sendMail({
+      from: process.env.SMTP_FROM_EMAIL || 'Planejix <no-reply@planejix.app>',
+      to,
+      subject: `Bem-vindo(a) ao Planejix, ${name || ''}!`.trim(),
+      text,
+      html,
+    });
+    console.log(`[Boas-vindas] E-mail enviado para ${to}`);
+  } catch (err) {
+    console.error(`[Boas-vindas] Falha ao enviar e-mail para ${to}:`, err.message);
+  }
+}
+
+module.exports = { sendReminderEmail, sendReportEmail, sendWelcomeEmail, isConfigured: () => smtpConfigured || !!getTransporter() };

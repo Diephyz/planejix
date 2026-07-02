@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const db = require('../database/db');
+const { sendWelcomeEmail } = require('../services/emailService');
 
 const DEFAULT_CATEGORIES = [
   { name: 'Alimentação', color: '#f97316' },
@@ -47,6 +48,11 @@ exports.register = async (req, res) => {
     .run(username, hash, name || null, email || null);
 
   const userId = Number(result.lastInsertRowid);
+
+  // Envia e-mail de boas-vindas (não bloqueia o registro se falhar)
+  if (email) {
+    sendWelcomeEmail({ to: email, name: name || username }).catch(() => {});
+  }
 
   try {
     const { MercadoPagoConfig, Preference } = require('mercadopago');

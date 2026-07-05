@@ -34,8 +34,15 @@ const PORT = process.env.PORT || 3001;
 
 app.set('trust proxy', 1);
 
-const allowedOrigins = ['http://localhost:3000'];
-if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://planejix.com.br',
+  'https://www.planejix.com.br',
+  'https://planejix.vercel.app',
+];
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 app.use(helmet({
   contentSecurityPolicy: false,

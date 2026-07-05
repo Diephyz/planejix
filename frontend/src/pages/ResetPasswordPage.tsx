@@ -36,8 +36,8 @@ export default function ResetPasswordPage() {
       setError('As senhas não coincidem');
       return;
     }
-    if (password.length < 6) {
-      setError('Senha deve ter pelo menos 6 caracteres');
+    if (password.length < 8) {
+      setError('Senha deve ter pelo menos 8 caracteres');
       return;
     }
     setLoading(true);
@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
               <form onSubmit={handleReset} className="space-y-4">
                 <div>
                   <label className="label">Nova senha</label>
-                  <input type="password" className="input-field" placeholder="Mínimo 6 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <input type="password" className="input-field" placeholder="Mínimo 8 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <div>
                   <label className="label">Confirmar senha</label>

@@ -85,6 +85,9 @@ db.exec(`
 // Subscription plan support
 try { db.exec("ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'"); } catch {}
 
+// Session invalidation: incremented on password change, invalidating old JWTs
+try { db.exec("ALTER TABLE users ADD COLUMN token_version INTEGER NOT NULL DEFAULT 0"); } catch {}
+
 // Due-date reminder support (e-mail): flags to avoid sending the same reminder twice
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_3d_sent_at TEXT DEFAULT NULL"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_due_sent_at TEXT DEFAULT NULL"); } catch {}

@@ -307,7 +307,7 @@ export default function AdminPage() {
           </div>
           <div>
             <label className="label">Senha *</label>
-            <input type="password" value={createForm.password} onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))} className="input-field" placeholder="Mínimo 6 caracteres" />
+            <input type="password" value={createForm.password} onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))} className="input-field" placeholder="Mínimo 8 caracteres" />
           </div>
           <div>
             <label className="label">Prazo de validade</label>

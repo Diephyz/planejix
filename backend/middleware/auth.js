@@ -10,10 +10,15 @@ function authMiddleware(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = db.prepare('SELECT is_admin, expires_at, plan FROM users WHERE id = ?').get(decoded.userId);
+    const user = db.prepare('SELECT is_admin, expires_at, plan, token_version FROM users WHERE id = ?').get(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ error: 'Usuário não encontrado' });
+    }
+
+    // Sessões antigas são invalidadas quando token_version muda (ex: troca de senha)
+    if ((decoded.tv ?? 0) !== (user.token_version ?? 0)) {
+      return res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
     }
 
     if (!user.is_admin && user.expires_at && new Date(user.expires_at) < new Date()) {

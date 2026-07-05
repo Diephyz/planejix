@@ -17,8 +17,28 @@ const DEFAULT_CATEGORIES = [
   { name: 'Transporte', color: '#3b82f6' },
 ];
 
-function signToken(userId, username) {
-  return jwt.sign({ userId, username }, process.env.JWT_SECRET, { expiresIn: '7d' });
+function signToken(userId, username, tokenVersion = 0) {
+  return jwt.sign({ userId, username, tv: tokenVersion }, process.env.JWT_SECRET, { expiresIn: '7d' });
+}
+
+const WEAK_PASSWORDS = new Set([
+  '12345678', '123456789', '1234567890', 'password', 'password1', 'senha1234',
+  'qwertyui', 'qwerty123', '11111111', '00000000', 'abcd1234', 'a1b2c3d4',
+  '87654321', 'iloveyou', 'planejix', 'brasil123', 'mudar123', 'admin123',
+]);
+
+/** Retorna mensagem de erro se a senha for fraca, ou null se OK. */
+function validatePasswordStrength(password) {
+  if (!password || password.length < 8) {
+    return 'Senha deve ter pelo menos 8 caracteres';
+  }
+  if (WEAK_PASSWORDS.has(password.toLowerCase())) {
+    return 'Essa senha é muito comum. Escolha uma senha mais segura';
+  }
+  if (/^(.)\1+$/.test(password)) {
+    return 'Senha não pode ser um caractere repetido';
+  }
+  return null;
 }
 
 exports.register = async (req, res) => {
@@ -29,8 +49,9 @@ exports.register = async (req, res) => {
   if (username.length < 3) {
     return res.status(400).json({ error: 'Username deve ter pelo menos 3 caracteres' });
   }
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'Senha deve ter pelo menos 6 caracteres' });
+  const pwError = validatePasswordStrength(password);
+  if (pwError) {
+    return res.status(400).json({ error: pwError });
   }
 
   const existingUsername = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get(username);
@@ -146,7 +167,7 @@ exports.googleAuth = async (req, res) => {
       return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
     }
 
-    const token = signToken(user.id, user.username);
+    const token = signToken(user.id, user.username, user.token_version || 0);
     res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, avatar_url: user.avatar_url || picture || null, is_admin: !!user.is_admin, plan: user.plan || 'free' } });
   } catch (err) {
     console.error('Google auth error:', err.message);
@@ -197,7 +218,7 @@ exports.login = (req, res) => {
     return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
   }
 
-  const token = signToken(user.id, user.username);
+  const token = signToken(user.id, user.username, user.token_version || 0);
   res.json({ token, user: { id: user.id, username: user.username, name: user.name || null, is_admin: !!user.is_admin, plan: user.plan || 'free' } });
 };
 
@@ -244,7 +265,8 @@ exports.forgotPassword = (req, res) => {
 exports.resetPassword = (req, res) => {
   const { token, password } = req.body;
   if (!token || !password) return res.status(400).json({ error: 'Token e nova senha são obrigatórios' });
-  if (password.length < 6) return res.status(400).json({ error: 'Senha deve ter pelo menos 6 caracteres' });
+  const pwError = validatePasswordStrength(password);
+  if (pwError) return res.status(400).json({ error: pwError });
 
   const user = db.prepare('SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > ?')
     .get(token, new Date().toISOString());
@@ -252,7 +274,7 @@ exports.resetPassword = (req, res) => {
   if (!user) return res.status(400).json({ error: 'Link expirado ou inválido. Solicite novamente.' });
 
   const hash = bcrypt.hashSync(password, 12);
-  db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?')
+  db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, token_version = COALESCE(token_version, 0) + 1 WHERE id = ?')
     .run(hash, user.id);
 
   res.json({ message: 'Senha redefinida com sucesso!' });

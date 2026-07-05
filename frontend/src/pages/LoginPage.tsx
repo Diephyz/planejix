@@ -270,7 +270,7 @@ export default function LoginPage() {
                     <input
                       type={showRegPassword ? 'text' : 'password'}
                       className="input-field pr-10"
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder="Mínimo 8 caracteres"
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
                       autoComplete="new-password"

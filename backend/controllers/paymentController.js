@@ -1,5 +1,36 @@
+const crypto = require('crypto');
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const db = require('../database/db');
+
+/**
+ * Valida o header x-signature do Mercado Pago (HMAC-SHA256).
+ * Só é aplicada quando MP_WEBHOOK_SECRET está definido no .env —
+ * o secret é obtido no painel MP em Suas integrações → Webhooks.
+ * Docs: manifest = "id:{data.id};request-id:{x-request-id};ts:{ts};"
+ */
+function isValidWebhookSignature(req) {
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!secret) return true; // sem secret configurado, mantém comportamento atual
+
+  const signature = req.headers['x-signature'];
+  const requestId = req.headers['x-request-id'];
+  const dataId = req.query['data.id'] || req.body?.data?.id;
+  if (!signature || !dataId) return false;
+
+  const parts = Object.fromEntries(
+    signature.split(',').map((p) => p.trim().split('=').map((s) => s.trim()))
+  );
+  if (!parts.ts || !parts.v1) return false;
+
+  const manifest = `id:${String(dataId).toLowerCase()};request-id:${requestId};ts:${parts.ts};`;
+  const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex');
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(parts.v1));
+  } catch {
+    return false;
+  }
+}
 
 function getClient() {
   if (!process.env.MP_ACCESS_TOKEN) {
@@ -63,6 +94,11 @@ exports.createPreference = async (req, res) => {
 
 exports.webhook = async (req, res) => {
   try {
+    if (!isValidWebhookSignature(req)) {
+      console.warn('[Pagamento] Webhook com assinatura inválida — ignorado');
+      return res.sendStatus(401);
+    }
+
     const { type, data } = req.body;
 
     if (type === 'payment') {

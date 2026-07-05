@@ -21,6 +21,7 @@ import TermsPage from './pages/TermsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import InstallPrompt from './components/shared/InstallPrompt';
 import CookieConsent from './components/shared/CookieConsent';
+import { Analytics } from '@vercel/analytics/react';
 import type { ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -33,6 +34,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
       <BrowserRouter>
+        <Analytics />
         <InstallPrompt />
         <CookieConsent />
         <Routes>

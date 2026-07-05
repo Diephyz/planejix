@@ -27,7 +27,7 @@ function getUpcomingReminders({ userId, daysBefore = 3 } = {}) {
   const query = `
     SELECT t.id, t.user_id, t.description, t.amount, t.date,
            t.reminder_3d_sent_at, t.reminder_due_sent_at,
-           u.email, u.name, u.username,
+           u.email, u.name, u.username, u.plan, u.is_admin,
            CASE WHEN t.date = ? THEN 'due_today' ELSE 'due_in_3_days' END AS reminder_type
     FROM transactions t
     JOIN users u ON u.id = t.user_id

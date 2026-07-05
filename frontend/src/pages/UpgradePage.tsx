@@ -54,6 +54,20 @@ export default function UpgradePage() {
   const [searchParams] = useSearchParams();
   const isPro = plan === 'pro' || isAdmin;
   const [loading, setLoading] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+
+  const handleCancel = async () => {
+    setCanceling(true);
+    try {
+      await paymentsAPI.cancel();
+      toast('Assinatura cancelada. Você voltou para o plano Free.');
+      setTimeout(() => window.location.reload(), 1200);
+    } catch {
+      toast('Erro ao cancelar assinatura. Tente novamente.', 'error');
+      setCanceling(false);
+    }
+  };
 
   useEffect(() => {
     const status = searchParams.get('status');
@@ -178,8 +192,18 @@ export default function UpgradePage() {
             </ul>
 
             {isPro ? (
-              <div className="text-center text-xs text-brand-500 font-semibold bg-brand-600/10 rounded-xl py-2.5">
-                Plano atual
+              <div className="space-y-2">
+                <div className="text-center text-xs text-brand-500 font-semibold bg-brand-600/10 rounded-xl py-2.5">
+                  Plano atual
+                </div>
+                {plan === 'pro' && !isAdmin && (
+                  <button
+                    onClick={() => setCancelOpen(true)}
+                    className="w-full text-center text-[11px] text-gray-500 hover:text-red-500 transition-colors cursor-pointer py-1"
+                  >
+                    Cancelar assinatura
+                  </button>
+                )}
               </div>
             ) : (
               <button
@@ -239,6 +263,52 @@ export default function UpgradePage() {
           </div>
         ))}
       </div>
+
+      {/* Modal: Cancelar assinatura */}
+      {cancelOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !canceling && setCancelOpen(false)} />
+          <div className="relative w-full max-w-sm rounded-2xl p-6 animate-scale-in bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Cancelar assinatura Pro</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Sem multa ou taxas</p>
+              </div>
+            </div>
+            <p className="text-[13px] text-gray-600 dark:text-gray-300 mb-3">
+              Ao cancelar, você volta imediatamente para o plano <strong>Free</strong> e perde acesso a:
+            </p>
+            <ul className="text-[12px] text-gray-500 dark:text-gray-400 space-y-1 mb-5 pl-1">
+              <li>· Transações ilimitadas (limite volta a 50/mês)</li>
+              <li>· Metas ilimitadas (limite volta a 3)</li>
+              <li>· Relatório PDF e lembretes por e-mail</li>
+            </ul>
+            <p className="text-[12px] text-gray-500 mb-5">Seus dados e transações são preservados.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCancelOpen(false)}
+                disabled={canceling}
+                className="btn-secondary flex-1 text-sm"
+              >
+                Manter Pro
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={canceling}
+                className="flex-1 text-sm py-2.5 rounded-xl font-medium text-white transition-all disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}
+              >
+                {canceling ? 'Cancelando...' : 'Confirmar cancelamento'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

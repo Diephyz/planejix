@@ -93,6 +93,20 @@ exports.webhook = async (req, res) => {
   }
 };
 
+exports.cancel = (req, res) => {
+  const userId = req.user.userId;
+
+  const user = db.prepare('SELECT plan, is_admin FROM users WHERE id = ?').get(userId);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+  if (user.is_admin) return res.status(400).json({ error: 'Contas de administrador não possuem assinatura' });
+  if (user.plan !== 'pro') return res.status(400).json({ error: 'Você não possui uma assinatura ativa' });
+
+  db.prepare('UPDATE users SET plan = ? WHERE id = ?').run('free', userId);
+  console.log(`[Pagamento] Usuário ${userId} cancelou a assinatura Pro`);
+
+  res.json({ success: true, plan: 'free' });
+};
+
 exports.status = (req, res) => {
   const userId = req.user.userId;
 

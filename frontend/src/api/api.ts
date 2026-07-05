@@ -127,6 +127,8 @@ export const paymentsAPI = {
     api.post<{ id: string; init_point: string; sandbox_init_point: string }>('/payments/create-preference'),
   getStatus: () =>
     api.get<{ plan: string; payment_id: string | null; started_at: string | null }>('/payments/status'),
+  cancel: () =>
+    api.post<{ success: boolean; plan: string }>('/payments/cancel'),
 };
 
 export const notificationsAPI = {

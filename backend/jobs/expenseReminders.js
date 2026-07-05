@@ -13,6 +13,8 @@ async function checkAndSendReminders() {
 
   for (const r of reminders) {
     if (!r.email) continue;
+    // Lembretes por e-mail são exclusivos do plano Pro (o sino in-app continua para todos)
+    if (r.plan !== 'pro' && !r.is_admin) continue;
 
     const flagColumn = FLAG_COLUMN[r.reminder_type];
     if (r[flagColumn]) continue; // already sent for this type

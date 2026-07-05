@@ -134,7 +134,7 @@ async function sendWelcomeEmail({ to, name }) {
           <li style="margin-bottom: 8px;">🔔 Receber alertas de contas a vencer</li>
         </ul>
         <div style="text-align: center; margin: 28px 0;">
-          <a href="https://planejix.vercel.app" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 15px;">
+          <a href="https://planejix.com.br" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 15px;">
             Acessar o Planejix →
           </a>
         </div>
@@ -146,7 +146,7 @@ async function sendWelcomeEmail({ to, name }) {
     </div>
   `;
 
-  const text = `${greeting}\n\nSeja bem-vindo(a) ao Planejix!\n\nAcesse agora: https://planejix.vercel.app\n\n— Equipe Planejix`;
+  const text = `${greeting}\n\nSeja bem-vindo(a) ao Planejix!\n\nAcesse agora: https://planejix.com.br\n\n— Equipe Planejix`;
 
   try {
     await t.sendMail({

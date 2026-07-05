@@ -3,7 +3,7 @@
 **Custo total: R$ 0**
 
 ```
-planejix.vercel.app  ←  usuário
+planejix.com.br  ←  usuário
         ↓ /api/*
 api-planejix.duckdns.org  ←  Oracle Cloud VM (Node.js + SQLite)
 ```
@@ -123,7 +123,7 @@ Em **Settings → Environment Variables**, adicione:
 ### 2.4 Fazer o deploy
 Clique em **Deploy**. Em ~1 minuto o site estará em:
 ```
-https://planejix.vercel.app
+https://planejix.com.br
 ```
 
 ---
@@ -133,9 +133,9 @@ https://planejix.vercel.app
 No [Google Cloud Console](https://console.cloud.google.com):
 1. Vá em **APIs & Services → Credentials → seu OAuth Client**
 2. Em **Authorized JavaScript origins**, adicione:
-   - `https://planejix.vercel.app`
+   - `https://planejix.com.br`
 3. Em **Authorized redirect URIs**, adicione:
-   - `https://planejix.vercel.app`
+   - `https://planejix.com.br`
 4. Salve
 
 ---

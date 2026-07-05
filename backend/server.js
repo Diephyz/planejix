@@ -44,14 +44,27 @@ if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_UR
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
+// URLs de deploy/preview do projeto na Vercel (ex: frontend-abc123-diephyz-s-projects.vercel.app)
+const vercelPreviewPattern = /^https:\/\/frontend-[a-z0-9]+-diephyz-s-projects\.vercel\.app$/;
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // curl, apps nativos, webhook MP
+  if (allowedOrigins.includes(origin)) return true;
+  if (vercelPreviewPattern.test(origin)) return true;
+  return false;
+}
+
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
 }));
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) cb(null, true);
-    else cb(new Error('Not allowed by CORS'));
+    if (isAllowedOrigin(origin)) cb(null, true);
+    else {
+      console.warn(`[CORS] Origem rejeitada: ${origin}`);
+      cb(new Error('Not allowed by CORS'));
+    }
   },
   credentials: true,
 }));

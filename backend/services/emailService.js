@@ -162,4 +162,33 @@ async function sendWelcomeEmail({ to, name }) {
   }
 }
 
-module.exports = { sendReminderEmail, sendReportEmail, sendWelcomeEmail, isConfigured: () => smtpConfigured || !!getTransporter() };
+/**
+ * Generic e-mail sender used by flows like password reset.
+ * @param {Object} opts
+ * @param {string} opts.to - recipient e-mail
+ * @param {string} opts.subject - e-mail subject
+ * @param {string} opts.html - HTML body
+ * @param {string} [opts.text] - plain-text fallback
+ */
+async function sendEmail({ to, subject, html, text }) {
+  const t = getTransporter();
+  if (!t) {
+    console.warn('[E-mail] SMTP não configurado — pulando envio.');
+    return;
+  }
+
+  try {
+    await t.sendMail({
+      from: process.env.SMTP_FROM_EMAIL || 'Planejix <no-reply@planejix.app>',
+      to,
+      subject,
+      html,
+      text,
+    });
+    console.log(`[E-mail] Enviado para ${to} ("${subject}")`);
+  } catch (err) {
+    console.error(`[E-mail] Falha ao enviar para ${to}:`, err.message);
+  }
+}
+
+module.exports = { sendEmail, sendReminderEmail, sendReportEmail, sendWelcomeEmail, isConfigured: () => smtpConfigured || !!getTransporter() };

@@ -176,7 +176,7 @@ export default function TransactionsPage() {
         <TableSkeleton rows={6} />
       ) : (
         <>
-          <TransactionTable transactions={paginated} onRefresh={fetchTransactions} onEdit={handleEdit} />
+          <TransactionTable transactions={paginated} onRefresh={fetchTransactions} onEdit={handleEdit} onAdd={() => { setEditingTransaction(undefined); setFormOpen(true); }} />
 
           {/* Pagination */}
           {totalPages > 1 && (

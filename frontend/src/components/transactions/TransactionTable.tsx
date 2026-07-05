@@ -7,6 +7,7 @@ interface TableProps {
   transactions: Transaction[];
   onRefresh: () => void;
   onEdit: (transaction: Transaction) => void;
+  onAdd?: () => void;
 }
 
 const formatCurrency = (v: number) =>
@@ -74,7 +75,7 @@ function MobileCard({ t, onEdit, onDelete }: { t: Transaction; onEdit: () => voi
   );
 }
 
-export default function TransactionTable({ transactions, onRefresh, onEdit }: TableProps) {
+export default function TransactionTable({ transactions, onRefresh, onEdit, onAdd }: TableProps) {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [confirmId, setConfirmId] = useState<number | null>(null);
 
@@ -94,12 +95,22 @@ export default function TransactionTable({ transactions, onRefresh, onEdit }: Ta
 
   if (transactions.length === 0) {
     return (
-      <div className="card text-center py-12 text-gray-500">
-        <svg className="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <p>Nenhuma transação encontrada</p>
-        <p className="text-xs mt-1">Tente outros filtros ou adicione uma transação</p>
+      <div className="card text-center py-16 animate-fade-in">
+        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-brand-600/10 flex items-center justify-center">
+          <svg className="w-10 h-10 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <p className="text-gray-900 dark:text-white font-semibold">Nenhuma transação encontrada</p>
+        <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">Tente outros filtros ou registre sua primeira movimentação</p>
+        {onAdd && (
+          <button onClick={onAdd} className="btn-primary mt-5 inline-flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Nova transação
+          </button>
+        )}
       </div>
     );
   }

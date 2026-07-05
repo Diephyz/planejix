@@ -1,4 +1,12 @@
 require('dotenv').config();
+
+// Monitoramento de erros — só ativa quando SENTRY_DSN está definido
+let Sentry = null;
+if (process.env.SENTRY_DSN) {
+  Sentry = require('@sentry/node');
+  Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
+}
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -66,6 +74,7 @@ app.use('/api/payments', paymentRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  if (Sentry) Sentry.captureException(err);
   res.status(err.status || 500).json({ error: err.message || 'Erro interno do servidor' });
 });
 

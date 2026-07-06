@@ -178,7 +178,7 @@ export default function LandingPage() {
       {/* Before/After — Pain points */}
       <section className="px-4 sm:px-6 py-16 sm:py-20 max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Chega de não saber onde vai seu dinheiro</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Chega de não saber para onde vai o seu dinheiro</h2>
           <p className="text-gray-500">Veja como o Planejix resolve os problemas mais comuns</p>
         </div>
         <div className="space-y-3">

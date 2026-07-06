@@ -73,11 +73,11 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 | `/` | `DashboardPage.tsx` | 5 KPI cards (receitas, despesas, saldo, maior gasto, saúde financeira) + budget alerts chips + area chart + upcoming payments + top categories ranking + recent transactions with category icons + bar chart. Quick actions (nova transação, PDF). |
 | `/transactions` | `TransactionsPage.tsx` | Paginated (10/page) table, summary strip, export to Excel, edit + delete with modal, date-range filter toggle, responsive grid filters. |
 | `/budgets` | `BudgetsPage.tsx` | Budget goals per category with progress bars (green/yellow/red). CRUD via modal. Skeleton loading. |
-| `/savings` | `SavingsPage.tsx` | Savings goals with circular SVG progress, deposit modal, CRUD. Free plan limit (3). |
+| `/savings` | `SavingsPage.tsx` | Savings goals with circular SVG progress, deposit modal, CRUD. No plan limits (Free plan extinct). |
 | `/categories` | `CategoriesPage.tsx` | Grid cards with color swatches. CRUD with toast + delete confirmation modal. |
 | `/import` | `ImportPage.tsx` | Drag-and-drop Excel/CSV import via SheetJS (`xlsx`). Preview table with row validation before bulk create. |
 | `/profile` | `ProfilePage.tsx` | Avatar, name/email editing, plan display with feature limits. |
-| `/upgrade` | `UpgradePage.tsx` | Free vs Pro comparison with glassmorphism cards, feature icons, benefits section. |
+| `/upgrade` | `UpgradePage.tsx` | Single Pro plan card (R$ 4,90/mês, all features), subscribe via Mercado Pago Checkout Pro, cancel-subscription modal. Free plan is extinct — legacy non-pro accounts keep working; admin can still set free/pro per user in AdminPage. PDF report + e-mail reminders remain Pro-gated. |
 
 ### Component Notes
 

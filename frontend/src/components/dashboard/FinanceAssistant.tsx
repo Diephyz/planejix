@@ -74,7 +74,7 @@ const FAQ: { test: (q: string) => boolean; answer: string }[] = [
   },
   {
     test: (q) => /(como|onde|posso).*(criar|definir|adicionar|configurar|fazer).*(meta|objetivo|economia|poupanca)/.test(q) || /o que e (uma )?(caixinha|reserva de emergencia)/.test(q),
-    answer: 'Para metas de economia: acesse Economias no menu, clique em "Nova meta", defina o objetivo (ex: viagem, reserva de emergência), o valor alvo e o prazo. Depois registre depósitos e acompanhe o progresso no círculo. No plano Free você pode ter até 3 metas.',
+    answer: 'Para metas de economia: acesse Economias no menu, clique em "Nova meta", defina o objetivo (ex: viagem, reserva de emergência), o valor alvo e o prazo. Depois registre depósitos e acompanhe o progresso no círculo.',
   },
   {
     test: (q) => /excel|planilha|exportar|importar|csv|xlsx/.test(q),
@@ -86,11 +86,11 @@ const FAQ: { test: (q: string) => boolean; answer: string }[] = [
   },
   {
     test: (q) => /plano|preco|quanto custa|valor da assinatura|\bpro\b|premium|upgrade|assinar/.test(q) && !/cancelar/.test(q),
-    answer: 'O Planejix tem 2 planos: Free (grátis — 50 transações/mês, 3 metas de economia, dashboard completo) e Pro (R$ 4,90/mês — transações e metas ilimitadas, relatório PDF e lembretes por e-mail). Para assinar, acesse a página Planos no menu. Pagamento seguro via Mercado Pago, cancele quando quiser.',
+    answer: 'O Planejix Pro custa apenas R$ 4,90/mês e inclui tudo: transações e metas ilimitadas, dashboard completo com gráficos, relatório PDF mensal, lembretes de vencimento por e-mail e suporte prioritário. Para assinar, acesse a página Planos no menu. Pagamento seguro via Mercado Pago — sem fidelidade, cancele quando quiser.',
   },
   {
     test: (q) => /cancelar.*(assinatura|plano|pro)|como cancel/.test(q),
-    answer: 'Para cancelar a assinatura Pro: vá em Planos no menu e clique em "Cancelar assinatura" abaixo do card Pro. Sem multa, sem burocracia — você volta ao plano Free na hora e seus dados são preservados.',
+    answer: 'Para cancelar a assinatura: vá em Planos no menu e clique em "Cancelar assinatura". Sem multa, sem burocracia — o cancelamento é imediato e seus dados ficam preservados caso queira voltar.',
   },
   {
     test: (q) => /senha|esqueci|recuperar conta|redefinir/.test(q),

@@ -120,24 +120,30 @@ export default function Achievements({
           <div
             key={a.id}
             className={`flex items-center gap-2.5 p-2.5 rounded-xl transition-all duration-300 ${
-              a.unlocked ? '' : 'opacity-30 grayscale'
+              a.unlocked ? '' : 'grayscale bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/5'
             } ${justUnlocked === a.id ? 'ring-2 ring-amber-400/50 animate-scale-in' : ''}`}
-            style={{
-              background: a.unlocked ? `${a.color}08` : 'rgba(255,255,255,0.02)',
-              border: `1px solid ${a.unlocked ? `${a.color}20` : 'rgba(255,255,255,0.03)'}`,
-            }}
+            style={a.unlocked ? {
+              background: `${a.color}08`,
+              border: `1px solid ${a.color}20`,
+            } : undefined}
           >
             <div
-              className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center"
-              style={{ background: `${a.color}15` }}
+              className={`w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center ${a.unlocked ? '' : 'bg-gray-200 dark:bg-white/[0.06]'}`}
+              style={a.unlocked ? { background: `${a.color}15` } : undefined}
             >
-              <svg className="w-4 h-4" fill="none" stroke={a.color} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={a.icon} />
-              </svg>
+              {a.unlocked ? (
+                <svg className="w-4 h-4" fill="none" stroke={a.color} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={a.icon} />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              )}
             </div>
             <div className="min-w-0">
-              <p className="text-[12px] font-medium text-gray-900 dark:text-white truncate">{a.title}</p>
-              <p className="text-[10px] text-gray-500 truncate">{a.description}</p>
+              <p className={`text-[12px] font-medium truncate ${a.unlocked ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>{a.title}</p>
+              <p className={`text-[10px] truncate ${a.unlocked ? 'text-gray-500' : 'text-gray-400 dark:text-gray-500'}`}>{a.description}</p>
             </div>
           </div>
         ))}

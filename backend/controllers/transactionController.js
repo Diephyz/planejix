@@ -246,17 +246,8 @@ function addMonths(dateStr, months) {
 }
 
 exports.create = (req, res) => {
-  const { userId, plan, isAdmin } = req.user;
+  const { userId } = req.user;
   const { type, kind, description, amount, date, category_id, notes, installment_total } = req.body;
-
-  if (plan === 'free' && !isAdmin) {
-    const now = new Date();
-    const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const count = db.prepare("SELECT COUNT(*) as c FROM transactions WHERE user_id = ? AND strftime('%Y-%m', date) = ?").get(userId, ym);
-    if (count.c >= 50) {
-      return res.status(403).json({ error: 'Limite de 50 transações/mês do plano gratuito atingido', requiredPlan: 'pro' });
-    }
-  }
 
   if (!type || !description || !amount || !date) {
     return res.status(400).json({ error: 'Tipo, descrição, valor e data são obrigatórios' });

@@ -64,11 +64,11 @@ export default function ProfilePage() {
             <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full ${
               isPro ? 'bg-brand-600/20 text-brand-500' : 'bg-gray-500/20 text-gray-400'
             }`}>
-              {isPro ? 'PRO' : 'FREE'}
+              {isPro ? 'PRO' : 'SEM ASSINATURA'}
             </span>
             {!isPro && (
               <a href="/upgrade" className="text-xs text-brand-500 hover:text-brand-500 underline">
-                Fazer upgrade
+                Assinar
               </a>
             )}
           </div>
@@ -126,11 +126,11 @@ export default function ProfilePage() {
 
       {/* Plan details */}
       <div className="card space-y-4">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Seu plano</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Sua assinatura</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { label: 'Transações/mês', value: isPro ? 'Ilimitado' : '50' },
-            { label: 'Metas de economia', value: isPro ? 'Ilimitado' : '3' },
+            { label: 'Transações', value: 'Ilimitado' },
+            { label: 'Metas de economia', value: 'Ilimitado' },
             { label: 'Relatório PDF', value: isPro ? 'Sim' : 'Não' },
             { label: 'Lembretes por e-mail', value: isPro ? 'Sim' : 'Não' },
           ].map((item) => (
@@ -145,7 +145,7 @@ export default function ProfilePage() {
             href="/upgrade"
             className="block w-full text-center text-sm px-4 py-2.5 rounded-xl bg-brand-600/10 text-brand-500 hover:bg-brand-600/20 transition-colors font-medium"
           >
-            Ver planos e fazer upgrade
+            Assinar o Planejix Pro — R$ 4,90/mês
           </a>
         )}
       </div>

@@ -4,49 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import { paymentsAPI } from '../api/api';
 import { useToast } from '../context/ToastContext';
 
-const features = [
-  { name: 'Dashboard e gráficos', free: true, pro: true, icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-  { name: 'Transações por mês', free: '50', pro: 'Ilimitado', icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4' },
-  { name: 'Metas de economia', free: '3', pro: 'Ilimitado', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-  { name: 'Relatório PDF', free: false, pro: true, icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { name: 'Lembretes por e-mail', free: false, pro: true, icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-  { name: 'Categorias e orçamento', free: true, pro: true, icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z' },
-  { name: 'Importar/exportar Excel', free: true, pro: true, icon: 'M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+const FEATURES = [
+  { name: 'Dashboard completo com gráficos e insights', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+  { name: 'Transações ilimitadas', icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4' },
+  { name: 'Metas de economia ilimitadas', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
+  { name: 'Relatório PDF mensal', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+  { name: 'Lembretes de vencimento por e-mail', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { name: 'Categorias e orçamentos personalizados', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z' },
+  { name: 'Importação e exportação Excel', icon: 'M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+  { name: 'Assistente financeiro inteligente', icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+  { name: 'Suporte prioritário via WhatsApp', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
 ];
-
-function FeatureIcon({ path }: { path: string }) {
-  return (
-    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} />
-    </svg>
-  );
-}
-
-function Check() {
-  return (
-    <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-      <svg className="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-      </svg>
-    </div>
-  );
-}
-
-function Cross() {
-  return (
-    <div className="w-5 h-5 rounded-full bg-gray-500/10 flex items-center justify-center flex-shrink-0">
-      <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </div>
-  );
-}
-
-function renderCell(value: boolean | string) {
-  if (value === true) return <Check />;
-  if (value === false) return <Cross />;
-  return <span className="text-xs font-bold text-brand-500 bg-brand-600/15 px-2 py-0.5 rounded-full">{value}</span>;
-}
 
 export default function UpgradePage() {
   const { plan, isAdmin } = useAuth();
@@ -57,22 +25,10 @@ export default function UpgradePage() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [canceling, setCanceling] = useState(false);
 
-  const handleCancel = async () => {
-    setCanceling(true);
-    try {
-      await paymentsAPI.cancel();
-      toast('Assinatura cancelada. Você voltou para o plano Free.');
-      setTimeout(() => window.location.reload(), 1200);
-    } catch {
-      toast('Erro ao cancelar assinatura. Tente novamente.', 'error');
-      setCanceling(false);
-    }
-  };
-
   useEffect(() => {
     const status = searchParams.get('status');
     if (status === 'approved') {
-      toast('Pagamento aprovado! Seu plano Pro está ativo.');
+      toast('Pagamento aprovado! Sua assinatura está ativa.');
     } else if (status === 'rejected') {
       toast('Pagamento não aprovado. Tente novamente.', 'error');
     } else if (status === 'pending') {
@@ -92,165 +48,132 @@ export default function UpgradePage() {
     }
   };
 
+  const handleCancel = async () => {
+    setCanceling(true);
+    try {
+      await paymentsAPI.cancel();
+      toast('Assinatura cancelada. Seus dados estão preservados.');
+      setTimeout(() => window.location.reload(), 1200);
+    } catch {
+      toast('Erro ao cancelar assinatura. Tente novamente.', 'error');
+      setCanceling(false);
+    }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 animate-fade-in pb-20 lg:pb-0">
+    <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8 animate-fade-in pb-20 lg:pb-0">
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-600/10 text-brand-500 text-xs font-semibold mb-2">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          {isPro ? 'Plano Pro ativo' : 'Compare os planos'}
+          {isPro ? 'Assinatura ativa' : 'Planejix Pro'}
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Planos Planejix</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Um plano. Tudo incluso.</h2>
         <p className="text-sm text-gray-400 max-w-md mx-auto">
-          Escolha o plano ideal para suas necessidades financeiras
+          Controle financeiro completo por menos que um cafezinho por mês
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Free */}
-        <div
-          className={`rounded-2xl p-6 transition-all duration-300 bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-white/5 ${!isPro ? 'ring-2 ring-brand-600/50' : ''}`}
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gray-500/10 flex items-center justify-center">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Free</h3>
-              <p className="text-xs text-gray-500">Para quem está começando</p>
-            </div>
-          </div>
+      {/* Card Pro único */}
+      <div
+        className="rounded-2xl p-6 sm:p-8 relative overflow-hidden ring-2 ring-brand-600/40"
+        style={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(5,150,105,0.06) 100%)',
+          border: '1px solid rgba(16,185,129,0.2)',
+        }}
+      >
+        <div className="absolute top-0 right-0 w-40 h-40 bg-brand-600/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-28 h-28 bg-accent-500/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 
-          <div className="mb-6">
-            <span className="text-3xl font-bold text-gray-900 dark:text-white">R$ 0</span>
-            <span className="text-sm text-gray-500 ml-1">/mês</span>
-          </div>
-
-          <ul className="space-y-3 mb-6">
-            {features.map((f) => (
-              <li key={f.name} className="flex items-center gap-3">
-                {renderCell(f.free)}
-                <FeatureIcon path={f.icon} />
-                <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">{f.name}</span>
-              </li>
-            ))}
-          </ul>
-
-          {!isPro && (
-            <div className="text-center text-xs text-brand-500 font-semibold bg-brand-600/10 rounded-xl py-2.5">
-              Plano atual
-            </div>
-          )}
-        </div>
-
-        {/* Pro */}
-        <div
-          className={`rounded-2xl p-6 relative overflow-hidden transition-all duration-300 ${isPro ? 'ring-2 ring-brand-600/50' : ''}`}
-          style={{
-            background: 'linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(5,150,105,0.06) 100%)',
-            border: '1px solid rgba(16,185,129,0.2)',
-          }}
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-600/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent-500/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-          <div className="relative">
-            <div className="absolute -top-1 -right-1">
-              <span className="text-gray-900 dark:text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg shadow-brand-600/25" style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
-                POPULAR
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-600/20 flex items-center justify-center">
-                <svg className="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="relative">
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-brand-600/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pro</h3>
-                <p className="text-xs text-gray-400">Controle total</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Planejix Pro</h3>
+                <p className="text-xs text-gray-400">Acesso completo, sem limitações</p>
               </div>
             </div>
-
-            <div className="mb-6">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">R$ 4,90</span>
+            <div className="text-right">
+              <span className="text-4xl font-bold text-gray-900 dark:text-white">R$ 4,90</span>
               <span className="text-sm text-gray-400 ml-1">/mês</span>
             </div>
-
-            <ul className="space-y-3 mb-6">
-              {features.map((f) => (
-                <li key={f.name} className="flex items-center gap-3">
-                  {renderCell(f.pro)}
-                  <FeatureIcon path={f.icon} />
-                  <span className="text-sm text-gray-200 flex-1">{f.name}</span>
-                </li>
-              ))}
-            </ul>
-
-            {isPro ? (
-              <div className="space-y-2">
-                <div className="text-center text-xs text-brand-500 font-semibold bg-brand-600/10 rounded-xl py-2.5">
-                  Plano atual
-                </div>
-                {plan === 'pro' && !isAdmin && (
-                  <button
-                    onClick={() => setCancelOpen(true)}
-                    className="w-full text-center text-[11px] text-gray-500 hover:text-red-500 transition-colors cursor-pointer py-1"
-                  >
-                    Cancelar assinatura
-                  </button>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={handleUpgrade}
-                disabled={loading}
-                className="w-full py-3 rounded-xl text-gray-900 dark:text-white font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50"
-                style={{
-                  background: 'linear-gradient(135deg, #10B981, #059669)',
-                  boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
-                }}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Preparando pagamento...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Assinar Pro — R$ 4,90/mês
-                  </span>
-                )}
-              </button>
-            )}
           </div>
+
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8">
+            {FEATURES.map((f) => (
+              <li key={f.name} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-700 dark:text-gray-200">{f.name}</span>
+              </li>
+            ))}
+          </ul>
+
+          {isPro ? (
+            <div className="space-y-2">
+              <div className="text-center text-sm text-brand-500 font-semibold bg-brand-600/10 rounded-xl py-3">
+                ✓ Sua assinatura está ativa
+              </div>
+              {plan === 'pro' && !isAdmin && (
+                <button
+                  onClick={() => setCancelOpen(true)}
+                  className="w-full text-center text-[11px] text-gray-500 hover:text-red-500 transition-colors cursor-pointer py-1"
+                >
+                  Cancelar assinatura
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={handleUpgrade}
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl text-white font-semibold text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 hover:opacity-95"
+              style={{
+                background: 'linear-gradient(135deg, #10B981, #059669)',
+                boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+              }}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Preparando pagamento...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  Assinar agora — R$ 4,90/mês
+                </span>
+              )}
+            </button>
+          )}
+
+          {!isPro && (
+            <div className="flex items-center justify-center gap-3 text-xs text-gray-500 mt-4">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Pagamento seguro via Mercado Pago · Cancele quando quiser
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Payment info */}
-      {!isPro && (
-        <div className="rounded-xl p-4 text-center bg-gray-50 dark:bg-dark-800/30 border border-gray-100 dark:border-white/5">
-          <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            Pagamento seguro via Mercado Pago · Cancele quando quiser
-          </div>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', title: 'Dados seguros', desc: 'Seus dados ficam protegidos e criptografados' },
           { icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', title: 'Sem contrato', desc: 'Cancele a qualquer momento sem multa' },
-          { icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', title: 'Suporte', desc: 'Atendimento prioritário para plano Pro' },
+          { icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', title: 'Suporte', desc: 'Atendimento prioritário via WhatsApp' },
         ].map((item) => (
           <div key={item.title} className="rounded-xl p-4 text-center bg-gray-50 dark:bg-dark-800/30 border border-gray-100 dark:border-white/5">
             <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-brand-600/10 flex items-center justify-center">
@@ -276,26 +199,21 @@ export default function UpgradePage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Cancelar assinatura Pro</h3>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Cancelar assinatura</h3>
                 <p className="text-xs text-gray-500 mt-0.5">Sem multa ou taxas</p>
               </div>
             </div>
             <p className="text-[13px] text-gray-600 dark:text-gray-300 mb-3">
-              Ao cancelar, você volta imediatamente para o plano <strong>Free</strong> e perde acesso a:
+              Ao cancelar, sua assinatura é encerrada imediatamente e você perde o acesso aos recursos do Planejix Pro.
             </p>
-            <ul className="text-[12px] text-gray-500 dark:text-gray-400 space-y-1 mb-5 pl-1">
-              <li>· Transações ilimitadas (limite volta a 50/mês)</li>
-              <li>· Metas ilimitadas (limite volta a 3)</li>
-              <li>· Relatório PDF e lembretes por e-mail</li>
-            </ul>
-            <p className="text-[12px] text-gray-500 mb-5">Seus dados e transações são preservados.</p>
+            <p className="text-[12px] text-gray-500 mb-5">Seus dados e transações ficam preservados caso decida voltar.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setCancelOpen(false)}
                 disabled={canceling}
                 className="btn-secondary flex-1 text-sm"
               >
-                Manter Pro
+                Manter assinatura
               </button>
               <button
                 onClick={handleCancel}

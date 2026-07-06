@@ -14,7 +14,7 @@ export default function TermsPage() {
 
         <section>
           <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">2. Descrição do serviço</h3>
-          <p className="text-gray-400">O Planejix é uma plataforma de gestão financeira pessoal que permite registrar transações, definir metas de orçamento, acompanhar economia e gerar relatórios. O serviço é oferecido nos planos Free e Pro.</p>
+          <p className="text-gray-400">O Planejix é uma plataforma de gestão financeira pessoal que permite registrar transações, definir metas de orçamento, acompanhar economia e gerar relatórios. O serviço é oferecido mediante assinatura mensal (Planejix Pro).</p>
         </section>
 
         <section>
@@ -30,8 +30,8 @@ export default function TermsPage() {
         <section>
           <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">4. Planos e pagamento</h3>
           <ul className="list-disc ml-5 space-y-1 text-gray-400">
-            <li><strong className="text-gray-700 dark:text-gray-300">Plano Free:</strong> funcionalidades básicas sem custo</li>
-            <li><strong className="text-gray-700 dark:text-gray-300">Plano Pro:</strong> funcionalidades avançadas mediante pagamento</li>
+            <li><strong className="text-gray-700 dark:text-gray-300">Planejix Pro:</strong> acesso completo à plataforma mediante assinatura mensal</li>
+            <li>O pagamento é processado pelo Mercado Pago</li>
             <li>Preços podem ser alterados com aviso prévio de 30 dias</li>
             <li>O cancelamento pode ser feito a qualquer momento</li>
           </ul>
@@ -41,9 +41,9 @@ export default function TermsPage() {
           <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">5. Cancelamento e reembolso</h3>
           <ul className="list-disc ml-5 space-y-1 text-gray-400">
             <li>Você pode cancelar sua assinatura a qualquer momento</li>
-            <li>O acesso Pro continua até o fim do período pago</li>
+            <li>O acesso continua até o fim do período pago</li>
             <li>Reembolso disponível em até 7 dias após a contratação (conforme CDC)</li>
-            <li>Após o cancelamento, sua conta reverte para o plano Free</li>
+            <li>Após o cancelamento, seus dados permanecem preservados e você pode reativar a assinatura quando quiser</li>
           </ul>
         </section>
 

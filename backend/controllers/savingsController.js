@@ -7,18 +7,11 @@ exports.getAll = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  const { userId, plan, isAdmin } = req.user;
+  const { userId } = req.user;
   const { name, target_amount, deadline } = req.body;
 
   if (!name || !target_amount || Number(target_amount) <= 0) {
     return res.status(400).json({ error: 'Nome e valor da meta são obrigatórios' });
-  }
-
-  if (plan === 'free' && !isAdmin) {
-    const count = db.prepare('SELECT COUNT(*) as c FROM savings_goals WHERE user_id = ?').get(userId);
-    if (count.c >= 3) {
-      return res.status(403).json({ error: 'Limite de 3 metas de economia no plano gratuito', requiredPlan: 'pro' });
-    }
   }
 
   const result = db.prepare('INSERT INTO savings_goals (user_id, name, target_amount, deadline) VALUES (?, ?, ?, ?)').run(userId, name, Number(target_amount), deadline || null);

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { savingsAPI } from '../api/api';
 import type { SavingsGoal } from '../types';
 import Modal from '../components/shared/Modal';
-import { useAuth } from '../context/AuthContext';
 import { CardsSkeleton } from '../components/shared/Skeleton';
 import { useToast } from '../context/ToastContext';
 
@@ -16,7 +15,6 @@ function daysUntil(deadline: string | null) {
 }
 
 export default function SavingsPage() {
-  const { isPro } = useAuth();
   const { toast } = useToast();
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,8 +107,6 @@ export default function SavingsPage() {
     }
   }
 
-  const canCreate = isPro || goals.length < 3;
-
   return (
     <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -120,9 +116,7 @@ export default function SavingsPage() {
         </div>
         <button
           onClick={openCreate}
-          disabled={!canCreate}
-          className="btn-primary flex items-center gap-2 disabled:opacity-50"
-          title={canCreate ? '' : 'Limite de 3 metas no plano Free'}
+          className="btn-primary flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -130,12 +124,6 @@ export default function SavingsPage() {
           Nova Meta
         </button>
       </div>
-
-      {!canCreate && (
-        <div className="text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 rounded-xl px-4 py-3">
-          Limite de 3 metas atingido no plano Free. <a href="/upgrade" className="underline font-semibold">Faça upgrade para o Pro</a> para metas ilimitadas.
-        </div>
-      )}
 
       {loading ? (
         <CardsSkeleton count={3} />

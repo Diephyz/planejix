@@ -10,7 +10,7 @@ function authMiddleware(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = db.prepare('SELECT is_admin, expires_at, plan, token_version FROM users WHERE id = ?').get(decoded.userId);
+    const user = db.prepare('SELECT is_admin, expires_at, plan, plan_expires_at, token_version FROM users WHERE id = ?').get(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ error: 'Usuário não encontrado' });
@@ -21,11 +21,21 @@ function authMiddleware(req, res, next) {
       return res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
     }
 
+    // Assinatura Pix vencida (30d + carência): plano efetivo vira 'expired' —
+    // o frontend redireciona para a tela de renovação
+    const subscriptionExpired = user.plan === 'pro' && user.plan_expires_at
+      && new Date(user.plan_expires_at) < new Date();
+
     if (!user.is_admin && user.expires_at && new Date(user.expires_at) < new Date()) {
       return res.status(401).json({ error: 'Conta expirada. Entre em contato com o administrador.' });
     }
 
-    req.user = { userId: decoded.userId, username: decoded.username, isAdmin: !!user.is_admin, plan: user.plan || 'free' };
+    req.user = {
+      userId: decoded.userId,
+      username: decoded.username,
+      isAdmin: !!user.is_admin,
+      plan: subscriptionExpired ? 'expired' : (user.plan || 'free'),
+    };
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Token inválido ou expirado' });

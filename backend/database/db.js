@@ -88,6 +88,15 @@ try { db.exec("ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'");
 // Session invalidation: incremented on password change, invalidating old JWTs
 try { db.exec("ALTER TABLE users ADD COLUMN token_version INTEGER NOT NULL DEFAULT 0"); } catch {}
 
+// Subscription recurrence: Pix pays for 30 days (plan_expires_at); card uses
+// MP preapproval (mp_preapproval_id, no expiry). Reminder flags avoid dup emails.
+try { db.exec("ALTER TABLE users ADD COLUMN mp_payment_id TEXT"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN plan_started_at TEXT"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN plan_expires_at TEXT"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN mp_preapproval_id TEXT"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN renewal_reminder_sent_at TEXT"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN expired_notice_sent_at TEXT"); } catch {}
+
 // Due-date reminder support (e-mail): flags to avoid sending the same reminder twice
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_3d_sent_at TEXT DEFAULT NULL"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_due_sent_at TEXT DEFAULT NULL"); } catch {}

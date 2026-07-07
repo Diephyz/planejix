@@ -62,13 +62,13 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-400">@{user?.username}</p>
           <div className="mt-2 flex items-center gap-2">
             <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full ${
-              isPro ? 'bg-brand-600/20 text-brand-500' : 'bg-gray-500/20 text-gray-400'
+              isPro ? 'bg-brand-600/20 text-brand-500' : plan === 'expired' ? 'bg-amber-500/20 text-amber-500' : 'bg-gray-500/20 text-gray-400'
             }`}>
-              {isPro ? 'PRO' : 'SEM ASSINATURA'}
+              {isPro ? 'PRO' : plan === 'expired' ? 'EXPIRADA' : 'SEM ASSINATURA'}
             </span>
             {!isPro && (
               <a href="/upgrade" className="text-xs text-brand-500 hover:text-brand-500 underline">
-                Assinar
+                {plan === 'expired' ? 'Renovar' : 'Assinar'}
               </a>
             )}
           </div>

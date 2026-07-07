@@ -75,45 +75,29 @@ exports.register = async (req, res) => {
     sendWelcomeEmail({ to: email, name: name || username }).catch(() => {});
   }
 
-  try {
-    const { MercadoPagoConfig, Preference } = require('mercadopago');
-    if (process.env.MP_ACCESS_TOKEN) {
-      const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-      const preference = new Preference(client);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3001}`;
+  // Gera as duas opções de pagamento: assinatura recorrente no cartão e
+  // Pix avulso de 30 dias. O frontend mostra a escolha ao usuário.
+  if (process.env.MP_ACCESS_TOKEN) {
+    const { createPixCheckout, createCardSubscription } = require('./paymentController');
+    const newUser = { id: userId, username, name, email };
+    let pixUrl = null;
+    let cardUrl = null;
 
-      const prefResult = await preference.create({
-        body: {
-          items: [{
-            id: 'planejix-acesso',
-            title: 'Planejix — Acesso ao App',
-            description: 'Acesso completo ao Planejix com todas as funcionalidades',
-            quantity: 1,
-            currency_id: 'BRL',
-            unit_price: parseFloat(process.env.MP_PRO_PRICE || '19.90'),
-          }],
-          payer: { name: name || username, email: email || undefined },
-          back_urls: {
-            success: `${frontendUrl}/login?payment=approved`,
-            failure: `${frontendUrl}/login?payment=rejected`,
-            pending: `${frontendUrl}/login?payment=pending`,
-          },
-          auto_return: 'approved',
-          notification_url: `${backendUrl}/api/payments/webhook`,
-          external_reference: String(userId),
-          statement_descriptor: 'PLANEJIX',
-        },
-      });
+    try { pixUrl = await createPixCheckout(newUser); } catch (err) {
+      console.error('[Register] Erro ao criar checkout Pix:', err.message);
+    }
+    try { cardUrl = await createCardSubscription(newUser); } catch (err) {
+      console.error('[Register] Erro ao criar assinatura de cartão:', err.message);
+    }
 
+    if (pixUrl || cardUrl) {
       return res.status(201).json({
-        message: 'Cadastro realizado! Redirecionando para pagamento...',
-        payment_url: prefResult.init_point,
+        message: 'Cadastro realizado! Escolha como pagar.',
+        payment_options: { pix_url: pixUrl, card_url: cardUrl },
+        payment_url: pixUrl || cardUrl, // compatibilidade
         user_id: userId,
       });
     }
-  } catch (err) {
-    console.error('[Register] Erro ao criar preferência MP:', err.message);
   }
 
   res.status(201).json({ message: 'Cadastro realizado! Aguarde a aprovação do administrador.' });
@@ -176,9 +160,10 @@ exports.googleAuth = async (req, res) => {
 };
 
 exports.me = (req, res) => {
-  const user = db.prepare('SELECT id, username, name, email, is_admin, avatar_url, plan FROM users WHERE id = ?').get(req.user.userId);
+  const user = db.prepare('SELECT id, username, name, email, is_admin, avatar_url, plan, plan_expires_at FROM users WHERE id = ?').get(req.user.userId);
   if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
-  res.json({ id: user.id, username: user.username, name: user.name || null, email: user.email || null, is_admin: !!user.is_admin, avatar_url: user.avatar_url || null, plan: user.plan || 'free' });
+  // req.user.plan já vem calculado pelo middleware ('expired' quando o Pix venceu)
+  res.json({ id: user.id, username: user.username, name: user.name || null, email: user.email || null, is_admin: !!user.is_admin, avatar_url: user.avatar_url || null, plan: req.user.plan, plan_expires_at: user.plan_expires_at || null });
 };
 
 exports.updateProfile = (req, res) => {

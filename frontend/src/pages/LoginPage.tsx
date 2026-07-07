@@ -43,6 +43,7 @@ export default function LoginPage() {
   const [regSuccess, setRegSuccess] = useState(false);
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState<{ pix_url: string | null; card_url: string | null } | null>(null);
   const [searchParams] = useSearchParams();
   const [payStatus, setPayStatus] = useState<'approved' | 'pending' | 'rejected' | null>(null);
 
@@ -101,6 +102,10 @@ export default function LoginPage() {
     setRegLoading(true);
     try {
       const res = await authAPI.register(regUsername, regPassword, regName || undefined, regEmail || undefined);
+      if (res.data.payment_options && (res.data.payment_options.pix_url || res.data.payment_options.card_url)) {
+        setPaymentOptions(res.data.payment_options);
+        return;
+      }
       if (res.data.payment_url) {
         window.location.href = res.data.payment_url;
         return;
@@ -119,6 +124,7 @@ export default function LoginPage() {
     setError('');
     setRegError('');
     setRegSuccess(false);
+    setPaymentOptions(null);
   };
 
   return (
@@ -259,6 +265,54 @@ export default function LoginPage() {
                 <GoogleLoginButton />
               </div>
             </>
+          ) : paymentOptions ? (
+            <div className="text-center py-2">
+              <div className="w-14 h-14 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-1">Conta criada!</h3>
+              <p className="text-gray-400 text-sm leading-relaxed mb-5">
+                Escolha como pagar seus <strong className="text-brand-500">R$ 4,90</strong> e libere seu acesso agora:
+              </p>
+              <div className="space-y-3 text-left">
+                {paymentOptions.card_url && (
+                  <a
+                    href={paymentOptions.card_url}
+                    className="block w-full p-4 rounded-xl text-white transition-all hover:opacity-95 cursor-pointer"
+                    style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}
+                  >
+                    <span className="flex items-center gap-3">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                      <span>
+                        <span className="block text-sm font-semibold">Cartão de crédito</span>
+                        <span className="block text-[11px] opacity-85">Assinatura mensal · renova sozinha · cancele quando quiser</span>
+                      </span>
+                    </span>
+                  </a>
+                )}
+                {paymentOptions.pix_url && (
+                  <a
+                    href={paymentOptions.pix_url}
+                    className="block w-full p-4 rounded-xl border-2 border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-600/10 transition-all cursor-pointer"
+                  >
+                    <span className="flex items-center gap-3">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>
+                        <span className="block text-sm font-semibold">Pix</span>
+                        <span className="block text-[11px] opacity-75">30 dias de acesso · aprovação na hora · renove quando quiser</span>
+                      </span>
+                    </span>
+                  </a>
+                )}
+              </div>
+              <p className="text-[11px] text-gray-500 mt-4">Pagamento seguro via Mercado Pago</p>
+            </div>
           ) : regSuccess ? (
             <div className="text-center py-4">
               <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">

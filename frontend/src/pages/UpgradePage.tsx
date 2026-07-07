@@ -21,7 +21,8 @@ export default function UpgradePage() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const isPro = plan === 'pro' || isAdmin;
-  const [loading, setLoading] = useState(false);
+  const isExpired = plan === 'expired' && !isAdmin;
+  const [loading, setLoading] = useState<'pix' | 'card' | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [canceling, setCanceling] = useState(false);
 
@@ -36,15 +37,26 @@ export default function UpgradePage() {
     }
   }, [searchParams, toast]);
 
-  const handleUpgrade = async () => {
-    setLoading(true);
+  const handlePix = async () => {
+    setLoading('pix');
     try {
       const res = await paymentsAPI.createPreference();
       window.location.href = res.data.init_point;
     } catch {
       toast('Erro ao iniciar pagamento. Tente novamente.', 'error');
-    } finally {
-      setLoading(false);
+      setLoading(null);
+    }
+  };
+
+  const handleCard = async () => {
+    setLoading('card');
+    try {
+      const res = await paymentsAPI.subscribe();
+      window.location.href = res.data.init_point;
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast(msg || 'Erro ao iniciar assinatura. Tente novamente.', 'error');
+      setLoading(null);
     }
   };
 
@@ -74,6 +86,15 @@ export default function UpgradePage() {
           Controle financeiro completo por menos que um cafezinho por mês
         </p>
       </div>
+
+      {isExpired && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm bg-amber-50 dark:bg-yellow-900/30 border border-amber-300 dark:border-yellow-700 text-amber-700 dark:text-yellow-400">
+          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span><strong>Seu acesso expirou.</strong> Renove abaixo para continuar — seus dados estão todos preservados.</span>
+        </div>
+      )}
 
       {/* Card Pro único */}
       <div
@@ -133,29 +154,53 @@ export default function UpgradePage() {
               )}
             </div>
           ) : (
-            <button
-              onClick={handleUpgrade}
-              disabled={loading}
-              className="w-full py-3.5 rounded-xl text-white font-semibold text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 hover:opacity-95"
-              style={{
-                background: 'linear-gradient(135deg, #10B981, #059669)',
-                boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
-              }}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Preparando pagamento...
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  Assinar agora — R$ 4,90/mês
-                </span>
-              )}
-            </button>
+            <div className="space-y-3">
+              <button
+                onClick={handleCard}
+                disabled={loading !== null}
+                className="w-full py-3.5 rounded-xl text-white font-semibold text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 hover:opacity-95"
+                style={{
+                  background: 'linear-gradient(135deg, #10B981, #059669)',
+                  boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+                }}
+              >
+                {loading === 'card' ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Preparando assinatura...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Assinar no cartão — R$ 4,90/mês
+                  </span>
+                )}
+              </button>
+              <p className="text-center text-[11px] text-gray-500 -mt-1">Renovação automática · cancele quando quiser</p>
+
+              <button
+                onClick={handlePix}
+                disabled={loading !== null}
+                className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 border-2 border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-600/10"
+              >
+                {loading === 'pix' ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-brand-400/40 border-t-brand-500 rounded-full animate-spin" />
+                    Preparando Pix...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Pagar com Pix — R$ 4,90 por 30 dias
+                  </span>
+                )}
+              </button>
+              <p className="text-center text-[11px] text-gray-500 -mt-1">Sem renovação automática · avisamos por e-mail quando estiver perto de vencer</p>
+            </div>
           )}
 
           {!isPro && (

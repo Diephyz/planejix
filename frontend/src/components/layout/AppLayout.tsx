@@ -1,12 +1,20 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import BottomNav from './BottomNav';
 import FinanceAssistant from '../dashboard/FinanceAssistant';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { plan, isAdmin } = useAuth();
+  const location = useLocation();
+
+  // Assinatura Pix vencida: só Planos (renovação) e Perfil (dados/LGPD) ficam acessíveis
+  if (plan === 'expired' && !isAdmin && !['/upgrade', '/profile'].includes(location.pathname)) {
+    return <Navigate to="/upgrade" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-dark-950">

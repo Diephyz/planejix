@@ -5,13 +5,33 @@ import type { AnnualSummary } from '../../types';
 const fmt = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
+const WA_LINK = 'https://wa.me/5577988023474?text=' + encodeURIComponent('Olá! Vim do app Planejix e preciso de ajuda.');
+
 const SUGGESTIONS = [
   'Quanto gastei este mês?',
   'Vou fechar o mês no azul?',
   'Como estão meus orçamentos?',
   'Como criar uma transação?',
-  'Quais são os planos?',
+  'Falar com atendente',
 ];
+
+/** Renderiza texto com links http(s) clicáveis */
+function LinkifiedText({ text }: { text: string }) {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        /^https?:\/\//.test(part) ? (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline font-semibold text-emerald-600 dark:text-emerald-400 break-all">
+            {part.includes('wa.me') ? 'Abrir WhatsApp →' : part}
+          </a>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
 
 interface Message {
   role: 'user' | 'assistant';
@@ -113,8 +133,68 @@ const FAQ: { test: (q: string) => boolean; answer: string }[] = [
     answer: 'Seus dados são seus: na página Perfil você pode "Exportar meus dados" (baixa tudo em JSON) ou "Excluir minha conta" (remoção permanente e imediata, conforme LGPD). A política completa está em planejix.com.br/privacy.',
   },
   {
-    test: (q) => /suporte|contato|falar com|atendimento|humano|ajuda de verdade|reclama/.test(q),
-    answer: 'Para falar com nosso suporte: use o botão do WhatsApp na tela de cadastro, ou envie mensagem direto pelo WhatsApp. Assinantes Pro têm atendimento prioritário!',
+    test: (q) => /suporte|contato|atendimento|reclama|elogio|sugestao|feedback/.test(q),
+    answer: `Nossa equipe atende pelo WhatsApp — respondemos rapidinho e adoramos ouvir sugestões! ${WA_LINK}`,
+  },
+  {
+    test: (q) => /o que e o planejix|sobre o planejix|para que serve|quem criou|quem fez/.test(q),
+    answer: 'O Planejix é uma carteira inteligente brasileira: você registra entradas e saídas, define orçamentos e metas, e o app mostra em gráficos claros para onde vai o seu dinheiro — com assistente, lembretes e relatórios. Criado pela Diephyz Corporation. 💚',
+  },
+  {
+    test: (q) => /confiavel|golpe|posso confiar|e seguro pagar/.test(q),
+    answer: 'Pode confiar! O pagamento é 100% processado pelo Mercado Pago (nunca vemos seu cartão), seus dados são criptografados, temos política de privacidade conforme a LGPD e reembolso em até 7 dias pelo Código de Defesa do Consumidor. Qualquer dúvida, fale com nosso atendimento humano.',
+  },
+  {
+    test: (q) => /funciona offline|sem internet|fora do ar/.test(q),
+    answer: 'O app instalado abre offline para consulta, mas registrar e sincronizar transações precisa de internet. Se o site parecer fora do ar, verifique sua conexão — e se persistir, avise nosso suporte no WhatsApp!',
+  },
+  {
+    test: (q) => /esqueci (meu )?(usuario|login)|qual (meu|e o) usuario/.test(q),
+    answer: 'Você pode entrar com o e-mail cadastrado no lugar do usuário! Na tela de login, digite seu e-mail e a senha. Se também esqueceu a senha, use o "Esqueceu a senha?".',
+  },
+  {
+    test: (q) => /(mudar|alterar|trocar).*(e-?mail|nome)|atualizar (cadastro|perfil|dados)/.test(q),
+    answer: 'Para atualizar nome ou e-mail: vá em Perfil no menu, edite os campos e clique em "Salvar alterações". O nome de usuário não pode ser alterado.',
+  },
+  {
+    test: (q) => /fixo|variavel|subtipo|tipo de gasto|diferenca entre/.test(q),
+    answer: 'Ao criar uma transação você escolhe o subtipo: Fixo (contas que se repetem com o mesmo valor, como aluguel), Variável (mercado, lazer — muda todo mês) e Outros. Isso ajuda os gráficos a mostrarem o peso de cada tipo no seu orçamento.',
+  },
+  {
+    test: (q) => /nota fiscal|recibo|comprovante de pagamento/.test(q),
+    answer: 'O comprovante do pagamento fica disponível no seu e-mail e na sua conta do Mercado Pago logo após a confirmação. Precisando de algo específico, chame nosso atendimento no WhatsApp.',
+  },
+  {
+    test: (q) => /formas? de pagamento|como (posso )?pagar|aceita (cartao|pix|boleto)|meios de pagamento/.test(q),
+    answer: 'Aceitamos duas formas: Cartão de crédito (assinatura de R$ 4,90/mês com renovação automática) e Pix (R$ 4,90 por 30 dias de acesso, aprovação na hora). Boleto não é aceito. Tudo via Mercado Pago, na página Planos.',
+  },
+  {
+    test: (q) => /quanto tempo.*(libera|ativa)|paguei e nao (liberou|ativou)|pagamento (nao caiu|demorando)/.test(q),
+    answer: `Pix libera em segundos e cartão na hora da aprovação — a tela de login verifica sozinha e destrava automaticamente. Se pagou e não liberou em 10 minutos, fale com a gente: ${WA_LINK}`,
+  },
+  {
+    test: (q) => /renovar|renovacao|vence quando|ate quando.*(acesso|assinatura)|expira/.test(q),
+    answer: 'Quem assina no cartão renova automaticamente todo mês, sem se preocupar. Quem paga via Pix tem 30 dias de acesso — avisamos por e-mail 3 dias antes de vencer, e renovar leva um minuto na página Planos.',
+  },
+  {
+    test: (q) => /familia|conjuge|esposa|marido|compartilhar conta|mais de uma pessoa|multiusuario/.test(q),
+    answer: 'Hoje cada conta é individual. Nada impede um casal de usar a mesma conta em dois celulares (mesmos login e senha), mas contas compartilhadas com perfis separados estão no nosso radar para o futuro!',
+  },
+  {
+    test: (q) => /backup|perder (meus )?dados|se o site sair do ar|dados somem/.test(q),
+    answer: 'Seus dados são salvos na nuvem com backup diário automático. Você também pode baixar tudo quando quiser em Perfil → "Exportar meus dados" (JSON) ou exportar as transações em Excel.',
+  },
+  {
+    test: (q) => /reembolso|dinheiro de volta|estorno|me arrependi/.test(q),
+    answer: `Você tem direito a reembolso integral em até 7 dias após a contratação, conforme o Código de Defesa do Consumidor. É só chamar nosso atendimento: ${WA_LINK}`,
+  },
+  {
+    test: (q) => /como comecar|comecando|primeiros passos|por onde comeco|acabei de (entrar|assinar|criar)/.test(q),
+    answer: 'Bem-vindo(a)! Sugestão de primeiros passos: 1️⃣ Registre suas transações do mês (botão "Nova transação") · 2️⃣ Crie orçamentos por categoria na página Orçamentos · 3️⃣ Defina uma meta de economia · 4️⃣ Acompanhe tudo no Dashboard. Em 5 minutos você já tem uma visão clara do seu dinheiro!',
+  },
+  {
+    test: (q) => /\b(erro|bug|travou|travando|nao funciona|nao carrega|problema no app|deu ruim)\b/.test(q),
+    answer: `Sinto muito por isso! Primeiro tente recarregar a página (ou fechar e abrir o app). Se continuar, me conte o que aconteceu pelo WhatsApp que resolvemos rápido: ${WA_LINK}`,
   },
   {
     test: (q) => /seguranca|seguro|criptograf|hackea|roubar|protegido/.test(q),
@@ -126,15 +206,43 @@ const FAQ: { test: (q: string) => boolean; answer: string }[] = [
 async function processQuestion(question: string): Promise<string> {
   const q = norm(question);
 
-  // Saudações e cortesia
-  if (/^(oi|ola|eai|opa|bom dia|boa tarde|boa noite|hey|hello)\b/.test(q) && q.length < 25) {
+  // Atendimento humano — prioridade máxima, nunca prende o cliente no robô
+  if (/atendente|humano|pessoa de verdade|falar com (alguem|o suporte|voces|uma pessoa)|suporte humano|nao (esta|ta) ajudando|quero ajuda de verdade/.test(q)) {
+    return `Claro! Nossa equipe atende pelo WhatsApp — normalmente respondemos em poucos minutos. ${WA_LINK}`;
+  }
+
+  // Saudações por período
+  if (/^bom dia\b/.test(q)) {
+    return 'Bom dia! ☀️ Começar o dia organizando as finanças é um ótimo sinal. Quer saber quanto gastou este mês, como estão seus orçamentos ou precisa de ajuda com alguma função?';
+  }
+  if (/^boa tarde\b/.test(q)) {
+    return 'Boa tarde! 😊 Em que posso ajudar? Posso mostrar seus gastos, a previsão do mês, suas metas — ou explicar qualquer função do Planejix.';
+  }
+  if (/^boa noite\b/.test(q)) {
+    return 'Boa noite! 🌙 Boa hora para revisar o dia. Quer ver quanto gastou, como está o orçamento ou tirar alguma dúvida sobre o app?';
+  }
+  if (/^(oi|ola|eai|opa|hey|hello|alo)\b/.test(q) && q.length < 25) {
     return 'Olá! Posso responder sobre seus gastos, receitas, orçamentos, metas e previsões — ou explicar como usar qualquer função do Planejix. Experimente: "Quanto gastei este mês?" ou "Como criar um orçamento?"';
   }
-  if (/obrigad|valeu|show|top|perfeito|otimo/.test(q) && q.length < 30) {
+
+  // Cortesia e conversa
+  if (/tudo bem|como (voce|vc) (esta|ta)|como vai/.test(q) && q.length < 35) {
+    return 'Tudo ótimo por aqui, obrigado por perguntar! 😄 E as suas finanças, como estão? Posso dar uma olhada — pergunte "Como estão minhas finanças?"';
+  }
+  if (/quem (e|es) (voce|vc)|o que (e|es) voce|voce e um robo|voce e uma ia/.test(q)) {
+    return 'Sou o assistente virtual do Planejix! Conheço seus dados financeiros (com todo sigilo) e sei tudo sobre o app. Se preferir falar com uma pessoa de verdade, é só pedir "quero falar com um atendente".';
+  }
+  if (/obrigad|valeu|show|top|perfeito|otimo|excelente|legal|massa/.test(q) && q.length < 30) {
     return 'De nada! Estou aqui sempre que precisar. 💚';
   }
-  if (/o que (voce|vc) (faz|sabe)|que perguntas|ajuda\b|comandos|como funciona (voce|o assistente)/.test(q)) {
-    return 'Posso ajudar com duas coisas: 📊 Seus dados — "Quanto gastei?", "Como estão meus orçamentos?", "Vou fechar o mês no azul?", "Quanto gastei com alimentação?" · ⚙️ Como usar o app — "Como criar transação recorrente?", "Como exportar para Excel?", "Quais são os planos?"';
+  if (/^(kkk+|haha+|rsrs+|hehe+|😂|🤣)/.test(q)) {
+    return '😄 Que bom te ver de bom humor! Finanças organizadas deixam qualquer um mais leve. Posso ajudar em algo?';
+  }
+  if (/^(tchau|ate mais|ate logo|falou|adeus|flw)\b/.test(q)) {
+    return 'Até mais! 👋 Continue cuidando bem do seu dinheiro — estarei aqui quando precisar.';
+  }
+  if (/o que (voce|vc) (faz|sabe)|que perguntas|ajuda\b|comandos|como funciona (voce|o assistente)|menu/.test(q)) {
+    return 'Posso ajudar com duas coisas: 📊 Seus dados — "Quanto gastei?", "Como estão meus orçamentos?", "Vou fechar o mês no azul?", "Quanto gastei com alimentação?" · ⚙️ Como usar o app — "Como criar transação recorrente?", "Como exportar para Excel?", "Quais são os planos?" · E se precisar, chame um atendente humano!';
   }
 
   // FAQ do produto (respostas estáticas, sem precisar de dados)
@@ -160,6 +268,16 @@ async function processQuestion(question: string): Promise<string> {
       const projectedExpenses = totalExpenses + dailyAvg * daysLeft;
       const projectedBalance = totalIncome - projectedExpenses;
       return `Projeção para o fim do mês: no seu ritmo atual (${fmt(dailyAvg)}/dia em gastos), você deve fechar com ${fmt(projectedExpenses)} em despesas e saldo ${projectedBalance >= 0 ? 'positivo' : 'negativo'} de ${fmt(Math.abs(projectedBalance))}. ${projectedBalance >= 0 ? 'Está no caminho certo! 🎯' : 'Vale segurar os gastos variáveis nos próximos dias.'}`;
+    }
+
+    // Quanto posso gastar por dia até o fim do mês
+    if (/quanto posso gastar|gastar por dia|sobra por dia|quanto (ainda )?tenho (para|pra) gastar/.test(q)) {
+      const now = new Date();
+      const daysLeft = Math.max(1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate());
+      const remaining = totalIncome - totalExpenses;
+      if (totalIncome === 0) return 'Ainda não há receitas registradas este mês, então não consigo calcular quanto sobra por dia. Registre suas entradas primeiro!';
+      if (remaining <= 0) return `Este mês você já gastou ${fmt(totalExpenses)} de ${fmt(totalIncome)} de receita — o saldo está ${remaining < 0 ? 'negativo em ' + fmt(Math.abs(remaining)) : 'zerado'}. Melhor segurar os próximos gastos! 🛑`;
+      return `Sobram ${fmt(remaining)} da sua receita este mês. Faltando ${daysLeft} dia(s), você pode gastar até ${fmt(remaining / daysLeft)}/dia para fechar no zero a zero — menos que isso, fecha no azul! 💪`;
     }
 
     // Orçamentos
@@ -282,10 +400,10 @@ async function processQuestion(question: string): Promise<string> {
       return tips.join(' ');
     }
 
-    // Fallback com dados
-    return `Não entendi exatamente, mas aqui vai um resumo: receita ${fmt(totalIncome)}, despesas ${fmt(totalExpenses)}, saldo ${fmt(balance)}. Você pode perguntar sobre gastos, orçamentos, metas, previsão do mês, ou como usar qualquer função (ex: "Como criar transação recorrente?").`;
+    // Fallback com dados — nunca deixa sem resposta
+    return `Hmm, não tenho certeza se entendi — mas aqui vai um resumo rápido: receita ${fmt(totalIncome)}, despesas ${fmt(totalExpenses)}, saldo ${fmt(balance)}. 💡 Experimente perguntar: "Quanto posso gastar por dia?", "Como estão meus orçamentos?", "Vou fechar o mês no azul?" — ou peça para falar com um atendente que nossa equipe te ajuda pelo WhatsApp!`;
   } catch {
-    return 'Não consegui acessar seus dados agora. Verifique sua conexão e tente novamente. Perguntas sobre como usar o app (planos, funções, configurações) eu respondo mesmo offline!';
+    return `Não consegui acessar seus dados agora — verifique a conexão e tente de novo. Enquanto isso, respondo dúvidas sobre o app (planos, funções, pagamento) normalmente. E se preferir ajuda humana: ${WA_LINK}`;
   }
 }
 
@@ -352,7 +470,7 @@ export default function FinanceAssistant() {
                   : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded-bl-sm'
               }`}
             >
-              {msg.text}
+              {msg.role === 'assistant' ? <LinkifiedText text={msg.text} /> : msg.text}
             </div>
           </div>
         ))}

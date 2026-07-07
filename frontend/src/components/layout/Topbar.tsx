@@ -35,7 +35,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <h1 className="text-base font-semibold text-gray-900 dark:text-gray-900 dark:text-white">{title}</h1>
+      <h1 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h1>
       <div className="ml-auto flex items-center gap-3">
         <NotificationBell />
         <span className="text-[11px] text-gray-600 hidden sm:block font-medium">Diephyz Corporation ©</span>

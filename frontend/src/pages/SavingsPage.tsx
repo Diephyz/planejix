@@ -3,6 +3,7 @@ import { savingsAPI } from '../api/api';
 import type { SavingsGoal } from '../types';
 import Modal from '../components/shared/Modal';
 import { CardsSkeleton } from '../components/shared/Skeleton';
+import Confetti from '../components/shared/Confetti';
 import { useToast } from '../context/ToastContext';
 
 const fmt = (v: number) =>
@@ -31,6 +32,7 @@ export default function SavingsPage() {
 
   const [deleteTarget, setDeleteTarget] = useState<SavingsGoal | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [celebrating, setCelebrating] = useState(false);
 
   async function loadGoals() {
     try {
@@ -83,13 +85,22 @@ export default function SavingsPage() {
 
   async function handleDeposit() {
     if (!depositTarget || !depositAmount || Number(depositAmount) <= 0) return;
+    const completesGoal =
+      depositTarget.current_amount < depositTarget.target_amount &&
+      depositTarget.current_amount + Number(depositAmount) >= depositTarget.target_amount;
     setDepositing(true);
     try {
       await savingsAPI.deposit(depositTarget.id, Number(depositAmount));
       setDepositTarget(null);
       setDepositAmount('');
       await loadGoals();
-      toast('Depósito realizado com sucesso');
+      if (completesGoal) {
+        setCelebrating(true);
+        toast('🎉 Meta concluída! Parabéns pela conquista!');
+        setTimeout(() => setCelebrating(false), 4500);
+      } else {
+        toast('Depósito realizado com sucesso');
+      }
     } catch {} finally {
       setDepositing(false);
     }
@@ -109,6 +120,7 @@ export default function SavingsPage() {
 
   return (
     <div className="space-y-5 pb-20 lg:pb-0">
+      {celebrating && <Confetti />}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Metas de Economia</h2>

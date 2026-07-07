@@ -24,7 +24,7 @@ export default function MonthlyReport({ summary, month, year }: { summary: Annua
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
           <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
@@ -61,7 +61,7 @@ export default function MonthlyReport({ summary, month, year }: { summary: Annua
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </span>
-          <span>Taxa de poupança: <strong className="text-gray-900 dark:text-gray-900 dark:text-white">{savingsRate.toFixed(0)}%</strong> {savingsRate >= 20 ? '— Excelente!' : savingsRate >= 10 ? '— Bom, mas pode melhorar' : '— Tente economizar mais'}</span>
+          <span>Taxa de poupança: <strong className="text-gray-900 dark:text-white">{savingsRate.toFixed(0)}%</strong> {savingsRate >= 20 ? '— Excelente!' : savingsRate >= 10 ? '— Bom, mas pode melhorar' : '— Tente economizar mais'}</span>
         </div>
 
         {Math.abs(expenseChange) > 5 && (
@@ -71,7 +71,7 @@ export default function MonthlyReport({ summary, month, year }: { summary: Annua
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={expenseChange > 0 ? 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6' : 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'} />
               </svg>
             </span>
-            <span>Despesas {expenseChange > 0 ? 'subiram' : 'caíram'} <strong className="text-gray-900 dark:text-gray-900 dark:text-white">{Math.abs(expenseChange).toFixed(0)}%</strong> vs mês anterior</span>
+            <span>Despesas {expenseChange > 0 ? 'subiram' : 'caíram'} <strong className="text-gray-900 dark:text-white">{Math.abs(expenseChange).toFixed(0)}%</strong> vs mês anterior</span>
           </div>
         )}
 

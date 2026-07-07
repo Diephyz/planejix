@@ -116,7 +116,7 @@ export default function TransactionsPage() {
     <div className="space-y-5 pb-20 lg:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white dark:text-gray-900 dark:text-white">Transações</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Transações</h2>
           <p className="text-sm text-gray-400 mt-0.5">{transactions.length} registro{transactions.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-2">

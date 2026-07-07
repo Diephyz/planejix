@@ -222,7 +222,7 @@ export default function AdminPage() {
                 const status = getExpiryStatus(u.expires_at, u.is_admin, u.approved);
                 return (
                   <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
                       {u.username}
                       {u.is_admin ? (
                         <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded">admin</span>

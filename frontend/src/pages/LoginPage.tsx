@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { authAPI } from '../api/api';
+import { authAPI, paymentsAPI } from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import GoogleLoginButton from '../components/auth/GoogleLoginButton';
 
@@ -44,18 +44,40 @@ export default function LoginPage() {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [searchParams] = useSearchParams();
-  const [paymentMsg, setPaymentMsg] = useState('');
+  const [payStatus, setPayStatus] = useState<'approved' | 'pending' | 'rejected' | null>(null);
 
   useEffect(() => {
     const payment = searchParams.get('payment');
-    if (payment === 'approved') {
-      setPaymentMsg('Pagamento confirmado! Faça login para acessar o Planejix.');
-    } else if (payment === 'rejected') {
-      setPaymentMsg('Pagamento não aprovado. Tente novamente ou entre em contato.');
-    } else if (payment === 'pending') {
-      setPaymentMsg('Pagamento pendente. Você será liberado assim que confirmar.');
+    if (payment === 'approved' || payment === 'pending' || payment === 'rejected') {
+      setPayStatus(payment);
     }
   }, [searchParams]);
+
+  // Pagamento pendente (ex: Pix): verifica automaticamente a cada 5s até a
+  // conta ser liberada pelo webhook — sem o usuário precisar recarregar.
+  useEffect(() => {
+    if (payStatus !== 'pending') return;
+    const userId = searchParams.get('external_reference');
+    const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id') || undefined;
+    if (!userId) return;
+
+    let tries = 0;
+    const interval = setInterval(async () => {
+      tries++;
+      if (tries > 60) { clearInterval(interval); return; } // ~5 minutos
+      try {
+        const res = await paymentsAPI.check(Number(userId), paymentId);
+        if (res.data.approved) {
+          setPayStatus('approved');
+          clearInterval(interval);
+        }
+      } catch {
+        // tenta de novo no próximo ciclo
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [payStatus, searchParams]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -137,13 +159,28 @@ export default function LoginPage() {
 
           {tab === 'login' ? (
             <>
-              {paymentMsg && (
-                <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${
-                  paymentMsg.includes('confirmado') ? 'bg-green-900/30 border border-green-700 text-green-400' :
-                  paymentMsg.includes('pendente') ? 'bg-yellow-900/30 border border-yellow-700 text-yellow-400' :
-                  'bg-red-900/30 border border-red-700 text-red-400'
-                }`}>
-                  {paymentMsg}
+              {payStatus === 'approved' && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4 text-sm bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 animate-scale-in">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span><strong>Pagamento confirmado!</strong> Sua conta está liberada — faça login para começar.</span>
+                </div>
+              )}
+              {payStatus === 'pending' && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4 text-sm bg-amber-50 dark:bg-yellow-900/30 border border-amber-300 dark:border-yellow-700 text-amber-700 dark:text-yellow-400">
+                  <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span>
+                    <strong>Aguardando confirmação do pagamento...</strong><br />
+                    <span className="text-[12px] opacity-80">Verificamos automaticamente — assim que compensar, esta tela é liberada sozinha.</span>
+                  </span>
+                </div>
+              )}
+              {payStatus === 'rejected' && (
+                <div className="px-4 py-3 rounded-xl mb-4 text-sm bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-400">
+                  Pagamento não aprovado. Tente novamente ou fale conosco pelo WhatsApp.
                 </div>
               )}
               {error && (

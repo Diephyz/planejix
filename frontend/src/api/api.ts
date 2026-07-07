@@ -129,6 +129,8 @@ export const paymentsAPI = {
     api.get<{ plan: string; payment_id: string | null; started_at: string | null }>('/payments/status'),
   cancel: () =>
     api.post<{ success: boolean; plan: string }>('/payments/cancel'),
+  check: (userId: number, paymentId?: string) =>
+    api.get<{ approved: boolean; plan: string }>('/payments/check', { params: { user_id: userId, payment_id: paymentId } }),
 };
 
 export const notificationsAPI = {

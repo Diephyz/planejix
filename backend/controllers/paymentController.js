@@ -129,6 +129,40 @@ exports.webhook = async (req, res) => {
   }
 };
 
+/**
+ * Endpoint público de polling pós-checkout: informa se a conta já foi
+ * liberada. Se ainda não e um payment_id foi informado, consulta o MP
+ * diretamente (fallback para webhook atrasado/perdido).
+ */
+exports.check = async (req, res) => {
+  const userId = parseInt(req.query.user_id);
+  const paymentId = req.query.payment_id;
+
+  if (!userId) return res.status(400).json({ error: 'user_id é obrigatório' });
+
+  const user = db.prepare('SELECT id, approved, plan FROM users WHERE id = ?').get(userId);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  if (!user.approved && paymentId && process.env.MP_ACCESS_TOKEN) {
+    try {
+      const payment = new Payment(getClient());
+      const data = await payment.get({ id: paymentId });
+      if (data.status === 'approved' && parseInt(data.external_reference) === userId) {
+        try { db.exec('ALTER TABLE users ADD COLUMN mp_payment_id TEXT'); } catch {}
+        try { db.exec('ALTER TABLE users ADD COLUMN plan_started_at TEXT'); } catch {}
+        db.prepare('UPDATE users SET plan = ?, approved = 1, mp_payment_id = ?, plan_started_at = ? WHERE id = ?')
+          .run('pro', String(paymentId), new Date().toISOString(), userId);
+        console.log(`[Pagamento] Usuário ${userId} liberado via polling (payment ${paymentId})`);
+        return res.json({ approved: true, plan: 'pro' });
+      }
+    } catch (err) {
+      console.warn('[Pagamento] Falha ao consultar MP no polling:', err.message);
+    }
+  }
+
+  res.json({ approved: !!user.approved, plan: user.plan || 'free' });
+};
+
 exports.cancel = (req, res) => {
   const userId = req.user.userId;
 

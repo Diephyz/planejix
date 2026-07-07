@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.planejix.com.br" }],
+      "destination": "https://planejix.com.br/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "https://api-planejix.duckdns.org/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }

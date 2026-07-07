@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Allow: /welcome
+Allow: /privacy
+Allow: /terms
+Allow: /login
+Disallow: /admin
+Disallow: /approvals
+Disallow: /transactions
+Disallow: /budgets
+Disallow: /savings
+Disallow: /categories
+Disallow: /import
+Disallow: /profile
+Disallow: /upgrade
+Disallow: /reset-password
+
+Sitemap: https://planejix.com.br/sitemap.xml

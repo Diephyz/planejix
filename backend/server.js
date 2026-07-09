@@ -84,6 +84,17 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Health check para monitoramento de uptime — valida servidor + banco
+app.get('/api/health', (req, res) => {
+  try {
+    const db = require('./database/db');
+    db.prepare('SELECT 1').get();
+    res.json({ ok: true, uptime: Math.round(process.uptime()) });
+  } catch (err) {
+    res.status(503).json({ ok: false, error: 'database' });
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);

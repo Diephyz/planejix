@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as XLSX from 'xlsx';
 import { transactionsAPI, categoriesAPI } from '../api/api';
 import type { Transaction, Category, TransactionFilters } from '../types';
 import TransactionTable from '../components/transactions/TransactionTable';
@@ -89,7 +88,8 @@ export default function TransactionsPage() {
     }
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
+    const XLSX = await import('xlsx'); // carregado sob demanda (~400KB)
     const kindLabel = (k: string | null | undefined) => {
       if (k === 'fixed') return 'Fixo';
       if (k === 'variable') return 'Variável';

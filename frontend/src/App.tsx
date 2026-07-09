@@ -1,28 +1,32 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import PrivateRoute from './components/auth/PrivateRoute';
 import AppLayout from './components/layout/AppLayout';
+// Páginas públicas de entrada ficam no bundle principal (primeira dor de carregamento)
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
-import TransactionsPage from './pages/TransactionsPage';
-import CategoriesPage from './pages/CategoriesPage';
-import ImportPage from './pages/ImportPage';
-import BudgetsPage from './pages/BudgetsPage';
-import AdminPage from './pages/AdminPage';
-import ApprovalsPage from './pages/ApprovalsPage';
-import UpgradePage from './pages/UpgradePage';
-import SavingsPage from './pages/SavingsPage';
-import ProfilePage from './pages/ProfilePage';
-import PrivacyPage from './pages/PrivacyPage';
-import TermsPage from './pages/TermsPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
 import InstallPrompt from './components/shared/InstallPrompt';
 import CookieConsent from './components/shared/CookieConsent';
+import PageLoader from './components/shared/PageLoader';
 import { Analytics } from '@vercel/analytics/react';
 import type { ReactNode } from 'react';
+
+// Demais páginas são chunks separados, baixados só quando a rota é visitada
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const TransactionsPage = lazy(() => import('./pages/TransactionsPage'));
+const CategoriesPage = lazy(() => import('./pages/CategoriesPage'));
+const ImportPage = lazy(() => import('./pages/ImportPage'));
+const BudgetsPage = lazy(() => import('./pages/BudgetsPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const ApprovalsPage = lazy(() => import('./pages/ApprovalsPage'));
+const UpgradePage = lazy(() => import('./pages/UpgradePage'));
+const SavingsPage = lazy(() => import('./pages/SavingsPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 
 function AdminRoute({ children }: { children: ReactNode }) {
   const { isAdmin } = useAuth();
@@ -37,6 +41,7 @@ export default function App() {
         <Analytics />
         <InstallPrompt />
         <CookieConsent />
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/welcome" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -65,6 +70,7 @@ export default function App() {
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
       </ToastProvider>
     </AuthProvider>

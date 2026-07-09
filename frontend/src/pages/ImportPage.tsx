@@ -1,7 +1,14 @@
 import { useState, useRef } from 'react';
-import * as XLSX from 'xlsx';
 import { transactionsAPI, categoriesAPI } from '../api/api';
 import type { Category } from '../types';
+
+// xlsx pesa ~400KB minificado — carrega sob demanda para não inflar o bundle inicial
+type XlsxModule = typeof import('xlsx');
+let xlsx: XlsxModule | null = null;
+async function loadXlsx(): Promise<XlsxModule> {
+  if (!xlsx) xlsx = await import('xlsx');
+  return xlsx;
+}
 
 interface Row {
   tipo: string;
@@ -19,9 +26,9 @@ interface PreviewRow extends Row {
 
 function parseDate(raw: string): string {
   if (!raw) return '';
-  // Excel serial number
-  if (/^\d+$/.test(String(raw))) {
-    const date = XLSX.SSF.parse_date_code(Number(raw));
+  // Excel serial number (xlsx já foi carregado por handleFile antes de chegar aqui)
+  if (/^\d+$/.test(String(raw)) && xlsx) {
+    const date = xlsx.SSF.parse_date_code(Number(raw));
     if (date) {
       const m = String(date.m).padStart(2, '0');
       const d = String(date.d).padStart(2, '0');
@@ -50,7 +57,8 @@ function parseKind(raw: string): 'fixed' | 'variable' | 'custom' {
   return 'custom';
 }
 
-function downloadTemplate() {
+async function downloadTemplate() {
+  const XLSX = await loadXlsx();
   const headers = ['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo'];
   const examples = [
     ['Saída', 'Supermercado', 250.00, '15/05/2026', 'Alimentação', 'Variável'],
@@ -78,6 +86,7 @@ export default function ImportPage() {
     const cats = await categoriesAPI.getAll().then(r => r.data);
     setCategories(cats);
 
+    const XLSX = await loadXlsx();
     const buf = await file.arrayBuffer();
     const wb = XLSX.read(buf, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];

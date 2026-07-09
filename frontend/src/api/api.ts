@@ -26,6 +26,10 @@ api.interceptors.response.use(
 export const profileAPI = {
   update: (data: { name?: string; email?: string }) =>
     api.put('/auth/profile', data),
+  changePassword: (current_password: string, new_password: string) =>
+    api.put('/auth/password', { current_password, new_password }),
+  updateAvatar: (avatar: string | null) =>
+    api.put('/auth/avatar', { avatar }),
 };
 
 export const authAPI = {

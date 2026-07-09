@@ -98,6 +98,8 @@ AUTH
 POST /api/auth/register   { username, password, name? }  → { token, user }
 POST /api/auth/login      { username, password }          → { token, user }
 POST /api/auth/google     { credential }                  → { token, user }
+PUT  /api/auth/password   { current_password, new_password } → { token } — bumps token_version (derruba outras sessões; erro de senha atual retorna 400, não 401)
+PUT  /api/auth/avatar     { avatar: dataURL|null }        → user — foto custom (data:) nunca é sobrescrita pelo avatar do Google no login
 
 TRANSACTIONS (JWT required)
 GET    /api/transactions         ?year&month&type&category_id&date_from&date_to

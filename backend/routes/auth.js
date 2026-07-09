@@ -14,6 +14,8 @@ const authLimiter = rateLimit({
 
 router.get('/me', authMiddleware, authController.me);
 router.put('/profile', authMiddleware, authController.updateProfile);
+router.put('/password', authLimiter, authMiddleware, authController.changePassword);
+router.put('/avatar', authMiddleware, authController.updateAvatar);
 router.post('/register', authLimiter, authController.register);
 router.post('/login', authLimiter, authController.login);
 router.post('/google', authLimiter, authController.googleAuth);

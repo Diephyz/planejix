@@ -124,7 +124,8 @@ exports.googleAuth = async (req, res) => {
     if (!user && email) {
       user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
       if (user) {
-        db.prepare('UPDATE users SET google_id = ?, avatar_url = ? WHERE id = ?').run(googleId, picture || null, user.id);
+        // Não sobrescreve foto enviada pelo usuário (data:) com a do Google
+        db.prepare("UPDATE users SET google_id = ?, avatar_url = CASE WHEN avatar_url LIKE 'data:%' THEN avatar_url ELSE ? END WHERE id = ?").run(googleId, picture || null, user.id);
       }
     }
 
@@ -132,8 +133,8 @@ exports.googleAuth = async (req, res) => {
       return res.status(403).json({ error: 'Conta não encontrada. Entre em contato com o administrador.' });
     }
 
-    // Save email and avatar on every login
-    db.prepare('UPDATE users SET email = COALESCE(email, ?), avatar_url = ? WHERE id = ?')
+    // Save email and avatar on every login (mas preserva foto enviada pelo usuário)
+    db.prepare("UPDATE users SET email = COALESCE(email, ?), avatar_url = CASE WHEN avatar_url LIKE 'data:%' THEN avatar_url ELSE ? END WHERE id = ?")
       .run(email || null, picture || null, user.id);
 
     // Promote to admin if this is the known admin email
@@ -263,6 +264,63 @@ exports.resetPassword = (req, res) => {
     .run(hash, user.id);
 
   res.json({ message: 'Senha redefinida com sucesso!' });
+};
+
+exports.changePassword = (req, res) => {
+  const { userId } = req.user;
+  const { current_password, new_password } = req.body;
+
+  if (!current_password || !new_password) {
+    return res.status(400).json({ error: 'Senha atual e nova senha são obrigatórias' });
+  }
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  if (!user.password) {
+    return res.status(400).json({ error: 'Sua conta entra com o Google e não tem senha. Use "Esqueci minha senha" na tela de login para criar uma.' });
+  }
+
+  // 400 (não 401): o interceptor do frontend desloga em qualquer 401
+  if (!bcrypt.compareSync(current_password, user.password)) {
+    return res.status(400).json({ error: 'Senha atual incorreta' });
+  }
+
+  if (new_password === current_password) {
+    return res.status(400).json({ error: 'A nova senha deve ser diferente da atual' });
+  }
+
+  const pwError = validatePasswordStrength(new_password);
+  if (pwError) return res.status(400).json({ error: pwError });
+
+  const hash = bcrypt.hashSync(new_password, 12);
+  const newVersion = (user.token_version || 0) + 1;
+  db.prepare('UPDATE users SET password = ?, token_version = ? WHERE id = ?').run(hash, newVersion, userId);
+
+  // Novo token com a versão atualizada: a sessão atual continua, as outras caem
+  const token = signToken(user.id, user.username, newVersion);
+  res.json({ message: 'Senha alterada com sucesso', token });
+};
+
+exports.updateAvatar = (req, res) => {
+  const { userId } = req.user;
+  const { avatar } = req.body;
+
+  if (avatar === null || avatar === '') {
+    db.prepare('UPDATE users SET avatar_url = NULL WHERE id = ?').run(userId);
+  } else {
+    if (typeof avatar !== 'string' || !/^data:image\/(jpeg|png|webp);base64,/.test(avatar)) {
+      return res.status(400).json({ error: 'Formato de imagem inválido. Envie JPEG, PNG ou WebP.' });
+    }
+    // O frontend redimensiona para 256px antes de enviar; limite defensivo
+    if (avatar.length > 400_000) {
+      return res.status(400).json({ error: 'Imagem muito grande. Tente uma foto menor.' });
+    }
+    db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(avatar, userId);
+  }
+
+  const updated = db.prepare('SELECT id, username, name, email, is_admin, avatar_url, plan FROM users WHERE id = ?').get(userId);
+  res.json({ id: updated.id, username: updated.username, name: updated.name, email: updated.email, is_admin: !!updated.is_admin, avatar_url: updated.avatar_url, plan: updated.plan || 'free' });
 };
 
 exports.deleteAccount = (req, res) => {

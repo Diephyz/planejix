@@ -1,8 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { profileAPI, authAPI } from '../api/api';
 import Modal from '../components/shared/Modal';
+
+/** Redimensiona a imagem no navegador para caber no limite do backend. */
+function resizeImage(file: File, maxSize = 256): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas não suportado'));
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Arquivo não é uma imagem válida'));
+    };
+    img.src = url;
+  });
+}
 
 export default function ProfilePage() {
   const { user, plan, isPro, login: setAuthUser, token, logout } = useAuth();
@@ -13,6 +39,14 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -38,6 +72,70 @@ export default function ProfilePage() {
     }
   };
 
+  const handleAvatarFile = async (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast('Escolha um arquivo de imagem (JPG, PNG...)', 'error');
+      return;
+    }
+    setAvatarUploading(true);
+    try {
+      const dataUrl = await resizeImage(file);
+      const res = await profileAPI.updateAvatar(dataUrl);
+      if (token) setAuthUser(token, res.data);
+      toast('Foto de perfil atualizada');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast(msg || 'Erro ao enviar a foto', 'error');
+    } finally {
+      setAvatarUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    setAvatarUploading(true);
+    try {
+      const res = await profileAPI.updateAvatar(null);
+      if (token) setAuthUser(token, res.data);
+      toast('Foto removida');
+    } catch {
+      toast('Erro ao remover a foto', 'error');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast('Preencha todos os campos de senha', 'error');
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast('A nova senha deve ter pelo menos 8 caracteres', 'error');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast('A confirmação não confere com a nova senha', 'error');
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      const res = await profileAPI.changePassword(currentPassword, newPassword);
+      // Novo token mantém esta sessão ativa; as demais são desconectadas
+      if (res.data.token && user) setAuthUser(res.data.token, user);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      toast('Senha alterada com sucesso');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast(msg || 'Erro ao alterar a senha', 'error');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   const displayName = user?.name || user?.username || '';
   const initials = displayName.charAt(0).toUpperCase();
 
@@ -50,13 +148,56 @@ export default function ProfilePage() {
 
       {/* Avatar + Plan */}
       <div className="card flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left">
-        {user?.avatar_url ? (
-          <img src={user.avatar_url} alt="avatar" className="w-20 h-20 rounded-2xl object-cover flex-shrink-0 ring-2 ring-brand-600/30" />
-        ) : (
-          <div className="w-20 h-20 bg-brand-700 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-900 dark:text-white flex-shrink-0 ring-2 ring-brand-600/30">
-            {initials}
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={avatarUploading}
+            className="relative group w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-brand-600/30 cursor-pointer disabled:opacity-60"
+            title="Alterar foto de perfil"
+          >
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-brand-700 flex items-center justify-center text-2xl font-bold text-gray-900 dark:text-white">
+                {initials}
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-0.5">
+              {avatarUploading ? (
+                <svg className="w-5 h-5 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+              ) : (
+                <>
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-[10px] text-white font-medium">Alterar</span>
+                </>
+              )}
+            </div>
+          </button>
+          {user?.avatar_url && (
+            <button
+              type="button"
+              onClick={handleRemoveAvatar}
+              disabled={avatarUploading}
+              className="text-[11px] text-gray-500 hover:text-red-400 transition-colors cursor-pointer"
+            >
+              Remover foto
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleAvatarFile(e.target.files?.[0])}
+          />
+        </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">{displayName}</h3>
           <p className="text-sm text-gray-400">@{user?.username}</p>
@@ -120,6 +261,65 @@ export default function ProfilePage() {
             className="btn-primary px-6 disabled:opacity-50"
           >
             {saving ? 'Salvando...' : 'Salvar alterações'}
+          </button>
+        </div>
+      </div>
+
+      {/* Change password */}
+      <div className="card space-y-5">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Alterar senha</h3>
+          <p className="text-xs text-gray-500 mt-0.5">Ao trocar a senha, suas outras sessões serão desconectadas</p>
+        </div>
+
+        <div>
+          <label className="label">Senha atual</label>
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className="input-field"
+            placeholder="••••••••"
+            autoComplete="current-password"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="label">Nova senha</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="input-field"
+              placeholder="Mínimo 8 caracteres"
+              autoComplete="new-password"
+            />
+          </div>
+          <div>
+            <label className="label">Confirmar nova senha</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="input-field"
+              placeholder="Repita a nova senha"
+              autoComplete="new-password"
+            />
+          </div>
+        </div>
+
+        {newPassword && confirmPassword && newPassword !== confirmPassword && (
+          <p className="text-xs text-red-400">As senhas não conferem</p>
+        )}
+
+        <div className="flex justify-end pt-1">
+          <button
+            onClick={handleChangePassword}
+            disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
+            className="btn-primary px-6 disabled:opacity-50"
+          >
+            {changingPassword ? 'Alterando...' : 'Alterar senha'}
           </button>
         </div>
       </div>

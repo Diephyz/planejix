@@ -165,7 +165,7 @@ export default function LandingPage() {
           <div className="w-px h-8 bg-gray-200 hidden sm:block" />
           <div>
             <p className="text-2xl font-bold text-gray-900">4.9</p>
-            <p className="text-xs text-gray-500 flex items-center gap-1"><StarRating /></p>
+            <div className="text-xs text-gray-500 flex items-center gap-1"><StarRating /></div>
           </div>
           <div className="w-px h-8 bg-gray-200 hidden sm:block" />
           <div>

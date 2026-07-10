@@ -30,7 +30,13 @@ const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 
 function AdminRoute({ children }: { children: ReactNode }) {
   const { isAdmin } = useAuth();
-  return isAdmin ? <>{children}</> : <Navigate to="/" replace />;
+  return isAdmin ? <>{children}</> : <Navigate to="/dashboard" replace />;
+}
+
+// Raiz do site: landing para visitantes, painel para quem já está logado
+function HomeGate() {
+  const { token } = useAuth();
+  return token ? <Navigate to="/dashboard" replace /> : <LandingPage />;
 }
 
 export default function App() {
@@ -43,19 +49,19 @@ export default function App() {
         <CookieConsent />
         <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/welcome" element={<LandingPage />} />
+          <Route path="/" element={<HomeGate />} />
+          <Route path="/welcome" element={<Navigate to="/" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route
-            path="/"
             element={
               <PrivateRoute>
                 <AppLayout />
               </PrivateRoute>
             }
           >
-            <Route index element={<DashboardPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
             <Route path="budgets" element={<BudgetsPage />} />
             <Route path="categories" element={<CategoriesPage />} />

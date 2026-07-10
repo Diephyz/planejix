@@ -12,7 +12,7 @@ export default defineConfig({
         name: 'Planejix - Carteira Inteligente',
         short_name: 'Planejix',
         description: 'Gerencie suas finanças pessoais de forma inteligente',
-        start_url: '/',
+        start_url: '/dashboard',
         display: 'standalone',
         background_color: '#0A0A12',
         theme_color: '#10B981',

@@ -24,7 +24,7 @@ export default function RegisterPage() {
     try {
       const res = await authAPI.register(username, password);
       login(res.data.token, res.data.user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
       setError(msg || 'Erro ao criar conta');

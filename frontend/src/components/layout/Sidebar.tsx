@@ -9,7 +9,7 @@ interface SidebarProps {
 
 const navItems = [
   {
-    to: '/',
+    to: '/dashboard',
     label: 'Dashboard',
     icon: (
       <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,9 +110,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
           <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest px-3 mb-2">Menu</p>
           {navItems.map((item) => {
-            const isActive = item.to === '/'
-              ? location.pathname === '/'
-              : location.pathname.startsWith(item.to);
+            const isActive = location.pathname.startsWith(item.to);
             return (
               <NavLink
                 key={item.to}

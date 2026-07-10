@@ -5,6 +5,11 @@
       "has": [{ "type": "host", "value": "www.planejix.com.br" }],
       "destination": "https://planejix.com.br/$1",
       "permanent": true
+    },
+    {
+      "source": "/welcome",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "rewrites": [

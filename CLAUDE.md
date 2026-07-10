@@ -57,7 +57,7 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 
 - **API layer**: `api/api.ts` — single axios instance. Exports `authAPI`, `transactionsAPI`, `categoriesAPI`, `budgetsAPI`, `adminAPI`, `notificationsAPI`. Request interceptor attaches JWT; response interceptor redirects to `/login` on 401.
 - **Auth state**: `context/AuthContext.tsx` (`useAuth` hook) — persists token + user (`{ id, username, name }`) in `localStorage` under `expense_token` / `expense_user`.
-- **Routing** (`App.tsx`): Public: `/login`. Private (inside `PrivateRoute > AppLayout`): `/` (Dashboard), `/transactions`, `/budgets`, `/savings`, `/categories`, `/import`, `/profile`, `/upgrade`. Admin: `/admin`, `/approvals`.
+- **Routing** (`App.tsx`): Public: `/` (HomeGate — landing para deslogado, redirect `/dashboard` se logado), `/login`, `/reset-password`; `/welcome` → redirect 308 para `/` (também no vercel.json). Private (inside `PrivateRoute > AppLayout`): `/dashboard`, `/transactions`, `/budgets`, `/savings`, `/categories`, `/import`, `/profile`, `/upgrade`. Admin: `/admin`, `/approvals`. PWA `start_url` = `/dashboard`.
 - **Vite proxy**: `/api/*` → `http://localhost:3001`. Configured in `vite.config.ts`.
 - **Theme**: Tailwind `darkMode: 'class'`. Premium dark palette (`#08080d` → `#3d3d54`). Glassmorphism cards with `backdrop-filter: blur(20px)` and rgba borders. Sidebar with gradient background. All component classes in `index.css` use rgba/glass pattern (no `dark:` variants needed for most components).
 - **Design system**: Claude Design project "Planejix Design System" with 9 HTML previews (tokens: colors, typography, animations; components: buttons, cards, inputs, toasts, skeleton, navigation).
@@ -70,7 +70,7 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 | Route | Component | Notes |
 |---|---|---|
 | `/login` | `LoginPage.tsx` | Tabbed login + register with animated floating orbs, input icons (user/lock), Google OAuth. WhatsApp contact button on register. |
-| `/` | `DashboardPage.tsx` | 5 KPI cards (receitas, despesas, saldo, maior gasto, saúde financeira) + budget alerts chips + area chart + upcoming payments + top categories ranking + recent transactions with category icons + bar chart. Quick actions (nova transação, PDF). |
+| `/dashboard` | `DashboardPage.tsx` | 5 KPI cards (receitas, despesas, saldo, maior gasto, saúde financeira) + budget alerts chips + area chart + upcoming payments + top categories ranking + recent transactions with category icons + bar chart. Quick actions (nova transação, PDF). |
 | `/transactions` | `TransactionsPage.tsx` | Paginated (10/page) table, summary strip, export to Excel, edit + delete with modal, date-range filter toggle, responsive grid filters. |
 | `/budgets` | `BudgetsPage.tsx` | Budget goals per category with progress bars (green/yellow/red). CRUD via modal. Skeleton loading. |
 | `/savings` | `SavingsPage.tsx` | Savings goals with circular SVG progress, deposit modal, CRUD. No plan limits (Free plan extinct). |

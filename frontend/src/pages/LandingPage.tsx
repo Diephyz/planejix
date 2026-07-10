@@ -175,6 +175,80 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Product screenshots — prova visual com dados demo */}
+      <section className="px-4 sm:px-6 py-16 sm:py-20" style={{ background: 'linear-gradient(180deg, #0b0b12, #12121c)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10 sm:mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-4 border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
+              Feito para o seu dinheiro render
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Veja o Planejix por dentro</h2>
+            <p className="text-gray-400 max-w-xl mx-auto">Interface real do app — saldo acumulativo, gráficos, metas e lembretes em um visual que dá gosto de abrir todo dia.</p>
+          </div>
+
+          {/* Print principal: dashboard em moldura de navegador */}
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10 max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a24] border-b border-white/5">
+              <span className="w-3 h-3 rounded-full bg-red-400/80" />
+              <span className="w-3 h-3 rounded-full bg-amber-400/80" />
+              <span className="w-3 h-3 rounded-full bg-emerald-400/80" />
+              <span className="ml-3 text-[11px] text-gray-500 bg-white/5 rounded-md px-3 py-1 hidden sm:block">planejix.com.br</span>
+            </div>
+            <img
+              src="/screenshots/dashboard-desktop.jpeg"
+              alt="Dashboard do Planejix com saldo total, insights automáticos e gráfico de evolução anual"
+              width={1440} height={900}
+              loading="lazy"
+              className="w-full h-auto block"
+            />
+          </div>
+
+          {/* Prints secundários + mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 max-w-5xl mx-auto items-start">
+            <div className="md:col-span-1 space-y-6">
+              <figure>
+                <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                  <img
+                    src="/screenshots/transacoes-desktop.jpeg"
+                    alt="Lista de transações do Planejix com filtros e exportação para Excel"
+                    width={1440} height={900}
+                    loading="lazy"
+                    className="w-full h-auto block"
+                  />
+                </div>
+                <figcaption className="text-xs text-gray-500 mt-2 text-center">Transações com filtros e exportação para Excel</figcaption>
+              </figure>
+              <figure>
+                <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                  <img
+                    src="/screenshots/economia-desktop.jpeg"
+                    alt="Metas de economia do Planejix com progresso circular"
+                    width={1440} height={900}
+                    loading="lazy"
+                    className="w-full h-auto block"
+                  />
+                </div>
+                <figcaption className="text-xs text-gray-500 mt-2 text-center">Metas de economia com progresso visual</figcaption>
+              </figure>
+            </div>
+            <div className="md:col-span-2 flex flex-col items-center">
+              <div className="rounded-[2rem] overflow-hidden border-[6px] border-[#1a1a24] shadow-2xl shadow-emerald-500/10 max-w-[300px]">
+                <img
+                  src="/screenshots/dashboard-mobile.jpeg"
+                  alt="Planejix no celular: dashboard responsivo instalável como aplicativo"
+                  width={390} height={844}
+                  loading="lazy"
+                  className="w-full h-auto block"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-3 text-center">No celular é app de verdade: instale na tela inicial, use até offline</p>
+            </div>
+          </div>
+
+          <p className="text-[11px] text-gray-600 mt-8 text-center">Capturas de tela reais do produto, com dados de demonstração.</p>
+        </div>
+      </section>
+
       {/* Before/After — Pain points */}
       <section className="px-4 sm:px-6 py-16 sm:py-20 max-w-4xl mx-auto">
         <div className="text-center mb-12">

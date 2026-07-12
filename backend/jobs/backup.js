@@ -1,8 +1,8 @@
 const cron = require('node-cron');
 const fs = require('fs');
 const path = require('path');
+const db = require('../database/db');
 
-const DB_PATH = path.join(__dirname, '..', 'database', 'expenses.db');
 const BACKUP_DIR = path.join(__dirname, '..', 'backups');
 const MAX_BACKUPS = 7;
 
@@ -15,7 +15,15 @@ function runBackup() {
     const timestamp = new Date().toISOString().split('T')[0];
     const backupFile = path.join(BACKUP_DIR, `expenses_${timestamp}.db`);
 
-    fs.copyFileSync(DB_PATH, backupFile);
+    // VACUUM INTO tira um snapshot completo e consistente pela conexão viva do
+    // banco — inclui o conteúdo do WAL, que um copyFileSync do arquivo principal
+    // deixaria de fora (bug que deixou backups sem semanas de dados).
+    if (fs.existsSync(backupFile)) fs.unlinkSync(backupFile);
+    db.prepare('VACUUM INTO ?').run(backupFile);
+
+    // Consolida o WAL no arquivo principal, reduzindo a janela de perda
+    db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+
     console.log(`[Backup] Backup criado: ${backupFile}`);
 
     const backups = fs.readdirSync(BACKUP_DIR)

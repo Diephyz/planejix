@@ -212,6 +212,14 @@ exports.webhook = async (req, res) => {
       if (paymentData.status === 'approved') {
         const userId = parseInt(paymentData.external_reference);
         if (userId) activatePixAccess(userId, data.id);
+      } else if (paymentData.status === 'refunded' || paymentData.status === 'charged_back') {
+        // Reembolso/estorno: revoga o acesso só se este for o pagamento que ativou o plano vigente
+        const userId = parseInt(paymentData.external_reference);
+        const user = userId ? db.prepare('SELECT mp_payment_id FROM users WHERE id = ?').get(userId) : null;
+        if (user && user.mp_payment_id === String(data.id)) {
+          db.prepare("UPDATE users SET plan = 'free', mp_payment_id = NULL, plan_expires_at = NULL WHERE id = ?").run(userId);
+          console.log(`[Pagamento] Payment ${data.id} ${paymentData.status} — acesso Pro do usuário ${userId} revogado`);
+        }
       }
     }
 

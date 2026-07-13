@@ -1,41 +1,79 @@
 const cron = require('node-cron');
 const db = require('../database/db');
 
+/** 'YYYY-MM' do mês `delta` meses antes/depois de (y, m). */
+function ymShift(y, m, delta) {
+  const dt = new Date(y, m - 1 + delta, 1);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+}
+
 function generateRecurringTransactions() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const curY = now.getFullYear();
+  const curM = now.getMonth() + 1;
   const today = now.getDate();
 
-  // Find all recurring transactions
   const recurring = db.prepare(`
     SELECT * FROM transactions
     WHERE recurring = 1 AND recurring_parent_id IS NULL
   `).all();
 
   for (const t of recurring) {
-    const originalDay = parseInt(t.date.split('-')[2], 10);
-    // Only generate on the same day of month as the original transaction
-    if (today !== originalDay) continue;
+    const [oy, om, od] = t.date.split('-').map(Number);
+    const originalYm = `${oy}-${String(om).padStart(2, '0')}`;
 
-    // Check if already generated this month
-    const exists = db.prepare(`
-      SELECT id FROM transactions
-      WHERE recurring_parent_id = ? AND strftime('%Y-%m', date) = ?
-    `).get(t.id, `${year}-${month}`);
+    // Ponto de partida: último mês já gerado (coluna; se vazia, deduz da cópia
+    // mais recente; sem cópias, o mês da transação original).
+    let startYm = t.recurring_last_generated;
+    if (!startYm) {
+      const lastCopy = db.prepare(`
+        SELECT MAX(strftime('%Y-%m', date)) AS ym
+        FROM transactions WHERE recurring_parent_id = ?
+      `).get(t.id);
+      startYm = (lastCopy && lastCopy.ym) || originalYm;
+    }
 
-    if (exists) continue;
+    // Catch-up limitado a 2 meses pra trás — recupera downtime sem despejar
+    // um histórico gigante de uma vez em dados antigos.
+    const cap = ymShift(curY, curM, -2);
+    if (startYm < cap && originalYm < cap) startYm = cap;
 
-    // Create copy for current month, capping day at 28 to avoid invalid dates
-    const day = Math.min(originalDay, 28);
-    const newDate = `${year}-${month}-${String(day).padStart(2, '0')}`;
+    let [y, m] = startYm.split('-').map(Number);
+    let lastGenerated = null;
 
-    db.prepare(`
-      INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring, recurring_parent_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-    `).run(t.user_id, t.category_id, t.type, t.kind, t.description, t.amount, newDate, t.notes, t.id);
+    // Gera cada mês pendente, do seguinte ao ponto de partida até o mês atual.
+    for (;;) {
+      m++;
+      if (m > 12) { m = 1; y++; }
+      if (y > curY || (y === curY && m > curM)) break;
 
-    console.log(`[Recorrente] Gerado: "${t.description}" para ${newDate} (user ${t.user_id})`);
+      const daysInMonth = new Date(y, m, 0).getDate();
+      const day = Math.min(od, daysInMonth); // dia 31 vira 28/29/30 em meses curtos
+
+      // No mês corrente espera chegar o dia; meses passados geram direto.
+      if (y === curY && m === curM && today < day) break;
+
+      const ym = `${y}-${String(m).padStart(2, '0')}`;
+      const exists = db.prepare(`
+        SELECT id FROM transactions
+        WHERE recurring_parent_id = ? AND strftime('%Y-%m', date) = ?
+      `).get(t.id, ym);
+
+      if (!exists) {
+        const newDate = `${ym}-${String(day).padStart(2, '0')}`;
+        db.prepare(`
+          INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring, recurring_parent_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+        `).run(t.user_id, t.category_id, t.type, t.kind, t.description, t.amount, newDate, t.notes, t.id);
+
+        console.log(`[Recorrente] Gerado: "${t.description}" para ${newDate} (user ${t.user_id})`);
+      }
+      lastGenerated = ym;
+    }
+
+    if (lastGenerated && lastGenerated !== t.recurring_last_generated) {
+      db.prepare('UPDATE transactions SET recurring_last_generated = ? WHERE id = ?').run(lastGenerated, t.id);
+    }
   }
 }
 
@@ -51,4 +89,4 @@ function startRecurringJob() {
   console.log('[Recorrente] Job de transações recorrentes iniciado.');
 }
 
-module.exports = { startRecurringJob };
+module.exports = { startRecurringJob, generateRecurringTransactions };

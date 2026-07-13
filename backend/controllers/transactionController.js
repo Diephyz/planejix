@@ -241,13 +241,17 @@ exports.getByCategory = (req, res) => {
 
 function addMonths(dateStr, months) {
   const [y, m, d] = dateStr.split('-').map(Number);
-  const dt = new Date(y, m - 1 + months, d);
-  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  // Ancora no dia 1 e trava o dia no fim do mês de destino — sem isso,
+  // 31/01 + 1 mês vira 03/03 (pula fevereiro inteiro)
+  const target = new Date(y, m - 1 + months, 1);
+  const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  const day = Math.min(d, lastDay);
+  return `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 exports.create = (req, res) => {
   const { userId } = req.user;
-  const { type, kind, description, amount, date, category_id, notes, installment_total } = req.body;
+  const { type, kind, description, amount, date, category_id, notes, installment_total, recurring } = req.body;
 
   if (!type || !description || !amount || !date) {
     return res.status(400).json({ error: 'Tipo, descrição, valor e data são obrigatórios' });
@@ -300,11 +304,11 @@ exports.create = (req, res) => {
 
   // ── Normal ───────────────────────────────────────────────────────────────
   const result = db.prepare(`
-    INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     userId, category_id || null, type, kind || 'variable',
-    description, Number(amount), date, notes || null
+    description, Number(amount), date, notes || null, recurring ? 1 : 0
   );
 
   const created = db.prepare(`
@@ -326,7 +330,7 @@ exports.update = (req, res) => {
   if (!description || !amount || !date) return res.status(400).json({ error: 'Descrição, valor e data são obrigatórios' });
   if (Number(amount) <= 0) return res.status(400).json({ error: 'Valor deve ser maior que zero' });
 
-  const transaction = db.prepare('SELECT id FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
+  const transaction = db.prepare('SELECT id, recurring, recurring_parent_id FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
   if (!transaction) return res.status(404).json({ error: 'Transação não encontrada' });
 
   db.prepare(`
@@ -336,6 +340,18 @@ exports.update = (req, res) => {
     WHERE id = ? AND user_id = ?
   `).run(type, kind || 'variable', description, Number(amount), date,
     category_id || null, notes || null, recurring ? 1 : 0, id, userId);
+
+  // Recorrência LIGADA agora numa transação-mãe: ancora o ponto de partida no
+  // mês anterior — o job passa a gerar deste mês em diante, sem backfill de
+  // meses em que a recorrência esteve desligada.
+  if (recurring && !transaction.recurring && !transaction.recurring_parent_id) {
+    const now = new Date();
+    const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const prevYm = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`;
+    const originalYm = String(date).slice(0, 7);
+    const anchor = originalYm > prevYm ? originalYm : prevYm;
+    db.prepare('UPDATE transactions SET recurring_last_generated = ? WHERE id = ?').run(anchor, id);
+  }
 
   const updated = db.prepare(`
     SELECT t.*, c.name AS category_name, c.color AS category_color
@@ -354,6 +370,10 @@ exports.remove = (req, res) => {
     return res.status(404).json({ error: 'Transação não encontrada' });
   }
 
+  // Cópias ficam órfãs quando a mãe morre (FK ON DELETE SET NULL) — sem isso,
+  // cada cópia com recurring=1 viraria uma nova "mãe" e multiplicaria lançamentos
+  db.prepare('UPDATE transactions SET recurring = 0 WHERE recurring_parent_id = ? AND user_id = ?').run(id, userId);
+
   db.prepare('DELETE FROM transactions WHERE id = ?').run(id);
   res.json({ success: true });
 };
@@ -365,6 +385,16 @@ exports.removeBulk = (req, res) => {
   if (!year || !month) {
     return res.status(400).json({ error: 'Ano e mês são obrigatórios' });
   }
+
+  // Neutraliza cópias cujas mães serão apagadas neste lote (mesmo motivo do remove)
+  db.prepare(`
+    UPDATE transactions SET recurring = 0
+    WHERE user_id = ? AND recurring_parent_id IN (
+      SELECT id FROM transactions
+      WHERE user_id = ? AND recurring = 1 AND recurring_parent_id IS NULL
+        AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
+    )
+  `).run(userId, userId, String(year), String(month).padStart(2, '0'));
 
   const result = db.prepare(`
     DELETE FROM transactions

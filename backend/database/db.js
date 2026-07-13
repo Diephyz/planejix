@@ -101,6 +101,10 @@ try { db.exec("ALTER TABLE users ADD COLUMN expired_notice_sent_at TEXT"); } cat
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_3d_sent_at TEXT DEFAULT NULL"); } catch {}
 try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_due_sent_at TEXT DEFAULT NULL"); } catch {}
 
+// Recorrência: último mês (YYYY-MM) já gerado pelo job — permite catch-up após
+// downtime sem ressuscitar cópias que o usuário apagou de propósito
+try { db.exec("ALTER TABLE transactions ADD COLUMN recurring_last_generated TEXT DEFAULT NULL"); } catch {}
+
 // Ensure admin accounts are always admin, no expiration, and approved.
 const adminUsername = process.env.ADMIN_USERNAME || 'Diephyz';
 db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE LOWER(username) = LOWER(?)").run(adminUsername);

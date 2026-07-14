@@ -101,7 +101,7 @@ export default function TransactionFilters({ filters, categories, onChange }: Fi
             setShowDateRange(false);
             onChange({ year: currentYear, month: new Date().getMonth() + 1, type: 'all', category_id: '', status: 'all' });
           }}
-          className="btn-secondary text-sm px-3 py-2"
+          className="btn-secondary text-sm px-3 py-2 col-span-2 sm:col-span-1"
         >
           Limpar
         </button>

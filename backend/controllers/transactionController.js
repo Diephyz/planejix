@@ -36,6 +36,12 @@ exports.getAll = (req, res) => {
     query += ` AND t.category_id = ?`;
     params.push(category_id);
   }
+  if (req.query.status && req.query.status !== 'all') {
+    const today = todayLocal();
+    if (req.query.status === 'paid') query += ` AND t.type = 'expense' AND t.paid_at IS NOT NULL`;
+    if (req.query.status === 'pending') { query += ` AND t.type = 'expense' AND t.paid_at IS NULL AND t.date >= ?`; params.push(today); }
+    if (req.query.status === 'overdue') { query += ` AND t.type = 'expense' AND t.paid_at IS NULL AND t.date < ?`; params.push(today); }
+  }
 
   query += ` ORDER BY t.date DESC, t.created_at DESC`;
 
@@ -92,6 +98,18 @@ exports.getSummary = (req, res) => {
     SELECT MAX(amount) AS value FROM transactions
     WHERE user_id = ? AND type = 'expense' AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
   `).get(userId, String(year), monthPad);
+
+  // Contas pendentes do mês (a pagar + vencidas)
+  const today = todayLocal();
+  const pendingRow = db.prepare(`
+    SELECT
+      COALESCE(SUM(amount), 0) AS toPay,
+      COALESCE(SUM(CASE WHEN date < ? THEN 1 ELSE 0 END), 0) AS overdueCount,
+      COALESCE(SUM(CASE WHEN date < ? THEN amount ELSE 0 END), 0) AS overdueTotal
+    FROM transactions
+    WHERE user_id = ? AND type = 'expense' AND paid_at IS NULL
+      AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
+  `).get(today, today, userId, String(year), monthPad);
 
   const byCategoryYear = db.prepare(`
     SELECT
@@ -153,6 +171,11 @@ exports.getSummary = (req, res) => {
     byCategoryYear,
     byCategoryMonth,
     largestExpense: largestExpense?.value ?? 0,
+    pending: {
+      toPay: pendingRow?.toPay ?? 0,
+      overdueCount: pendingRow?.overdueCount ?? 0,
+      overdueTotal: pendingRow?.overdueTotal ?? 0,
+    },
     previousMonth: {
       totalIncome: prevRow?.totalIncome ?? 0,
       totalExpenses: prevRow?.totalExpenses ?? 0,
@@ -239,6 +262,20 @@ exports.getByCategory = (req, res) => {
   res.json(rows);
 };
 
+// Data de hoje em horário local (toISOString é UTC e vira o dia às 21h no Brasil)
+function todayLocal() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+// Resolve paid_at de uma despesa: override explícito do toggle > regra automática
+// pela data (passada/hoje = paga, futura = a pagar). Receita nunca tem status.
+function resolvePaidAt(type, date, paid) {
+  if (type !== 'expense') return null;
+  const shouldBePaid = paid !== undefined ? !!paid : date <= todayLocal();
+  return shouldBePaid ? new Date().toISOString() : null;
+}
+
 function addMonths(dateStr, months) {
   const [y, m, d] = dateStr.split('-').map(Number);
   // Ancora no dia 1 e trava o dia no fim do mês de destino — sem isso,
@@ -251,7 +288,7 @@ function addMonths(dateStr, months) {
 
 exports.create = (req, res) => {
   const { userId } = req.user;
-  const { type, kind, description, amount, date, category_id, notes, installment_total, recurring } = req.body;
+  const { type, kind, description, amount, date, category_id, notes, installment_total, recurring, paid } = req.body;
 
   if (!type || !description || !amount || !date) {
     return res.status(400).json({ error: 'Tipo, descrição, valor e data são obrigatórios' });
@@ -278,18 +315,20 @@ exports.create = (req, res) => {
     const stmt = db.prepare(`
       INSERT INTO transactions
         (user_id, category_id, type, kind, description, amount, date, notes,
-         installment_total, installment_current, installment_group_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         installment_total, installment_current, installment_group_id, paid_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     let firstId;
     for (let i = 1; i <= total; i++) {
       const parcAmt = i === total ? lastAmount : baseAmount;
       const parcDate = addMonths(date, i - 1);
+      // Parcela 1 respeita o toggle do formulário; as demais decidem pela própria data
+      const parcPaidAt = i === 1 ? resolvePaidAt(type, parcDate, paid) : resolvePaidAt(type, parcDate, undefined);
       const r = stmt.run(
         userId, category_id || null, type, kind || 'variable',
         description, parcAmt, parcDate, notes || null,
-        total, i, groupId
+        total, i, groupId, parcPaidAt
       );
       if (i === 1) firstId = r.lastInsertRowid;
     }
@@ -304,11 +343,12 @@ exports.create = (req, res) => {
 
   // ── Normal ───────────────────────────────────────────────────────────────
   const result = db.prepare(`
-    INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring, paid_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     userId, category_id || null, type, kind || 'variable',
-    description, Number(amount), date, notes || null, recurring ? 1 : 0
+    description, Number(amount), date, notes || null, recurring ? 1 : 0,
+    resolvePaidAt(type, date, paid)
   );
 
   const created = db.prepare(`
@@ -323,23 +363,31 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
   const { userId } = req.user;
   const { id } = req.params;
-  const { type, kind, description, amount, date, category_id, notes, recurring } = req.body;
+  const { type, kind, description, amount, date, category_id, notes, recurring, paid } = req.body;
 
   if (!type || !['income', 'expense'].includes(type)) return res.status(400).json({ error: 'Tipo inválido' });
   if (kind && !['fixed', 'variable', 'custom'].includes(kind)) return res.status(400).json({ error: 'Subtipo inválido' });
   if (!description || !amount || !date) return res.status(400).json({ error: 'Descrição, valor e data são obrigatórios' });
   if (Number(amount) <= 0) return res.status(400).json({ error: 'Valor deve ser maior que zero' });
 
-  const transaction = db.prepare('SELECT id, recurring, recurring_parent_id FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
+  const transaction = db.prepare('SELECT id, recurring, recurring_parent_id, paid_at FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
   if (!transaction) return res.status(404).json({ error: 'Transação não encontrada' });
+
+  // Sem `paid` no body o status atual é preservado; se já estava paga, mantém o
+  // timestamp original. Transação que virou receita perde o status.
+  let paidAt = null;
+  if (type === 'expense') {
+    const wantsPaid = paid !== undefined ? !!paid : transaction.paid_at !== null;
+    paidAt = wantsPaid ? (transaction.paid_at || new Date().toISOString()) : null;
+  }
 
   db.prepare(`
     UPDATE transactions SET
       type = ?, kind = ?, description = ?, amount = ?, date = ?,
-      category_id = ?, notes = ?, recurring = ?
+      category_id = ?, notes = ?, recurring = ?, paid_at = ?
     WHERE id = ? AND user_id = ?
   `).run(type, kind || 'variable', description, Number(amount), date,
-    category_id || null, notes || null, recurring ? 1 : 0, id, userId);
+    category_id || null, notes || null, recurring ? 1 : 0, paidAt, id, userId);
 
   // Recorrência LIGADA agora numa transação-mãe: ancora o ponto de partida no
   // mês anterior — o job passa a gerar deste mês em diante, sem backfill de
@@ -352,6 +400,29 @@ exports.update = (req, res) => {
     const anchor = originalYm > prevYm ? originalYm : prevYm;
     db.prepare('UPDATE transactions SET recurring_last_generated = ? WHERE id = ?').run(anchor, id);
   }
+
+  const updated = db.prepare(`
+    SELECT t.*, c.name AS category_name, c.color AS category_color
+    FROM transactions t LEFT JOIN categories c ON t.category_id = c.id
+    WHERE t.id = ?
+  `).get(id);
+  res.json(updated);
+};
+
+// Toggle leve de status (badge da tabela e ✓ do dashboard) — o PUT exigiria o
+// payload completo da transação só para alternar pago/a pagar
+exports.togglePaid = (req, res) => {
+  const { userId } = req.user;
+  const { id } = req.params;
+  const { paid } = req.body;
+
+  if (typeof paid !== 'boolean') return res.status(400).json({ error: 'Campo paid deve ser booleano' });
+
+  const t = db.prepare('SELECT id, type FROM transactions WHERE id = ? AND user_id = ?').get(id, userId);
+  if (!t) return res.status(404).json({ error: 'Transação não encontrada' });
+  if (t.type !== 'expense') return res.status(400).json({ error: 'Apenas despesas têm status de pagamento' });
+
+  db.prepare('UPDATE transactions SET paid_at = ? WHERE id = ?').run(paid ? new Date().toISOString() : null, id);
 
   const updated = db.prepare(`
     SELECT t.*, c.name AS category_name, c.color AS category_color

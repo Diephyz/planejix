@@ -32,6 +32,7 @@ function getUpcomingReminders({ userId, daysBefore = 3 } = {}) {
     FROM transactions t
     JOIN users u ON u.id = t.user_id
     WHERE t.type = 'expense'
+      AND t.paid_at IS NULL
       AND t.date IN (?, ?)
       ${userId ? 'AND t.user_id = ?' : ''}
     ORDER BY t.date ASC

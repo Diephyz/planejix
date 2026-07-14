@@ -102,11 +102,12 @@ PUT  /api/auth/password   { current_password, new_password } → { token } — b
 PUT  /api/auth/avatar     { avatar: dataURL|null }        → user — foto custom (data:) nunca é sobrescrita pelo avatar do Google no login
 
 TRANSACTIONS (JWT required)
-GET    /api/transactions         ?year&month&type&category_id&date_from&date_to
-GET    /api/transactions/summary ?year&month  → AnnualSummary (monthly[], annual{}, byKind{}, byCategoryYear[], byCategoryMonth[], largestExpense)
+GET    /api/transactions         ?year&month&type&category_id&date_from&date_to&status (status: paid|pending|overdue)
+GET    /api/transactions/summary ?year&month  → AnnualSummary (monthly[], annual{}, byKind{}, byCategoryYear[], byCategoryMonth[], largestExpense, pending{toPay,overdueCount,overdueTotal})
 GET    /api/transactions/by-category ?year&month → { name, color, value }[]
-POST   /api/transactions         { type, kind, description, amount, date, category_id?, notes?, recurring? }
-PUT    /api/transactions/:id     (same fields, partial)
+POST   /api/transactions         { type, kind, description, amount, date, category_id?, notes?, recurring?, paid? }
+PUT    /api/transactions/:id     (same fields, partial; sem `paid` no body o status atual é preservado)
+PATCH  /api/transactions/:id/paid { paid: boolean } → transação — alterna pago/a pagar (400 se income)
 DELETE /api/transactions/:id
 
 CATEGORIES (JWT required)
@@ -132,6 +133,7 @@ GET    /api/notifications/upcoming  → AppNotification[] — expenses due today
 - `transactions.type`: `'income'` | `'expense'`; `transactions.kind`: `'fixed'` | `'variable'` | `'custom'`.
 - `transactions.amount` is always positive — `type` determines the sign in the UI.
 - `transactions.recurring`: `INTEGER` `0` or `1`. Always coerce with `!!t.recurring` in React.
+- `transactions.paid_at`: `TEXT` timestamp ou `NULL` — status de pagamento de DESPESAS (NULL = a pagar; preenchido = paga). Receitas sempre NULL. Status "vencida" é derivado no front (`lib/expenseStatus.ts`): a pagar + `date` < hoje. Despesa nova: data <= hoje nasce paga, futura nasce a pagar (override via `paid` no body). Cópias do job recorrente nascem a pagar (salvo catch-up de mês encerrado). `reminderService` só lembra contas com `paid_at IS NULL`.
 - `budgets.period`: `'monthly'` | `'annual'`. `getProgress` computes `spent` by summing expenses matching period and category.
 - `categories` are per-user; deleting a category sets `category_id = NULL` on related transactions (`ON DELETE SET NULL`).
 - Dates stored as `TEXT` `YYYY-MM-DD`. SQLite filters use `strftime('%Y', date)` / `strftime('%m', date)` with zero-padded month strings.
@@ -147,5 +149,6 @@ GET    /api/notifications/upcoming  → AppNotification[] — expenses due today
 | `backend/.env` | `PORT` | Backend port (default 3001) |
 | `backend/.env` | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM_EMAIL` | SMTP credentials for due-date reminder e-mails (`emailService.js`, Nodemailer). Production uses Gmail (`smtp.gmail.com:587`) with an app password — see Google Account → Security → App passwords. If unset, the e-mail job logs a warning and skips sending (no crash). |
 | `frontend/.env` | `VITE_GOOGLE_CLIENT_ID` | Renders the Google Sign-In button client-side |
+| `frontend/.env` | `VITE_META_PIXEL_ID` | Meta Pixel (Facebook/Instagram Ads) — `lib/metaPixel.ts`. No-op if unset. Only loads after LGPD consent (`planejix_lgpd_consent`). Events: PageView (route changes), CompleteRegistration, InitiateCheckout, Purchase (deduped per payment via localStorage). For production, set on the Vercel project (`npx vercel env add`), not only locally. |
 
 `VITE_*` variables are bundled at build time — restart Vite after changing them.

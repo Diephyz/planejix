@@ -64,10 +64,12 @@ export const transactionsAPI = {
     }>('/transactions/accumulated'),
   getByCategory: (year: number, month?: number) =>
     api.get<{ name: string; color: string; value: number }[]>('/transactions/by-category', { params: { year, month } }),
-  create: (data: Partial<Transaction>) =>
+  create: (data: Partial<Transaction> & { paid?: boolean }) =>
     api.post<Transaction>('/transactions', data),
-  update: (id: number, data: Partial<Transaction>) =>
+  update: (id: number, data: Partial<Transaction> & { paid?: boolean }) =>
     api.put<Transaction>(`/transactions/${id}`, data),
+  togglePaid: (id: number, paid: boolean) =>
+    api.patch<Transaction>(`/transactions/${id}/paid`, { paid }),
   delete: (id: number) =>
     api.delete(`/transactions/${id}`),
   deleteBulk: (year: number, month: number) =>

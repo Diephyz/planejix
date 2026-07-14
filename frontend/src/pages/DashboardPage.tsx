@@ -50,7 +50,32 @@ function HealthBadge({ income, expenses }: { income: number; expenses: number })
   );
 }
 
-function UpcomingPayments({ items }: { items: AppNotification[] }) {
+// Contas pendentes do mês: quanto falta pagar, vencidas e saldo projetado
+function PendingCard({ toPay, overdueCount, balance }: { toPay: number; overdueCount: number; balance: number }) {
+  const hasOverdue = overdueCount > 0;
+  const color = hasOverdue ? '#ef4444' : toPay > 0 ? '#F59E0B' : '#10B981';
+  const bg = hasOverdue ? 'rgba(239,68,68,0.06)' : toPay > 0 ? 'rgba(245,158,11,0.06)' : 'rgba(16,185,129,0.06)';
+  return (
+    <div
+      className="rounded-2xl p-4 transition-all duration-300 hover:translate-y-[-2px] min-w-0"
+      style={{ background: bg, border: `1px solid ${color}20` }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}40` }} />
+        <span className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">A pagar</span>
+      </div>
+      <p className="text-lg font-bold" style={{ color }}>{fmt(toPay)}</p>
+      <span className="text-[10px] block" style={{ color: hasOverdue ? '#ef4444' : undefined }}>
+        {hasOverdue
+          ? `${overdueCount} conta${overdueCount > 1 ? 's' : ''} vencida${overdueCount > 1 ? 's' : ''}!`
+          : toPay > 0 ? 'nenhuma vencida' : 'tudo em dia 🎉'}
+      </span>
+      <span className="text-[10px] text-gray-500 block">Saldo projetado: {fmt(balance - toPay)}</span>
+    </div>
+  );
+}
+
+function UpcomingPayments({ items, onMarkPaid }: { items: AppNotification[]; onMarkPaid: (id: number) => void }) {
   if (items.length === 0) {
     return (
       <div className="card h-full flex flex-col">
@@ -92,6 +117,15 @@ function UpcomingPayments({ items }: { items: AppNotification[] }) {
                 <p className="text-[11px] text-gray-500">{fmtDate(n.date)} {isToday ? '· Vence hoje!' : '· Em 3 dias'}</p>
               </div>
               <span className="text-[13px] font-bold text-gray-900 dark:text-white flex-shrink-0">{fmt(n.amount)}</span>
+              <button
+                onClick={() => onMarkPaid(n.id)}
+                title="Marcar como paga"
+                className="p-1.5 flex-shrink-0 text-gray-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </button>
             </div>
           );
         })}
@@ -221,6 +255,23 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Marca uma conta como paga direto do card Próximos Vencimentos.
+  // Remoção otimista + refetch silencioso (sem skeleton) para os KPIs acompanharem.
+  const handleMarkPaid = async (id: number) => {
+    setUpcoming((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await transactionsAPI.togglePaid(id, true);
+      const [summaryRes, notifRes] = await Promise.all([
+        transactionsAPI.getSummary(year, month),
+        notificationsAPI.getUpcoming(),
+      ]);
+      setSummary(summaryRes.data);
+      setUpcoming(notifRes.data);
+    } catch {
+      fetchData(); // restaura o estado real em caso de falha
+    }
+  };
+
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
   const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -274,7 +325,7 @@ export default function DashboardPage() {
       <SmartInsights summary={summary} budgetAlerts={budgetAlerts} />
 
       {/* KPI Cards with Sparklines */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <SparklineKpi
           label="Receitas"
           value={summary.annual.totalIncome}
@@ -308,6 +359,11 @@ export default function DashboardPage() {
           sparkData={expenseSparkData}
           previousValue={summary.previousMonth?.largestExpense}
           invertTrend
+        />
+        <PendingCard
+          toPay={summary.pending?.toPay ?? 0}
+          overdueCount={summary.pending?.overdueCount ?? 0}
+          balance={summary.annual.balance}
         />
         <HealthBadge income={summary.annual.totalIncome} expenses={summary.annual.totalExpenses} />
       </div>
@@ -343,7 +399,7 @@ export default function DashboardPage() {
         <div className="xl:col-span-2">
           <AnnualLineChart data={summary.monthly} />
         </div>
-        <UpcomingPayments items={upcoming} />
+        <UpcomingPayments items={upcoming} onMarkPaid={handleMarkPaid} />
       </div>
 
       {/* Row 2: Donut chart + Recent transactions */}

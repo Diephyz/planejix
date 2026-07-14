@@ -105,6 +105,16 @@ try { db.exec("ALTER TABLE transactions ADD COLUMN reminder_due_sent_at TEXT DEF
 // downtime sem ressuscitar cópias que o usuário apagou de propósito
 try { db.exec("ALTER TABLE transactions ADD COLUMN recurring_last_generated TEXT DEFAULT NULL"); } catch {}
 
+// Status de pagamento de despesas: NULL = a pagar, timestamp = paga.
+// Backfill roda uma única vez (dentro do try do ALTER): despesas já lançadas
+// com data <= hoje nascem pagas, para não virar tudo "vencida" da noite pro dia.
+try {
+  db.exec("ALTER TABLE transactions ADD COLUMN paid_at TEXT DEFAULT NULL");
+  const _n = new Date();
+  const _today = `${_n.getFullYear()}-${String(_n.getMonth() + 1).padStart(2, '0')}-${String(_n.getDate()).padStart(2, '0')}`;
+  db.prepare("UPDATE transactions SET paid_at = date WHERE type = 'expense' AND date <= ?").run(_today);
+} catch {}
+
 // Ensure admin accounts are always admin, no expiration, and approved.
 const adminUsername = process.env.ADMIN_USERNAME || 'Diephyz';
 db.prepare("UPDATE users SET is_admin = 1, expires_at = NULL, approved = 1 WHERE LOWER(username) = LOWER(?)").run(adminUsername);

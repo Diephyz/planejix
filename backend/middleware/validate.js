@@ -41,6 +41,9 @@ function validateTransaction(req, res, next) {
   if (req.body.notes && req.body.notes.length > 1000) {
     return res.status(400).json({ error: 'Observações muito longas (máx 1000 caracteres)' });
   }
+  if (req.body.paid !== undefined && typeof req.body.paid !== 'boolean') {
+    return res.status(400).json({ error: 'Campo paid deve ser booleano' });
+  }
 
   req.body = sanitizeObj(req.body);
   next();

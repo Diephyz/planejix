@@ -23,6 +23,8 @@ export interface AdminUser {
 
 export type TransactionType = 'income' | 'expense';
 export type ExpenseKind = 'fixed' | 'variable' | 'custom';
+// Status de pagamento de despesa: 'overdue' é derivado (a pagar + data passada), nunca persistido
+export type ExpenseStatus = 'paid' | 'pending' | 'overdue';
 
 export interface Category {
   id: number;
@@ -43,6 +45,7 @@ export interface Transaction {
   date: string;
   notes?: string;
   recurring?: boolean;
+  paid_at?: string | null;
   installment_total?: number | null;
   installment_current?: number | null;
   installment_group_id?: number | null;
@@ -91,6 +94,11 @@ export interface AnnualSummary {
   byCategoryYear: CategorySlice[];
   byCategoryMonth: CategorySlice[];
   largestExpense: number;
+  pending?: {
+    toPay: number;
+    overdueCount: number;
+    overdueTotal: number;
+  };
   previousMonth?: {
     totalIncome: number;
     totalExpenses: number;
@@ -106,6 +114,7 @@ export interface TransactionFilters {
   category_id?: number | '';
   date_from?: string;
   date_to?: string;
+  status?: ExpenseStatus | 'all';
 }
 
 export interface SavingsGoal {

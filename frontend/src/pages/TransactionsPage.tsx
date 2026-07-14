@@ -6,6 +6,7 @@ import TransactionFiltersComponent from '../components/transactions/TransactionF
 import TransactionForm from '../components/transactions/TransactionForm';
 import { TableSkeleton } from '../components/shared/Skeleton';
 import { useToast } from '../context/ToastContext';
+import { getExpenseStatus, STATUS_LABEL } from '../lib/expenseStatus';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
@@ -42,6 +43,7 @@ export default function TransactionsPage() {
       if (filters.category_id) params.category_id = filters.category_id as number;
       if (filters.date_from) params.date_from = filters.date_from;
       if (filters.date_to) params.date_to = filters.date_to;
+      if (filters.status && filters.status !== 'all') params.status = filters.status;
       const res = await transactionsAPI.getAll(params);
       setTransactions(res.data);
       setPage(1);
@@ -96,16 +98,20 @@ export default function TransactionsPage() {
       if (k === 'custom') return 'Outros';
       return '';
     };
-    const data = transactions.map((t) => ({
-      Data: t.date,
-      Descrição: t.description,
-      Tipo: t.type === 'income' ? 'Entrada' : 'Saída',
-      Subtipo: kindLabel(t.kind),
-      Categoria: t.category_name || '',
-      'Valor (R$)': t.amount,
-      Observações: t.notes || '',
-      Recorrente: t.recurring ? 'Sim' : 'Não',
-    }));
+    const data = transactions.map((t) => {
+      const status = getExpenseStatus(t);
+      return {
+        Data: t.date,
+        Descrição: t.description,
+        Tipo: t.type === 'income' ? 'Entrada' : 'Saída',
+        Subtipo: kindLabel(t.kind),
+        Categoria: t.category_name || '',
+        'Valor (R$)': t.amount,
+        Situação: status ? STATUS_LABEL[status] : '',
+        Observações: t.notes || '',
+        Recorrente: t.recurring ? 'Sim' : 'Não',
+      };
+    });
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Transações');

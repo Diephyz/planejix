@@ -3,6 +3,7 @@ import Modal from '../shared/Modal';
 import { transactionsAPI, categoriesAPI } from '../../api/api';
 import type { Category, Transaction, TransactionType, ExpenseKind } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { localToday } from '../../lib/expenseStatus';
 
 function DiscardModal({ open, onClose, onDiscard }: { open: boolean; onClose: () => void; onDiscard: () => void }) {
   if (!open) return null;
@@ -27,7 +28,7 @@ interface TransactionFormProps {
   transaction?: Transaction;
 }
 
-const today = new Date().toISOString().split('T')[0];
+const today = localToday();
 
 export default function TransactionForm({ open, onClose, onSuccess, transaction }: TransactionFormProps) {
   const { toast } = useToast();
@@ -40,6 +41,8 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
   const [categoryId, setCategoryId] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [recurring, setRecurring] = useState(false);
+  const [paid, setPaid] = useState(true);
+  const paidTouched = useRef(false);
   const [isInstallment, setIsInstallment] = useState(false);
   const [installmentCount, setInstallmentCount] = useState('2');
   const [categories, setCategories] = useState<Category[]>([]);
@@ -61,11 +64,21 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
         setCategoryId(transaction.category_id ? String(transaction.category_id) : '');
         setNotes(transaction.notes || '');
         setRecurring(!!transaction.recurring);
+        setPaid(!!transaction.paid_at);
+        paidTouched.current = true;
       } else {
         reset();
       }
     }
   }, [open, transaction]);
+
+  // Default inteligente: enquanto o usuário não tocar no toggle, a data decide
+  // (passada/hoje = já paguei; futura = a pagar)
+  useEffect(() => {
+    if (!isEdit && !paidTouched.current) {
+      setPaid(date <= localToday());
+    }
+  }, [date, isEdit, open]);
 
   const reset = () => {
     setType('expense');
@@ -76,6 +89,8 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
     setCategoryId('');
     setNotes('');
     setRecurring(false);
+    setPaid(true);
+    paidTouched.current = false;
     setIsInstallment(false);
     setInstallmentCount('2');
     setError('');
@@ -122,6 +137,7 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
         category_id: categoryId ? Number(categoryId) : null,
         notes: notes.trim() || undefined,
         recurring,
+        ...(type === 'expense' ? { paid } : {}),
         ...(isInstallment && !isEdit ? { installment_total: Number(installmentCount) } : {}),
       };
       if (isEdit && transaction) {
@@ -288,6 +304,25 @@ export default function TransactionForm({ open, onClose, onSuccess, transaction 
                 <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isInstallment ? 'translate-x-5' : ''}`} />
               </div>
               <span className="text-sm text-gray-600 dark:text-gray-300 leading-tight">Parcelado</span>
+            </label>
+          )}
+
+          {/* Já paguei — só para despesas; default segue a data até o usuário tocar */}
+          {type === 'expense' && (
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <div className="relative flex-shrink-0">
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={paid}
+                  onChange={(e) => { setPaid(e.target.checked); paidTouched.current = true; markDirty(); }}
+                />
+                <div className={`w-10 h-5 rounded-full transition-colors ${paid ? 'bg-emerald-500' : 'bg-dark-600'}`} />
+                <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${paid ? 'translate-x-5' : ''}`} />
+              </div>
+              <span className="text-sm text-gray-600 dark:text-gray-300 leading-tight">
+                {isInstallment && !isEdit ? '1ª parcela já paga' : 'Já paguei'}
+              </span>
             </label>
           )}
         </div>

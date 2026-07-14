@@ -12,6 +12,7 @@ router.get('/by-category', transactionController.getByCategory);
 router.get('/', transactionController.getAll);
 router.post('/', validateTransaction, transactionController.create);
 router.put('/:id', validateTransaction, transactionController.update);
+router.patch('/:id/paid', transactionController.togglePaid);
 router.delete('/bulk', transactionController.removeBulk);
 router.delete('/:id', transactionController.remove);
 

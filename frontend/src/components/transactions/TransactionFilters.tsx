@@ -74,6 +74,17 @@ export default function TransactionFilters({ filters, categories, onChange }: Fi
           {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
 
+        <select
+          className="input-field text-sm"
+          value={filters.status || 'all'}
+          onChange={(e) => onChange({ ...filters, status: e.target.value as never })}
+        >
+          <option value="all">Situação</option>
+          <option value="paid">Pagas</option>
+          <option value="pending">A pagar</option>
+          <option value="overdue">Vencidas</option>
+        </select>
+
         <button
           onClick={toggleDateRange}
           className={`btn-secondary text-sm px-3 py-2 flex items-center justify-center gap-1.5 ${showDateRange ? 'border-brand-500 text-brand-500' : ''}`}
@@ -88,7 +99,7 @@ export default function TransactionFilters({ filters, categories, onChange }: Fi
         <button
           onClick={() => {
             setShowDateRange(false);
-            onChange({ year: currentYear, month: new Date().getMonth() + 1, type: 'all', category_id: '' });
+            onChange({ year: currentYear, month: new Date().getMonth() + 1, type: 'all', category_id: '', status: 'all' });
           }}
           className="btn-secondary text-sm px-3 py-2"
         >

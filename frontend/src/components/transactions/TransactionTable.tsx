@@ -2,6 +2,46 @@ import { useState } from 'react';
 import type { Transaction } from '../../types';
 import { transactionsAPI } from '../../api/api';
 import Modal from '../shared/Modal';
+import { getExpenseStatus, STATUS_LABEL } from '../../lib/expenseStatus';
+
+const STATUS_STYLE = {
+  paid: 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20',
+  pending: 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20',
+  overdue: 'bg-red-500/10 text-red-400 hover:bg-red-500/20',
+} as const;
+
+// Badge de status de despesa (Paga/A pagar/Vencida) — clicável para alternar.
+// Receita não renderiza nada.
+function StatusBadge({ t, onRefresh }: { t: Transaction; onRefresh: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const status = getExpenseStatus(t);
+  if (!status) return null;
+
+  const toggle = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await transactionsAPI.togglePaid(t.id, status !== 'paid');
+      onRefresh();
+    } catch {
+      // silencioso — badge volta ao estado real no próximo refresh
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      disabled={busy}
+      title={status === 'paid' ? 'Clique para marcar como a pagar' : 'Clique para marcar como paga'}
+      className={`text-[10px] px-2 py-0.5 rounded-full font-medium cursor-pointer transition-colors disabled:opacity-50 ${STATUS_STYLE[status]}`}
+    >
+      {STATUS_LABEL[status]}
+    </button>
+  );
+}
 
 interface TableProps {
   transactions: Transaction[];
@@ -22,7 +62,7 @@ const kindLabels: Record<string, string> = {
   custom: 'Outros',
 };
 
-function MobileCard({ t, onEdit, onDelete }: { t: Transaction; onEdit: () => void; onDelete: () => void }) {
+function MobileCard({ t, onEdit, onDelete, onRefresh }: { t: Transaction; onEdit: () => void; onDelete: () => void; onRefresh: () => void }) {
   const catColor = t.category_color || (t.type === 'income' ? '#10B981' : '#6366f1');
   return (
     <div
@@ -48,6 +88,7 @@ function MobileCard({ t, onEdit, onDelete }: { t: Transaction; onEdit: () => voi
           </div>
           {t.notes && <p className="text-[11px] text-gray-500 mt-1 truncate">{t.notes}</p>}
           <div className="flex items-center gap-2 mt-2">
+            <StatusBadge t={t} onRefresh={onRefresh} />
             {!!t.recurring && (
               <span className="text-[10px] text-brand-500 bg-brand-600/10 px-2 py-0.5 rounded-full font-medium">Recorrente</span>
             )}
@@ -125,6 +166,7 @@ export default function TransactionTable({ transactions, onRefresh, onEdit, onAd
             t={t}
             onEdit={() => onEdit(t)}
             onDelete={() => setConfirmId(t.id)}
+            onRefresh={onRefresh}
           />
         ))}
       </div>
@@ -174,11 +216,14 @@ export default function TransactionTable({ transactions, onRefresh, onEdit, onAd
                   )}
                 </td>
                 <td className="px-5 py-3">
-                  <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
-                    t.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                  }`}>
-                    {t.type === 'income' ? 'Entrada' : 'Saída'}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
+                      t.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {t.type === 'income' ? 'Entrada' : 'Saída'}
+                    </span>
+                    <StatusBadge t={t} onRefresh={onRefresh} />
+                  </div>
                 </td>
                 <td className={`px-5 py-3 text-right font-semibold whitespace-nowrap ${
                   t.type === 'income' ? 'text-green-400' : 'text-red-400'

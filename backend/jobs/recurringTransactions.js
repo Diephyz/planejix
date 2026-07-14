@@ -61,10 +61,15 @@ function generateRecurringTransactions() {
 
       if (!exists) {
         const newDate = `${ym}-${String(day).padStart(2, '0')}`;
+        // Cópia de despesa nasce "a pagar" (paid_at NULL); só nasce paga em
+        // catch-up de mês já encerrado, pra não despejar "vencidas" falsas no
+        // histórico. Receita recorrente não tem status.
+        const firstOfCurrentMonth = `${curY}-${String(curM).padStart(2, '0')}-01`;
+        const paidAt = t.type === 'expense' && newDate < firstOfCurrentMonth ? newDate : null;
         db.prepare(`
-          INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring, recurring_parent_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-        `).run(t.user_id, t.category_id, t.type, t.kind, t.description, t.amount, newDate, t.notes, t.id);
+          INSERT INTO transactions (user_id, category_id, type, kind, description, amount, date, notes, recurring, recurring_parent_id, paid_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+        `).run(t.user_id, t.category_id, t.type, t.kind, t.description, t.amount, newDate, t.notes, t.id, paidAt);
 
         console.log(`[Recorrente] Gerado: "${t.description}" para ${newDate} (user ${t.user_id})`);
       }

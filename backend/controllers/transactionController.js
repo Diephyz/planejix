@@ -432,6 +432,24 @@ exports.togglePaid = (req, res) => {
   res.json(updated);
 };
 
+// Quita várias despesas de uma vez (botão "marcar todas como pagas")
+exports.togglePaidBulk = (req, res) => {
+  const { userId } = req.user;
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0 || ids.length > 500 || ids.some((i) => !Number.isInteger(i))) {
+    return res.status(400).json({ error: 'Envie uma lista de ids (máx. 500)' });
+  }
+
+  const placeholders = ids.map(() => '?').join(',');
+  const result = db.prepare(`
+    UPDATE transactions SET paid_at = ?
+    WHERE id IN (${placeholders}) AND user_id = ? AND type = 'expense' AND paid_at IS NULL
+  `).run(new Date().toISOString(), ...ids, userId);
+
+  res.json({ success: true, updated: result.changes });
+};
+
 exports.remove = (req, res) => {
   const { userId } = req.user;
   const { id } = req.params;

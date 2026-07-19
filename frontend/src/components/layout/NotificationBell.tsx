@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { notificationsAPI } from '../../api/api';
+import { notificationsAPI, transactionsAPI } from '../../api/api';
 import type { AppNotification } from '../../types';
 
 const fmt = (v: number) =>
@@ -24,6 +24,17 @@ export default function NotificationBell() {
 
   // Busca ao montar (ou seja, sempre que o usuário abre/recarrega o Planejix)
   useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+
+  // Quita a conta direto do sino: remoção otimista + resync com o servidor
+  const handleMarkPaid = async (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await transactionsAPI.togglePaid(id, true);
+    } catch {
+      // falhou: restaura o estado real
+    }
+    fetchNotifications();
+  };
 
   // Fecha o dropdown ao clicar fora
   useEffect(() => {
@@ -94,6 +105,15 @@ export default function NotificationBell() {
                         {isToday ? 'Vence hoje' : 'Vence em 3 dias'}
                       </span>
                     </div>
+                    <button
+                      onClick={() => handleMarkPaid(n.id)}
+                      title="Marcar como paga"
+                      className="p-1.5 mt-0.5 flex-shrink-0 text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </button>
                   </div>
                 );
               })

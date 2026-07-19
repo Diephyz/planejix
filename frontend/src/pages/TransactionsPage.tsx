@@ -25,6 +25,7 @@ export default function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [deleteMonthOpen, setDeleteMonthOpen] = useState(false);
   const [deletingMonth, setDeletingMonth] = useState(false);
+  const [payingAll, setPayingAll] = useState(false);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -87,6 +88,25 @@ export default function TransactionsPage() {
       toast('Erro ao apagar transações do mês');
     } finally {
       setDeletingMonth(false);
+    }
+  };
+
+  // Despesas pendentes na listagem atual (para o botão de quitar em massa)
+  const pendingIds = transactions
+    .filter((t) => t.type === 'expense' && !t.paid_at)
+    .map((t) => t.id);
+
+  const handlePayAll = async () => {
+    if (pendingIds.length === 0) return;
+    setPayingAll(true);
+    try {
+      const res = await transactionsAPI.togglePaidBulk(pendingIds);
+      await fetchTransactions();
+      toast(`${res.data.updated} conta(s) marcada(s) como paga(s)`);
+    } catch {
+      toast('Erro ao marcar contas como pagas');
+    } finally {
+      setPayingAll(false);
     }
   };
 
@@ -177,6 +197,20 @@ export default function TransactionsPage() {
       </div>
 
       <TransactionFiltersComponent filters={filters} categories={categories} onChange={setFilters} />
+
+      {/* Quitar em massa: aparece ao filtrar por A pagar/Vencidas */}
+      {!loading && (filters.status === 'pending' || filters.status === 'overdue') && pendingIds.length > 0 && (
+        <button
+          onClick={handlePayAll}
+          disabled={payingAll}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm px-4 py-2.5 rounded-xl font-medium transition-all text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/20 disabled:opacity-50 cursor-pointer"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          {payingAll ? 'Marcando...' : `Marcar ${pendingIds.length} conta${pendingIds.length > 1 ? 's' : ''} como paga${pendingIds.length > 1 ? 's' : ''}`}
+        </button>
+      )}
 
       {loading ? (
         <TableSkeleton rows={6} />

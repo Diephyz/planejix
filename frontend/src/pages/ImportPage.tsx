@@ -17,6 +17,7 @@ interface Row {
   data: string;
   categoria?: string;
   subtipo?: string;
+  situacao?: string;
 }
 
 interface PreviewRow extends Row {
@@ -57,16 +58,25 @@ function parseKind(raw: string): 'fixed' | 'variable' | 'custom' {
   return 'custom';
 }
 
+// Situação (opcional, só despesas): vazio = regra automática pela data
+function parsePaid(raw: string): boolean | undefined {
+  const v = raw?.toLowerCase().trim();
+  if (!v) return undefined;
+  if (['paga', 'pago', 'paid', 'sim', 'quitada'].includes(v)) return true;
+  if (['a pagar', 'pendente', 'pending', 'não', 'nao', 'vencida'].includes(v)) return false;
+  return undefined;
+}
+
 async function downloadTemplate() {
   const XLSX = await loadXlsx();
-  const headers = ['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo'];
+  const headers = ['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo', 'Situação'];
   const examples = [
-    ['Saída', 'Supermercado', 250.00, '15/05/2026', 'Alimentação', 'Variável'],
-    ['Entrada', 'Salário', 3500.00, '01/05/2026', 'Salário', 'Fixo'],
-    ['Saída', 'Conta de luz', 180.00, '10/05/2026', 'Moradia', 'Fixo'],
+    ['Saída', 'Supermercado', 250.00, '15/05/2026', 'Alimentação', 'Variável', 'Paga'],
+    ['Entrada', 'Salário', 3500.00, '01/05/2026', 'Salário', 'Fixo', ''],
+    ['Saída', 'Conta de luz', 180.00, '10/05/2026', 'Moradia', 'Fixo', 'A pagar'],
   ];
   const ws = XLSX.utils.aoa_to_sheet([headers, ...examples]);
-  ws['!cols'] = [{ wch: 10 }, { wch: 24 }, { wch: 10 }, { wch: 14 }, { wch: 18 }, { wch: 14 }];
+  ws['!cols'] = [{ wch: 10 }, { wch: 24 }, { wch: 10 }, { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 12 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Transações');
   XLSX.writeFile(wb, 'modelo_planejix.xlsx');
@@ -102,6 +112,7 @@ export default function ImportPage() {
       const data = normalize('Data') || normalize('data') || normalize('Date');
       const categoria = normalize('Categoria') || normalize('categoria');
       const subtipo = normalize('Subtipo') || normalize('subtipo') || normalize('Kind');
+      const situacao = normalize('Situação') || normalize('Situacao') || normalize('situação') || normalize('Status');
 
       const parsedType = parseType(tipo);
       const parsedDate = parseDate(String(data));
@@ -115,7 +126,7 @@ export default function ImportPage() {
 
       return {
         tipo, descricao, valor: String(valor), data: String(data),
-        categoria, subtipo,
+        categoria, subtipo, situacao: String(situacao),
         _valid: !_error, _error,
       };
     });
@@ -140,10 +151,13 @@ export default function ImportPage() {
         (c) => c.name.toLowerCase() === row.categoria?.toLowerCase()
       );
 
+      const paid = type === 'expense' ? parsePaid(row.situacao || '') : undefined;
+
       try {
         await transactionsAPI.create({
           type, description: row.descricao, amount, date, kind,
           category_id: cat?.id ?? undefined,
+          ...(paid !== undefined ? { paid } : {}),
         });
         ok++;
       } catch {
@@ -183,7 +197,7 @@ export default function ImportPage() {
           <table className="text-xs text-gray-400 min-w-[480px] w-full">
             <thead>
               <tr className="border-b border-dark-600">
-                {['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo'].map(col => (
+                {['Tipo', 'Descrição', 'Valor', 'Data', 'Categoria', 'Subtipo', 'Situação'].map(col => (
                   <th key={col} className="text-left py-2 pr-4 font-semibold text-gray-300 whitespace-nowrap">{col}</th>
                 ))}
               </tr>

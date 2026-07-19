@@ -35,6 +35,10 @@ export async function generateMonthlyReport(summary: AnnualSummary, year: number
     ['Saldo', fmt(summary.annual.balance)],
     ['Maior Gasto', fmt(summary.largestExpense)],
   ];
+  if (summary.pending) {
+    kpis.push(['A Pagar', fmt(summary.pending.toPay)]);
+    kpis.push(['Vencidas', `${summary.pending.overdueCount} (${fmt(summary.pending.overdueTotal)})`]);
+  }
 
   kpis.forEach(([label, value], i) => {
     const x = 14 + (i % 2) * 90;
@@ -46,7 +50,7 @@ export async function generateMonthlyReport(summary: AnnualSummary, year: number
     doc.text(value, x + 30, ky);
   });
 
-  y += 35;
+  y += Math.ceil(kpis.length / 2) * 14 + 7;
 
   // Gastos por Tipo
   doc.setFontSize(11);

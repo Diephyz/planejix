@@ -70,6 +70,8 @@ export const transactionsAPI = {
     api.put<Transaction>(`/transactions/${id}`, data),
   togglePaid: (id: number, paid: boolean) =>
     api.patch<Transaction>(`/transactions/${id}/paid`, { paid }),
+  togglePaidBulk: (ids: number[]) =>
+    api.patch<{ success: boolean; updated: number }>('/transactions/paid-bulk', { ids }),
   delete: (id: number) =>
     api.delete(`/transactions/${id}`),
   deleteBulk: (year: number, month: number) =>

@@ -49,6 +49,18 @@ function generateMonthlyPdfBuffer(userId, year, month) {
   const totalIncome = annualRow?.totalIncome ?? 0;
   const totalExpenses = annualRow?.totalExpenses ?? 0;
 
+  // Contas pendentes do mês (a pagar + vencidas)
+  const n = new Date();
+  const todayStr = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  const pendingRow = db.prepare(`
+    SELECT
+      COALESCE(SUM(amount), 0) AS toPay,
+      COALESCE(SUM(CASE WHEN date < ? THEN 1 ELSE 0 END), 0) AS overdueCount
+    FROM transactions
+    WHERE user_id = ? AND type = 'expense' AND paid_at IS NULL
+      AND strftime('%Y', date) = ? AND strftime('%m', date) = ?
+  `).get(todayStr, userId, String(year), monthPad);
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
     const chunks = [];
@@ -69,6 +81,11 @@ function generateMonthlyPdfBuffer(userId, year, month) {
     doc.font('Helvetica-Bold').text('Saídas: ', { continued: true }).font('Helvetica').text(fmt(totalExpenses));
     doc.font('Helvetica-Bold').text('Saldo: ', { continued: true }).font('Helvetica').text(fmt(totalIncome - totalExpenses));
     doc.font('Helvetica-Bold').text('Maior Gasto: ', { continued: true }).font('Helvetica').text(fmt(largest?.value ?? 0));
+    if (pendingRow && pendingRow.toPay > 0) {
+      const vencidas = pendingRow.overdueCount > 0 ? ` (${pendingRow.overdueCount} vencida${pendingRow.overdueCount > 1 ? 's' : ''})` : '';
+      doc.font('Helvetica-Bold').fillColor('#b45309').text('A Pagar: ', { continued: true }).font('Helvetica').text(`${fmt(pendingRow.toPay)}${vencidas}`);
+      doc.fillColor('#333');
+    }
     doc.moveDown(1);
 
     // Gastos por Tipo

@@ -80,20 +80,25 @@ exports.register = async (req, res) => {
   if (process.env.MP_ACCESS_TOKEN) {
     const { createPixCheckout, createCardSubscription } = require('./paymentController');
     const newUser = { id: userId, username, name, email };
-    let pixUrl = null;
-    let cardUrl = null;
 
-    try { pixUrl = await createPixCheckout(newUser); } catch (err) {
-      console.error('[Register] Erro ao criar checkout Pix:', err.message);
-    }
-    try { cardUrl = await createCardSubscription(newUser); } catch (err) {
-      console.error('[Register] Erro ao criar assinatura de cartão:', err.message);
-    }
+    // Mensal e anual, Pix e cartão — em paralelo pra não segurar o cadastro
+    const quiet = (p, label) => p.catch((err) => { console.error(`[Register] Erro ao criar ${label}:`, err.message); return null; });
+    const [pixUrl, cardUrl, pixUrlAnnual, cardUrlAnnual] = await Promise.all([
+      quiet(createPixCheckout(newUser), 'checkout Pix mensal'),
+      quiet(createCardSubscription(newUser), 'assinatura mensal'),
+      quiet(createPixCheckout(newUser, 'annual'), 'checkout Pix anual'),
+      quiet(createCardSubscription(newUser, 'annual'), 'assinatura anual'),
+    ]);
 
-    if (pixUrl || cardUrl) {
+    if (pixUrl || cardUrl || pixUrlAnnual || cardUrlAnnual) {
       return res.status(201).json({
         message: 'Cadastro realizado! Escolha como pagar.',
-        payment_options: { pix_url: pixUrl, card_url: cardUrl },
+        payment_options: {
+          pix_url: pixUrl,
+          card_url: cardUrl,
+          pix_url_annual: pixUrlAnnual,
+          card_url_annual: cardUrlAnnual,
+        },
         payment_url: pixUrl || cardUrl, // compatibilidade
         user_id: userId,
       });

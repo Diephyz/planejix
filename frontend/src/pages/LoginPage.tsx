@@ -44,7 +44,14 @@ export default function LoginPage() {
   const [regSuccess, setRegSuccess] = useState(false);
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [paymentOptions, setPaymentOptions] = useState<{ pix_url: string | null; card_url: string | null } | null>(null);
+  const [paymentOptions, setPaymentOptions] = useState<{
+    pix_url: string | null;
+    card_url: string | null;
+    pix_url_annual?: string | null;
+    card_url_annual?: string | null;
+  } | null>(null);
+  // Anual em destaque por padrão na escolha de pagamento pós-cadastro
+  const [regPeriod, setRegPeriod] = useState<'monthly' | 'annual'>('annual');
   const [searchParams] = useSearchParams();
   const [payStatus, setPayStatus] = useState<'approved' | 'pending' | 'rejected' | null>(null);
 
@@ -284,44 +291,83 @@ export default function LoginPage() {
                 </svg>
               </div>
               <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-1">Conta criada!</h3>
-              <p className="text-gray-400 text-sm leading-relaxed mb-5">
-                Escolha como pagar seus <strong className="text-brand-500">R$ 4,90</strong> e libere seu acesso agora:
+              <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                Escolha seu plano e libere o acesso agora:
               </p>
-              <div className="space-y-3 text-left">
-                {paymentOptions.card_url && (
-                  <a
-                    href={paymentOptions.card_url}
-                    className="block w-full p-4 rounded-xl text-white transition-all hover:opacity-95 cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}
+
+              {/* Toggle Mensal / Anual (anual só aparece se o backend gerou as URLs) */}
+              {(paymentOptions.pix_url_annual || paymentOptions.card_url_annual) && (
+                <div className="inline-flex rounded-xl p-1 mb-4 bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setRegPeriod('monthly')}
+                    className={`px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer ${
+                      regPeriod === 'monthly' ? 'bg-white dark:bg-dark-800 text-gray-900 dark:text-white shadow' : 'text-gray-500'
+                    }`}
                   >
-                    <span className="flex items-center gap-3">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
-                      <span>
-                        <span className="block text-sm font-semibold">Cartão de crédito</span>
-                        <span className="block text-[11px] opacity-85">Assinatura mensal · renova sozinha · cancele quando quiser</span>
-                      </span>
-                    </span>
-                  </a>
-                )}
-                {paymentOptions.pix_url && (
-                  <a
-                    href={paymentOptions.pix_url}
-                    className="block w-full p-4 rounded-xl border-2 border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-600/10 transition-all cursor-pointer"
+                    Mensal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRegPeriod('annual')}
+                    className={`px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                      regPeriod === 'annual' ? 'bg-white dark:bg-dark-800 text-gray-900 dark:text-white shadow' : 'text-gray-500'
+                    }`}
                   >
-                    <span className="flex items-center gap-3">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      <span>
-                        <span className="block text-sm font-semibold">Pix</span>
-                        <span className="block text-[11px] opacity-75">30 dias de acesso · aprovação na hora · renove quando quiser</span>
-                      </span>
-                    </span>
-                  </a>
-                )}
-              </div>
+                    Anual
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500">-24%</span>
+                  </button>
+                </div>
+              )}
+
+              {(() => {
+                const annual = regPeriod === 'annual' && (paymentOptions.pix_url_annual || paymentOptions.card_url_annual);
+                const cardUrl = annual ? paymentOptions.card_url_annual : paymentOptions.card_url;
+                const pixUrl = annual ? paymentOptions.pix_url_annual : paymentOptions.pix_url;
+                const price = annual ? 'R$ 44,90' : 'R$ 4,90';
+                return (
+                  <div className="space-y-3 text-left">
+                    {annual && (
+                      <p className="text-center text-[12px] text-emerald-500 font-medium -mt-1">
+                        {price}/ano — equivale a R$ 3,74/mês · 2 meses e meio grátis
+                      </p>
+                    )}
+                    {cardUrl && (
+                      <a
+                        href={cardUrl}
+                        className="block w-full p-4 rounded-xl text-white transition-all hover:opacity-95 cursor-pointer"
+                        style={{ background: 'linear-gradient(135deg, #10B981, #059669)', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}
+                      >
+                        <span className="flex items-center gap-3">
+                          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                          </svg>
+                          <span>
+                            <span className="block text-sm font-semibold">Cartão de crédito — {price}{annual ? '/ano' : '/mês'}</span>
+                            <span className="block text-[11px] opacity-85">{annual ? 'Renova 1x por ano' : 'Assinatura mensal · renova sozinha'} · cancele quando quiser</span>
+                          </span>
+                        </span>
+                      </a>
+                    )}
+                    {pixUrl && (
+                      <a
+                        href={pixUrl}
+                        className="block w-full p-4 rounded-xl border-2 border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-600/10 transition-all cursor-pointer"
+                      >
+                        <span className="flex items-center gap-3">
+                          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          <span>
+                            <span className="block text-sm font-semibold">Pix — {price}</span>
+                            <span className="block text-[11px] opacity-75">{annual ? '1 ano de acesso' : '30 dias de acesso'} · aprovação na hora · renove quando quiser</span>
+                          </span>
+                        </span>
+                      </a>
+                    )}
+                  </div>
+                );
+              })()}
               <p className="text-[11px] text-gray-500 mt-4">Pagamento seguro via Mercado Pago</p>
             </div>
           ) : regSuccess ? (

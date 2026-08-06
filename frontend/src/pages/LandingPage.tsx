@@ -144,8 +144,9 @@ export default function LandingPage() {
         <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mb-8 leading-relaxed">
           O Planejix mostra exatamente para onde vai cada centavo do seu dinheiro, te avisa antes das contas vencerem e te ajuda a economizar de verdade.
         </p>
-        <div className="flex items-center justify-center gap-4 flex-wrap mb-6">
+        <div className="flex flex-col items-center gap-2 mb-6">
           <CtaButton text="Começar por R$ 4,90/mês" navigate={navigate} />
+          <span className="text-xs text-emerald-700 font-medium">ou R$ 44,90/ano — economize 24%</span>
         </div>
         <div className="flex items-center justify-center gap-4 text-xs text-gray-400 flex-wrap">
           <span className="flex items-center gap-1">
@@ -493,7 +494,8 @@ export default function LandingPage() {
           >
             Criar minha conta — R$ 4,90/mês
           </button>
-          <p className="text-xs text-emerald-200 mt-4">Sem contrato. Cancele a qualquer momento. Garantia de 7 dias.</p>
+          <p className="text-sm text-white font-medium mt-3">ou R$ 44,90/ano (economize 24%)</p>
+          <p className="text-xs text-emerald-200 mt-2">Sem contrato. Cancele a qualquer momento. Garantia de 7 dias.</p>
         </div>
       </section>
 

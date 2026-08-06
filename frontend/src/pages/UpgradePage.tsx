@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { paymentsAPI } from '../api/api';
 import { useToast } from '../context/ToastContext';
+import { trackPixel, trackPurchaseOnce } from '../lib/metaPixel';
 
 const FEATURES = [
   { name: 'Dashboard completo com gráficos e insights', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
@@ -25,11 +26,19 @@ export default function UpgradePage() {
   const [loading, setLoading] = useState<'pix' | 'card' | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [canceling, setCanceling] = useState(false);
+  // Anual em destaque por padrão (R$ 44,90 = R$ 3,74/mês, 24% off)
+  const [period, setPeriod] = useState<'monthly' | 'annual'>('annual');
+  const annual = period === 'annual';
+  const priceLabel = annual ? 'R$ 44,90' : 'R$ 4,90';
+  const priceSuffix = annual ? '/ano' : '/mês';
 
   useEffect(() => {
     const status = searchParams.get('status');
     if (status === 'approved') {
       toast('Pagamento aprovado! Sua assinatura está ativa.');
+      const pid = searchParams.get('payment_id') || searchParams.get('collection_id') || searchParams.get('preapproval_id');
+      const value = searchParams.get('period') === 'annual' ? 44.9 : 4.9;
+      trackPurchaseOnce(pid || `upgrade-${new Date().toISOString().slice(0, 10)}`, value);
     } else if (status === 'rejected') {
       toast('Pagamento não aprovado. Tente novamente.', 'error');
     } else if (status === 'pending') {
@@ -39,8 +48,9 @@ export default function UpgradePage() {
 
   const handlePix = async () => {
     setLoading('pix');
+    trackPixel('InitiateCheckout');
     try {
-      const res = await paymentsAPI.createPreference();
+      const res = await paymentsAPI.createPreference(period);
       window.location.href = res.data.init_point;
     } catch {
       toast('Erro ao iniciar pagamento. Tente novamente.', 'error');
@@ -50,8 +60,9 @@ export default function UpgradePage() {
 
   const handleCard = async () => {
     setLoading('card');
+    trackPixel('InitiateCheckout');
     try {
-      const res = await paymentsAPI.subscribe();
+      const res = await paymentsAPI.subscribe(period);
       window.location.href = res.data.init_point;
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
@@ -96,6 +107,31 @@ export default function UpgradePage() {
         </div>
       )}
 
+      {/* Toggle Mensal / Anual */}
+      {!isPro && (
+        <div className="flex items-center justify-center">
+          <div className="inline-flex rounded-xl p-1 bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/10">
+            <button
+              onClick={() => setPeriod('monthly')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                !annual ? 'bg-white dark:bg-dark-800 text-gray-900 dark:text-white shadow' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              onClick={() => setPeriod('annual')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                annual ? 'bg-white dark:bg-dark-800 text-gray-900 dark:text-white shadow' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              Anual
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500">-24%</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Card Pro único */}
       <div
         className="rounded-2xl p-6 sm:p-8 relative overflow-hidden ring-2 ring-brand-600/40"
@@ -121,8 +157,11 @@ export default function UpgradePage() {
               </div>
             </div>
             <div className="text-right">
-              <span className="text-4xl font-bold text-gray-900 dark:text-white">R$ 4,90</span>
-              <span className="text-sm text-gray-400 ml-1">/mês</span>
+              <span className="text-4xl font-bold text-gray-900 dark:text-white">{priceLabel}</span>
+              <span className="text-sm text-gray-400 ml-1">{priceSuffix}</span>
+              {annual && !isPro && (
+                <p className="text-[11px] text-emerald-500 font-medium mt-0.5">equivale a R$ 3,74/mês · 2 meses e meio grátis</p>
+              )}
             </div>
           </div>
 
@@ -174,7 +213,7 @@ export default function UpgradePage() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    Assinar no cartão — R$ 4,90/mês
+                    Assinar no cartão — {priceLabel}{priceSuffix}
                   </span>
                 )}
               </button>
@@ -195,7 +234,7 @@ export default function UpgradePage() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    Pagar com Pix — R$ 4,90 por 30 dias
+                    Pagar com Pix — {priceLabel} por {annual ? '1 ano' : '30 dias'}
                   </span>
                 )}
               </button>

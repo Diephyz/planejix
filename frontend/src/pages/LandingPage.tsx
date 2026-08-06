@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const features = [
@@ -57,7 +57,7 @@ const faqs = [
   { q: 'Posso cancelar a qualquer momento?', a: 'Sim. Sem contrato, sem multa. Cancele quando quiser e seu acesso continua até o fim do período pago.' },
   { q: 'Meus dados estão seguros?', a: 'Sim. Senhas criptografadas com bcrypt, comunicação via HTTPS, headers de segurança, e seus dados nunca são compartilhados com terceiros.' },
   { q: 'Funciona no celular?', a: 'Sim. O Planejix é um app instalável (PWA). Funciona no iPhone e Android direto do navegador, com acesso offline.' },
-  { q: 'Tem versão gratuita?', a: 'O acesso completo custa apenas R$ 4,90/mês. Sem limitações, sem anúncios, todas as funcionalidades inclusas.' },
+  { q: 'Tem versão gratuita?', a: 'O acesso completo custa apenas R$ 4,90/mês — ou R$ 44,90/ano, que sai por R$ 3,74/mês (24% de economia). Sem limitações, sem anúncios, todas as funcionalidades inclusas.' },
 ];
 
 function Icon({ d }: { d: string }) {
@@ -95,6 +95,19 @@ function CtaButton({ text, navigate: nav }: { text: string; navigate: (path: str
 export default function LandingPage() {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  // Lightbox: print clicado abre ampliado para análise
+  const [zoom, setZoom] = useState<{ src: string; alt: string } | null>(null);
+
+  useEffect(() => {
+    if (!zoom) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setZoom(null); };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [zoom]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -176,76 +189,92 @@ export default function LandingPage() {
       </section>
 
       {/* Product screenshots — prova visual com dados demo */}
-      <section className="px-4 sm:px-6 py-16 sm:py-20" style={{ background: 'linear-gradient(180deg, #0b0b12, #12121c)' }}>
+      <section className="px-4 sm:px-6 py-16 sm:py-20 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 sm:mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-4 border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-4 border border-emerald-100 bg-emerald-50 text-emerald-700">
               Feito para o seu dinheiro render
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Veja o Planejix por dentro</h2>
-            <p className="text-gray-400 max-w-xl mx-auto">Interface real do app — saldo acumulativo, gráficos, metas e lembretes em um visual que dá gosto de abrir todo dia.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Veja o Planejix por dentro</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">Interface real do app — saldo acumulativo, gráficos, metas e lembretes em um visual que dá gosto de abrir todo dia.</p>
           </div>
 
           {/* Print principal: dashboard em moldura de navegador */}
-          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10 max-w-4xl mx-auto">
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a24] border-b border-white/5">
+          <div className="rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/15 ring-1 ring-gray-900/5 max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a24]">
               <span className="w-3 h-3 rounded-full bg-red-400/80" />
               <span className="w-3 h-3 rounded-full bg-amber-400/80" />
               <span className="w-3 h-3 rounded-full bg-emerald-400/80" />
-              <span className="ml-3 text-[11px] text-gray-500 bg-white/5 rounded-md px-3 py-1 hidden sm:block">planejix.com.br</span>
+              <span className="ml-3 text-[11px] text-gray-400 bg-white/5 rounded-md px-3 py-1 hidden sm:block">planejix.com.br</span>
             </div>
             <img
               src="/screenshots/dashboard-desktop.jpeg"
               alt="Dashboard do Planejix com saldo total, insights automáticos e gráfico de evolução anual"
               width={1440} height={900}
               loading="lazy"
-              className="w-full h-auto block"
+              className="w-full h-auto block cursor-zoom-in"
+              title="Clique para ampliar"
+              onClick={() => setZoom({ src: '/screenshots/dashboard-desktop.jpeg', alt: 'Dashboard do Planejix com saldo total, insights automáticos e gráfico de evolução anual' })}
             />
           </div>
 
-          {/* Prints secundários + mobile */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 max-w-5xl mx-auto items-start">
-            <div className="md:col-span-1 space-y-6">
-              <figure>
-                <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg">
-                  <img
-                    src="/screenshots/transacoes-desktop.jpeg"
-                    alt="Lista de transações do Planejix com filtros e exportação para Excel"
-                    width={1440} height={900}
-                    loading="lazy"
-                    className="w-full h-auto block"
-                  />
+          {/* Prints secundários + mobile: janelas de app de cada lado, celular ao centro — cena de uso real */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 mt-12 max-w-5xl mx-auto md:items-center">
+            <figure className="md:translate-x-5 md:z-0">
+              <div className="rounded-xl overflow-hidden shadow-xl shadow-gray-900/20 ring-1 ring-gray-900/5 md:rotate-[-4deg]">
+                <div className="flex items-center gap-1.5 px-3 py-2 bg-[#1a1a24]">
+                  <span className="w-2 h-2 rounded-full bg-red-400/80" />
+                  <span className="w-2 h-2 rounded-full bg-amber-400/80" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400/80" />
                 </div>
-                <figcaption className="text-xs text-gray-500 mt-2 text-center">Transações com filtros e exportação para Excel</figcaption>
-              </figure>
-              <figure>
-                <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg">
-                  <img
-                    src="/screenshots/economia-desktop.jpeg"
-                    alt="Metas de economia do Planejix com progresso circular"
-                    width={1440} height={900}
-                    loading="lazy"
-                    className="w-full h-auto block"
-                  />
-                </div>
-                <figcaption className="text-xs text-gray-500 mt-2 text-center">Metas de economia com progresso visual</figcaption>
-              </figure>
-            </div>
-            <div className="md:col-span-2 flex flex-col items-center">
-              <div className="rounded-[2rem] overflow-hidden border-[6px] border-[#1a1a24] shadow-2xl shadow-emerald-500/10 max-w-[300px]">
+                <img
+                  src="/screenshots/transacoes-desktop.jpeg"
+                  alt="Lista de transações do Planejix com filtros e exportação para Excel"
+                  width={1440} height={900}
+                  loading="lazy"
+                  className="w-full h-auto block cursor-zoom-in"
+                  title="Clique para ampliar"
+                  onClick={() => setZoom({ src: '/screenshots/transacoes-desktop.jpeg', alt: 'Lista de transações do Planejix com filtros e exportação para Excel' })}
+                />
+              </div>
+              <figcaption className="text-xs text-gray-500 mt-4 text-center">Transações com filtros e exportação para Excel</figcaption>
+            </figure>
+            <div className="flex flex-col items-center md:z-10">
+              <div className="rounded-[2rem] overflow-hidden border-[6px] border-[#1a1a24] shadow-2xl shadow-gray-900/25 max-w-[280px] sm:max-w-[300px] bg-[#1a1a24]">
                 <img
                   src="/screenshots/dashboard-mobile.jpeg"
                   alt="Planejix no celular: dashboard responsivo instalável como aplicativo"
                   width={390} height={844}
                   loading="lazy"
-                  className="w-full h-auto block"
+                  className="w-full h-auto block rounded-[1.6rem] cursor-zoom-in"
+                  title="Clique para ampliar"
+                  onClick={() => setZoom({ src: '/screenshots/dashboard-mobile.jpeg', alt: 'Planejix no celular: dashboard responsivo instalável como aplicativo' })}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-3 text-center">No celular é app de verdade: instale na tela inicial, use até offline</p>
             </div>
+            <figure className="md:-translate-x-5 md:z-0">
+              <div className="rounded-xl overflow-hidden shadow-xl shadow-gray-900/20 ring-1 ring-gray-900/5 md:rotate-[4deg]">
+                <div className="flex items-center gap-1.5 px-3 py-2 bg-[#1a1a24]">
+                  <span className="w-2 h-2 rounded-full bg-red-400/80" />
+                  <span className="w-2 h-2 rounded-full bg-amber-400/80" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400/80" />
+                </div>
+                <img
+                  src="/screenshots/economia-desktop.jpeg"
+                  alt="Metas de economia do Planejix com progresso circular"
+                  width={1440} height={900}
+                  loading="lazy"
+                  className="w-full h-auto block cursor-zoom-in"
+                  title="Clique para ampliar"
+                  onClick={() => setZoom({ src: '/screenshots/economia-desktop.jpeg', alt: 'Metas de economia do Planejix com progresso circular' })}
+                />
+              </div>
+              <figcaption className="text-xs text-gray-500 mt-4 text-center">Metas de economia com progresso visual</figcaption>
+            </figure>
           </div>
 
-          <p className="text-[11px] text-gray-600 mt-8 text-center">Capturas de tela reais do produto, com dados de demonstração.</p>
+          <p className="text-[11px] text-gray-400 mt-8 text-center">Capturas de tela reais do produto, com dados de demonstração.</p>
         </div>
       </section>
 
@@ -257,7 +286,7 @@ export default function LandingPage() {
         </div>
         <div className="space-y-3">
           {problems.map((p, i) => (
-            <div key={i} className="flex items-stretch gap-3 sm:gap-4">
+            <div key={i} className="flex flex-col sm:flex-row sm:items-stretch gap-2 sm:gap-4">
               <div className="flex-1 p-4 rounded-xl bg-red-50 border border-red-100">
                 <div className="flex items-center gap-2 mb-1">
                   <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,8 +296,8 @@ export default function LandingPage() {
                 </div>
                 <p className="text-sm text-red-800">{p.before}</p>
               </div>
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center justify-center">
+                <svg className="w-5 h-5 text-gray-300 rotate-90 sm:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -382,6 +411,9 @@ export default function LandingPage() {
                 <span className="text-gray-400 ml-1">/mês</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">Menos que um café no Starbucks</p>
+              <p className="text-sm text-emerald-700 font-medium mt-2 inline-block px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100">
+                ou R$ 44,90/ano — economize 24%
+              </p>
             </div>
 
             <ul className="space-y-2.5 mb-6">
@@ -479,6 +511,35 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Lightbox: print ampliado para análise — fecha com clique, X ou Esc */}
+      {zoom && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 cursor-zoom-out animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label={zoom.alt}
+          onClick={() => setZoom(null)}
+        >
+          <button
+            onClick={() => setZoom(null)}
+            aria-label="Fechar imagem ampliada"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <figure className="max-w-6xl w-full max-h-full flex flex-col items-center gap-3">
+            <img
+              src={zoom.src}
+              alt={zoom.alt}
+              className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl shadow-2xl"
+            />
+            <figcaption className="text-sm text-gray-300 text-center">{zoom.alt}</figcaption>
+          </figure>
+        </div>
+      )}
     </div>
   );
 }

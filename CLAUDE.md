@@ -77,7 +77,7 @@ The remote is configured with an embedded PAT for silent pushes. A Claude Code S
 | `/categories` | `CategoriesPage.tsx` | Grid cards with color swatches. CRUD with toast + delete confirmation modal. |
 | `/import` | `ImportPage.tsx` | Drag-and-drop Excel/CSV import via SheetJS (`xlsx`). Preview table with row validation before bulk create. |
 | `/profile` | `ProfilePage.tsx` | Avatar, name/email editing, plan display with feature limits. |
-| `/upgrade` | `UpgradePage.tsx` | Single Pro plan card (R$ 4,90/mês, all features), subscribe via Mercado Pago Checkout Pro, cancel-subscription modal. Free plan is extinct — legacy non-pro accounts keep working; admin can still set free/pro per user in AdminPage. PDF report + e-mail reminders remain Pro-gated. |
+| `/upgrade` | `UpgradePage.tsx` | Single Pro plan card com toggle Mensal (R$ 4,90) / Anual (R$ 44,90, default, "-24%"), subscribe via Mercado Pago Checkout Pro, cancel-subscription modal. Pix anual = 368 dias de acesso; cartão anual = preapproval frequency 12. Free plan is extinct — legacy non-pro accounts keep working; admin can still set free/pro per user in AdminPage. PDF report + e-mail reminders remain Pro-gated. Preços via env: `MP_PRO_PRICE` (4.90) e `MP_PRO_ANNUAL_PRICE` (44.90). |
 
 ### Component Notes
 

@@ -131,12 +131,12 @@ export const savingsAPI = {
 };
 
 export const paymentsAPI = {
-  createPreference: () =>
-    api.post<{ id: string; init_point: string; sandbox_init_point: string }>('/payments/create-preference'),
+  createPreference: (period: 'monthly' | 'annual' = 'monthly') =>
+    api.post<{ id: string; init_point: string; sandbox_init_point: string }>('/payments/create-preference', { period }),
   getStatus: () =>
     api.get<{ plan: string; payment_id: string | null; started_at: string | null }>('/payments/status'),
-  subscribe: () =>
-    api.post<{ init_point: string }>('/payments/subscribe'),
+  subscribe: (period: 'monthly' | 'annual' = 'monthly') =>
+    api.post<{ init_point: string }>('/payments/subscribe', { period }),
   cancel: () =>
     api.post<{ success: boolean; plan: string }>('/payments/cancel'),
   check: (userId: number, paymentId?: string) =>

@@ -4,6 +4,8 @@ const db = require('../database/db');
 
 // Pix compra 30 dias de acesso + 3 de carência antes do paywall
 const PIX_ACCESS_DAYS = 33;
+// Plano anual: 365 dias + 3 de carência
+const PIX_ANNUAL_DAYS = 368;
 
 /**
  * Valida o header x-signature do Mercado Pago (HMAC-SHA256).
@@ -52,6 +54,10 @@ function getPrice() {
   return parseFloat(process.env.MP_PRO_PRICE || '4.90');
 }
 
+function getAnnualPrice() {
+  return parseFloat(process.env.MP_PRO_ANNUAL_PRICE || '44.90');
+}
+
 /** Plano efetivo: pro com plan_expires_at no passado conta como expirado. */
 function isSubscriptionExpired(user) {
   return user.plan === 'pro' && user.plan_expires_at && new Date(user.plan_expires_at) < new Date();
@@ -62,7 +68,7 @@ function isSubscriptionExpired(user) {
  * Assinantes de cartão (mp_preapproval_id) não recebem expiração —
  * a recorrência deles é gerida pelo próprio Mercado Pago.
  */
-function activatePixAccess(userId, paymentId) {
+function activatePixAccess(userId, paymentId, days = PIX_ACCESS_DAYS) {
   const user = db.prepare('SELECT mp_preapproval_id FROM users WHERE id = ?').get(userId);
   if (!user) return;
 
@@ -73,13 +79,13 @@ function activatePixAccess(userId, paymentId) {
     return;
   }
 
-  const expires = new Date(Date.now() + PIX_ACCESS_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
   db.prepare(`
     UPDATE users SET plan = 'pro', approved = 1, mp_payment_id = ?, plan_started_at = ?,
       plan_expires_at = ?, renewal_reminder_sent_at = NULL, expired_notice_sent_at = NULL
     WHERE id = ?
   `).run(String(paymentId), new Date().toISOString(), expires, userId);
-  console.log(`[Pagamento] Usuário ${userId} ativado por 30 dias via Pix (payment ${paymentId}, expira ${expires})`);
+  console.log(`[Pagamento] Usuário ${userId} ativado por ${days} dias via Pix (payment ${paymentId}, expira ${expires})`);
 }
 
 /** Ativa a assinatura recorrente de cartão (preapproval autorizado). */
@@ -92,30 +98,44 @@ function activateCardSubscription(userId, preapprovalId) {
   console.log(`[Pagamento] Usuário ${userId} assinou via cartão (preapproval ${preapprovalId})`);
 }
 
-/** Checkout Pix avulso — 30 dias de acesso (cartão de crédito excluído). */
-async function createPixCheckout(user) {
+// Item ids identificam o período no webhook (fallback: valor do pagamento)
+const PIX_ITEM_MONTHLY = 'planejix-pix-30d';
+const PIX_ITEM_ANNUAL = 'planejix-pix-365d';
+
+/** Checkout Pix avulso — 30 dias (mensal) ou 365 dias (anual), cartão excluído. */
+async function createPixCheckout(user, period = 'monthly') {
   const { frontendUrl, backendUrl } = getUrls();
   const preference = new Preference(getClient());
+  const annual = period === 'annual';
 
   const result = await preference.create({
     body: {
-      items: [{
-        id: 'planejix-pix-30d',
-        title: 'Planejix — 30 dias de acesso',
-        description: 'Acesso completo ao Planejix por 30 dias (renovável)',
-        quantity: 1,
-        currency_id: 'BRL',
-        unit_price: getPrice(),
-      }],
+      items: [annual
+        ? {
+            id: PIX_ITEM_ANNUAL,
+            title: 'Planejix — 1 ano de acesso',
+            description: 'Acesso completo ao Planejix por 365 dias (renovável)',
+            quantity: 1,
+            currency_id: 'BRL',
+            unit_price: getAnnualPrice(),
+          }
+        : {
+            id: PIX_ITEM_MONTHLY,
+            title: 'Planejix — 30 dias de acesso',
+            description: 'Acesso completo ao Planejix por 30 dias (renovável)',
+            quantity: 1,
+            currency_id: 'BRL',
+            unit_price: getPrice(),
+          }],
       payer: { name: user.name || user.username, email: user.email || undefined },
       payment_methods: {
         excluded_payment_types: [{ id: 'credit_card' }, { id: 'ticket' }],
         installments: 1,
       },
       back_urls: {
-        success: `${frontendUrl}/login?payment=approved`,
+        success: `${frontendUrl}/login?payment=approved${annual ? '&period=annual' : ''}`,
         failure: `${frontendUrl}/login?payment=rejected`,
-        pending: `${frontendUrl}/login?payment=pending`,
+        pending: `${frontendUrl}/login?payment=pending${annual ? '&period=annual' : ''}`,
       },
       auto_return: 'approved',
       notification_url: `${backendUrl}/api/payments/webhook`,
@@ -127,24 +147,25 @@ async function createPixCheckout(user) {
   return result.init_point;
 }
 
-/** Assinatura recorrente mensal no cartão (Preapproval do MP). */
-async function createCardSubscription(user) {
+/** Assinatura recorrente no cartão (Preapproval do MP) — mensal ou anual. */
+async function createCardSubscription(user, period = 'monthly') {
   if (!user.email) throw new Error('E-mail é obrigatório para assinatura no cartão');
   const { frontendUrl, backendUrl } = getUrls();
   const preapproval = new PreApproval(getClient());
+  const annual = period === 'annual';
 
   const result = await preapproval.create({
     body: {
-      reason: 'Planejix — Assinatura Mensal',
+      reason: annual ? 'Planejix — Assinatura Anual' : 'Planejix — Assinatura Mensal',
       external_reference: String(user.id),
       payer_email: user.email,
       auto_recurring: {
-        frequency: 1,
+        frequency: annual ? 12 : 1,
         frequency_type: 'months',
-        transaction_amount: getPrice(),
+        transaction_amount: annual ? getAnnualPrice() : getPrice(),
         currency_id: 'BRL',
       },
-      back_url: `${frontendUrl}/login?payment=approved`,
+      back_url: `${frontendUrl}/login?payment=approved${annual ? '&period=annual' : ''}`,
       notification_url: `${backendUrl}/api/payments/webhook`,
       status: 'pending',
     },
@@ -153,9 +174,18 @@ async function createCardSubscription(user) {
   return result.init_point;
 }
 
+/** Dias de acesso comprados num pagamento Pix: anual ou mensal, pelo item (fallback: valor). */
+function pixDaysFor(paymentData) {
+  const itemId = paymentData?.additional_info?.items?.[0]?.id;
+  if (itemId === PIX_ITEM_ANNUAL) return PIX_ANNUAL_DAYS;
+  if (itemId === PIX_ITEM_MONTHLY) return PIX_ACCESS_DAYS;
+  return (paymentData?.transaction_amount ?? 0) >= getAnnualPrice() - 1 ? PIX_ANNUAL_DAYS : PIX_ACCESS_DAYS;
+}
+
 exports.createPixCheckout = createPixCheckout;
 exports.createCardSubscription = createCardSubscription;
 exports.isSubscriptionExpired = isSubscriptionExpired;
+exports.pixDaysFor = pixDaysFor;
 
 /** Checkout Pix (30 dias) para usuário logado — novo pagamento ou renovação. */
 exports.createPreference = async (req, res) => {
@@ -168,7 +198,8 @@ exports.createPreference = async (req, res) => {
       return res.status(400).json({ error: 'Sua assinatura já está ativa!' });
     }
 
-    const init_point = await createPixCheckout(user);
+    const period = req.body?.period === 'annual' ? 'annual' : 'monthly';
+    const init_point = await createPixCheckout(user, period);
     res.json({ init_point });
   } catch (err) {
     console.error('[Pagamento] Erro ao criar checkout Pix:', err.message);
@@ -188,7 +219,8 @@ exports.subscribe = async (req, res) => {
     }
     if (!user.email) return res.status(400).json({ error: 'Cadastre um e-mail no Perfil para assinar no cartão' });
 
-    const init_point = await createCardSubscription(user);
+    const period = req.body?.period === 'annual' ? 'annual' : 'monthly';
+    const init_point = await createCardSubscription(user, period);
     res.json({ init_point });
   } catch (err) {
     console.error('[Pagamento] Erro ao criar assinatura:', err.message);
@@ -211,7 +243,7 @@ exports.webhook = async (req, res) => {
 
       if (paymentData.status === 'approved') {
         const userId = parseInt(paymentData.external_reference);
-        if (userId) activatePixAccess(userId, data.id);
+        if (userId) activatePixAccess(userId, data.id, pixDaysFor(paymentData));
       } else if (paymentData.status === 'refunded' || paymentData.status === 'charged_back') {
         // Reembolso/estorno: revoga o acesso só se este for o pagamento que ativou o plano vigente
         const userId = parseInt(paymentData.external_reference);
@@ -267,7 +299,7 @@ exports.check = async (req, res) => {
       const payment = new Payment(getClient());
       const data = await payment.get({ id: paymentId });
       if (data.status === 'approved' && parseInt(data.external_reference) === userId) {
-        activatePixAccess(userId, paymentId);
+        activatePixAccess(userId, paymentId, pixDaysFor(data));
         console.log(`[Pagamento] Usuário ${userId} liberado via polling (payment ${paymentId})`);
         return res.json({ approved: true, plan: 'pro' });
       }

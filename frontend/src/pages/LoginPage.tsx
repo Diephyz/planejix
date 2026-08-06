@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authAPI, paymentsAPI } from '../api/api';
+import { trackPixel, trackPurchaseOnce } from '../lib/metaPixel';
 import { useAuth } from '../context/AuthContext';
 import GoogleLoginButton from '../components/auth/GoogleLoginButton';
 
@@ -52,6 +53,11 @@ export default function LoginPage() {
     if (payment === 'approved' || payment === 'pending' || payment === 'rejected') {
       setPayStatus(payment);
     }
+    if (payment === 'approved') {
+      const pid = searchParams.get('payment_id') || searchParams.get('collection_id');
+      const value = searchParams.get('period') === 'annual' ? 44.9 : 4.9;
+      trackPurchaseOnce(pid || `url-${new Date().toISOString().slice(0, 10)}`, value);
+    }
   }, [searchParams]);
 
   // Pagamento pendente (ex: Pix): verifica automaticamente a cada 5s até a
@@ -71,6 +77,8 @@ export default function LoginPage() {
         if (res.data.approved) {
           setPayStatus('approved');
           clearInterval(interval);
+          const value = searchParams.get('period') === 'annual' ? 44.9 : 4.9;
+          trackPurchaseOnce(paymentId || `poll-${new Date().toISOString().slice(0, 10)}`, value);
         }
       } catch {
         // tenta de novo no próximo ciclo
@@ -102,11 +110,14 @@ export default function LoginPage() {
     setRegLoading(true);
     try {
       const res = await authAPI.register(regUsername, regPassword, regName || undefined, regEmail || undefined);
+      trackPixel('CompleteRegistration');
       if (res.data.payment_options && (res.data.payment_options.pix_url || res.data.payment_options.card_url)) {
+        trackPixel('InitiateCheckout');
         setPaymentOptions(res.data.payment_options);
         return;
       }
       if (res.data.payment_url) {
+        trackPixel('InitiateCheckout');
         window.location.href = res.data.payment_url;
         return;
       }

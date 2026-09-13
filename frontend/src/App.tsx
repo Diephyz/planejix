@@ -1,9 +1,11 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { initMetaPixel, trackPixel } from './lib/metaPixel';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import PrivateRoute from './components/auth/PrivateRoute';
 import AppLayout from './components/layout/AppLayout';
+import LegalLayout from './components/layout/LegalLayout';
 // Páginas públicas de entrada ficam no bundle principal (primeira dor de carregamento)
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -33,6 +35,16 @@ function AdminRoute({ children }: { children: ReactNode }) {
   return isAdmin ? <>{children}</> : <Navigate to="/dashboard" replace />;
 }
 
+// Meta Pixel: PageView em cada troca de rota (no-op sem VITE_META_PIXEL_ID/consentimento)
+function PixelTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    initMetaPixel();
+    trackPixel('PageView');
+  }, [location.pathname]);
+  return null;
+}
+
 // Raiz do site: landing para visitantes, painel para quem já está logado
 function HomeGate() {
   const { token } = useAuth();
@@ -45,6 +57,7 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <Analytics />
+        <PixelTracker />
         <InstallPrompt />
         <CookieConsent />
         <Suspense fallback={<PageLoader />}>
@@ -54,6 +67,11 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<Navigate to="/login" replace />} />
+          {/* Páginas legais são públicas: linkadas na landing, no cadastro e no aviso de cookies */}
+          <Route element={<LegalLayout />}>
+            <Route path="privacy" element={<PrivacyPage />} />
+            <Route path="terms" element={<TermsPage />} />
+          </Route>
           <Route
             element={
               <PrivateRoute>
@@ -69,8 +87,6 @@ export default function App() {
             <Route path="savings" element={<SavingsPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="upgrade" element={<UpgradePage />} />
-            <Route path="privacy" element={<PrivacyPage />} />
-            <Route path="terms" element={<TermsPage />} />
             <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             <Route path="approvals" element={<AdminRoute><ApprovalsPage /></AdminRoute>} />
           </Route>

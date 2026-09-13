@@ -21,3 +21,17 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Local database backups and stray artifacts (never commit user data)
+backend/backups/
+backend/expenses.db
+response.json
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Projeto não relacionado ao Planejix (automação GuardiãoXML) — não deve entrar neste repo
+automation/
+
+# Assets de skills do Claude Code (ferramenta, não código do projeto)
+.claude/skills/

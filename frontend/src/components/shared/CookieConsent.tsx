@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { initMetaPixel, trackPixel } from '../../lib/metaPixel';
 
 export default function CookieConsent() {
   const [show, setShow] = useState(false);
@@ -14,6 +15,9 @@ export default function CookieConsent() {
   const handleAccept = () => {
     localStorage.setItem('planejix_lgpd_consent', Date.now().toString());
     setShow(false);
+    // Consentimento dado: o pixel pode iniciar nesta mesma visita
+    initMetaPixel();
+    trackPixel('PageView');
   };
 
   if (!show) return null;
